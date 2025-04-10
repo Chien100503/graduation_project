@@ -1,7 +1,7 @@
 package com.petshop.petopia.config;
 
 import com.petshop.petopia.security.JwtFilter;
-import com.petshop.petopia.service.impl.UserDetailsServiceImpl;
+import com.petshop.petopia.implement.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -92,16 +92,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers("/api/register", "/api/login").permitAll()
-                                .requestMatchers("/api/company").hasRole("ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/users").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers("/api/pets/**").hasAnyAuthority("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No sessions
                 )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
-        // CORS đã được cấu hình đúng ở đây
         return http.build();
     }
 }

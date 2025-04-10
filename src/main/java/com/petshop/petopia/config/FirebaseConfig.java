@@ -13,27 +13,23 @@ import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
-
     @Value("${firebase.service-account.path}")
     private Resource serviceAccountResource;
 
     @Value("${firebase.storage.bucket-name}")
     private String storageBucket;
 
-    @Value("${firebase.database.url}")
-    private String databaseUrl;
-
     @PostConstruct
     public void initialize() throws IOException {
-        try (InputStream serviceAccount = serviceAccountResource.getInputStream()) {
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setStorageBucket(storageBucket)
-                    .setDatabaseUrl(databaseUrl)
-                    .build();
+        if (FirebaseApp.getApps().isEmpty()) {
+            try (InputStream serviceAccount = serviceAccountResource.getInputStream()) {
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setStorageBucket(storageBucket)
+                        .build();
 
-            if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
+                System.out.println("✅ Firebase initialized.");
             }
         }
     }

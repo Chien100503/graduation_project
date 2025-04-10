@@ -2,15 +2,25 @@ package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.PetCreateRequest;
 import com.petshop.petopia.model.Pet;
+import com.petshop.petopia.model.ProductCategory;
+import com.petshop.petopia.repository.PetRepository;
 import com.petshop.petopia.repository.ProductCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PetService {
 
+    private final PetRepository petRepository;
     private final ProductCategoryRepository categoryRepository;
+
+    public Pet createPet(PetCreateRequest req, String imageUrl) {
+        Pet pet = buildPetFromRequest(req, imageUrl);
+        return petRepository.save(pet);
+    }
 
     public Pet buildPetFromRequest(PetCreateRequest req, String imageUrl) {
         Pet pet = new Pet();
@@ -26,7 +36,10 @@ public class PetService {
         pet.setHealthStatus(req.getHealthStatus());
         pet.setDescription(req.getDescription());
         pet.setImg(imageUrl);
-        pet.setPrCategory(categoryRepository.findById(req.getProductCategoryId()).orElse(null));
+
+        Optional<ProductCategory> category = categoryRepository.findById(req.getProductCategoryId());
+        category.ifPresent(pet::setPrCategory);
+
         return pet;
     }
 }

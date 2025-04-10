@@ -1,4 +1,4 @@
-package com.petshop.petopia.service.impl;
+package com.petshop.petopia.implement;
 
 import com.petshop.petopia.model.Role;
 import com.petshop.petopia.model.User;

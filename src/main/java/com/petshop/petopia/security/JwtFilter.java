@@ -1,7 +1,6 @@
 package com.petshop.petopia.security;
 
-import com.petshop.petopia.service.CustomUserDetailsService;
-import com.petshop.petopia.service.impl.UserDetailsServiceImpl;
+import com.petshop.petopia.implement.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
             email = jwtService.extractEmail(token); // Extract email from token
         }
 
-        // If the token is valid and no authentication is set in the context
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -54,7 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // Continue the filter chain
         filterChain.doFilter(request, response);
     }
 }
