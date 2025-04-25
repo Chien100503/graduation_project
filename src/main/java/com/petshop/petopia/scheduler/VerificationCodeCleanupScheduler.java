@@ -12,7 +12,7 @@ public class VerificationCodeCleanupScheduler {
 
     private final VerificationCodeService cleanupService;
 
-    @Scheduled(fixedRate = 60000) // mỗi 5 phút
+    @Scheduled(fixedRate = 60000)
     public void cleanUpExpiredCodes() {
         cleanupService.cleanUp(); // gọi service để xóa
     }

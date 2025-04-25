@@ -2,7 +2,7 @@ package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.LoginRequest;
 import com.petshop.petopia.dto.response.LoginResponse;
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.UserRepository;
 import com.petshop.petopia.security.JwtService;
 import lombok.AllArgsConstructor;

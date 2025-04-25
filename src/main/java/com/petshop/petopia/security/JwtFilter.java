@@ -1,7 +1,7 @@
 package com.petshop.petopia.security;
 
 import com.petshop.petopia.implement.UserDetailsServiceImpl;
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

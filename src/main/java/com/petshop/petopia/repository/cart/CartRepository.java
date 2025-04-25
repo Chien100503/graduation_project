@@ -1,6 +1,6 @@
 package com.petshop.petopia.repository.cart;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.model.cart.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 

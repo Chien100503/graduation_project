@@ -1,9 +1,9 @@
 package com.petshop.petopia.service;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
 import com.petshop.petopia.model.VerificationCode;
-import com.petshop.petopia.repository.VerificationCodeRepository;
+import com.petshop.petopia.repository.verify.VerificationCodeRepository;
 import com.petshop.petopia.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

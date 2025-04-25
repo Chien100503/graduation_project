@@ -1,6 +1,6 @@
 package com.petshop.petopia.model.order;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 @Entity
 @Table(name = "orders")

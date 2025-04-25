@@ -1,12 +1,11 @@
 package com.petshop.petopia.model.cart;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity

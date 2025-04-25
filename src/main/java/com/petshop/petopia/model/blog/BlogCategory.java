@@ -1,4 +1,4 @@
-package com.petshop.petopia.model;
+package com.petshop.petopia.model.blog;
 
 import jakarta.persistence.*;
 import lombok.Getter;

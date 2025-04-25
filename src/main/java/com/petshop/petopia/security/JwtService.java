@@ -1,6 +1,6 @@
 package com.petshop.petopia.security;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

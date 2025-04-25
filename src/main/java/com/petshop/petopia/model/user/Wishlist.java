@@ -1,23 +1,26 @@
-package com.petshop.petopia.model;
+package com.petshop.petopia.model.user;
 
+import com.petshop.petopia.model.product.Pet;
+import com.petshop.petopia.model.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.util.Date;
 
 @Entity
-@Table(name = "order_items")
+@Table(name = "wishlists")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class OrderItem {
+public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -27,6 +30,6 @@ public class OrderItem {
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    private Integer quantity;
-    private Double price;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 }

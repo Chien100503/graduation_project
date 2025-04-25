@@ -1,12 +1,11 @@
 package com.petshop.petopia.service;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.model.cart.Cart;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.order.Order;
 import com.petshop.petopia.model.order.OrderItem;
 import com.petshop.petopia.model.product.Pet;
-import com.petshop.petopia.repository.*;
 import com.petshop.petopia.repository.cart.CartRepository;
 import com.petshop.petopia.repository.order.OrderItemRepository;
 import com.petshop.petopia.repository.order.OrderRepository;

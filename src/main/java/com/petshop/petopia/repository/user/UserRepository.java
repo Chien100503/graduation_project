@@ -1,6 +1,6 @@
 package com.petshop.petopia.repository.user;
 
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

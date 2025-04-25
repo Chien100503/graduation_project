@@ -1,7 +1,7 @@
 package com.petshop.petopia.config;
 
-import com.petshop.petopia.model.Role;
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.Role;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.RoleRepository;
 import com.petshop.petopia.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;

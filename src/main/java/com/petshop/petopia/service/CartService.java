@@ -3,7 +3,7 @@ package com.petshop.petopia.service;
 import com.petshop.petopia.dto.request.cart.CartItemRequest;
 import com.petshop.petopia.dto.request.cart.CartItemUpdateRequest;
 import com.petshop.petopia.dto.response.cart.CartResponse;
-import com.petshop.petopia.model.User;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.model.cart.Cart;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.product.Pet;

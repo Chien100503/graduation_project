@@ -1,4 +1,4 @@
-package com.petshop.petopia.model;
+package com.petshop.petopia.model.user;
 
 import com.petshop.petopia.model.order.Order;
 import jakarta.persistence.*;
