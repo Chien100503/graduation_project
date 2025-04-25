@@ -1,12 +1,16 @@
 package com.petshop.petopia.security;
 
+import com.petshop.petopia.model.User;
+import com.petshop.petopia.repository.user.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +22,9 @@ public class JwtService {
 
     @Value("${petopia.app.jwtSecret}")
     private String SECRET;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
@@ -57,13 +64,12 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // Extract all claims from the token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(getSignKey())
+                .verifyWith((SecretKey) getSignKey())  // Thêm cast sang SecretKey
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     // Check if the token is expired
@@ -75,5 +81,16 @@ public class JwtService {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Integer extractUserId(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        String email = extractEmail(token);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
+        return user.getUid();
     }
 }

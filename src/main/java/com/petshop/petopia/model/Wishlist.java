@@ -1,5 +1,7 @@
 package com.petshop.petopia.model;
 
+import com.petshop.petopia.model.product.Pet;
+import com.petshop.petopia.model.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

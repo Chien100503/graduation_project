@@ -1,34 +1,37 @@
 package com.petshop.petopia.controller;
 
-import com.petshop.petopia.dto.request.PetCreateRequest;
-import com.petshop.petopia.model.Pet;
-import com.petshop.petopia.service.FirebaseService;
+import com.petshop.petopia.dto.request.admin.PetCreateRequest;
+import com.petshop.petopia.model.product.Pet;
 import com.petshop.petopia.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/pets")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PetController {
 
     private final PetService petService;
-    private final FirebaseService firebaseService;
 
-    @PostMapping(value = "/admin/addPets", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> createPet(@ModelAttribute PetCreateRequest petRequest) {
+    @GetMapping("/pet")
+    public ResponseEntity<?> getPets() {
         try {
-            String imageUrl = firebaseService.upload(petRequest.getFile());
+            List<Pet> pets = petService.getAllPets();
 
-            Pet createdPet = petService.createPet(petRequest, imageUrl);
-            return ResponseEntity.ok(createdPet);
+            if (pets.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
 
-        } catch (IOException e) {
+            return ResponseEntity.ok(pets);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .body("❌ Failed to upload image or save pet: " + e.getMessage());
+                    .body("❌ Failed to retrieve pets: " + e.getMessage());
         }
     }
+
+
 }

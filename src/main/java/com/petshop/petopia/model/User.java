@@ -1,5 +1,6 @@
 package com.petshop.petopia.model;
 
+import com.petshop.petopia.model.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -9,7 +10,8 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -23,6 +25,7 @@ public class User {
     private String address;
     private String password;
     private String wishlist;
+    private Boolean isActive;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

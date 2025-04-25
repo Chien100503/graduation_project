@@ -1,4 +1,4 @@
-package com.petshop.petopia.model;
+package com.petshop.petopia.model.order;
 
 import com.petshop.petopia.model.product.Pet;
 import com.petshop.petopia.model.product.Product;
@@ -7,32 +7,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.util.Date;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "order_items")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Review {
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer rID;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    private Integer rating;
-    private String comment;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Integer quantity;
+    private Double price;
 }

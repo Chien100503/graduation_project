@@ -2,8 +2,8 @@ package com.petshop.petopia.config;
 
 import com.petshop.petopia.model.Role;
 import com.petshop.petopia.model.User;
-import com.petshop.petopia.repository.RoleRepository;
-import com.petshop.petopia.repository.UserRepository;
+import com.petshop.petopia.repository.user.RoleRepository;
+import com.petshop.petopia.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
             }});
             admin.setCreatedAt(new Date());
             admin.setUpdatedAt(new Date());
-
+            admin.setIsActive(true);
             userRepository.save(admin);
             System.out.println("Created default admin user: admin@petopia.com / admin123");
         } else {
