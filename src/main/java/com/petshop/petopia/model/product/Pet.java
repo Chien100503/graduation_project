@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "pets")
+@Table(name = "pet")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,11 +15,11 @@ public class Pet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pid;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "product_category_id")
-    private ProductCategory prCategory;
+    @JoinColumn(name = "pet_category_id") // Sửa tên cột khóa ngoại
+    private PetCategory petCategory; // Sửa tên trường để khớp với PetCategory
 
     private String name;
     private String breed;

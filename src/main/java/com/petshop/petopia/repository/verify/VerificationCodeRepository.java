@@ -18,11 +18,11 @@ public interface VerificationCodeRepository extends JpaRepository<VerificationCo
     void deleteByUser(User user);
 
     // Tìm mã xác thực theo userId (uid của User)
-    Optional<VerificationCode> findByUser_Uid(Integer userUid);
+    Optional<VerificationCode> findByUser_Id(Integer userUid);
 
     // Xóa mã xác thực theo userId (uid của User)
     @Modifying
-    @Query("DELETE FROM VerificationCode v WHERE v.user.uid = :userId")
+    @Query("DELETE FROM VerificationCode v WHERE v.user.id = :userId")
     void deleteByUserId(@Param("userId") Integer userId);
 
     void deleteAllByExpiryTimeLessThan(Long expiryTime);

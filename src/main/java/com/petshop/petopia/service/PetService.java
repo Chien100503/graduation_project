@@ -4,9 +4,10 @@ package com.petshop.petopia.service;
 import com.petshop.petopia.dto.request.admin.PetCreateRequest;
 import com.petshop.petopia.dto.response.PetResponse;
 import com.petshop.petopia.model.product.Pet;
-import com.petshop.petopia.model.product.ProductCategory;
+import com.petshop.petopia.model.product.PetCategory;
+import com.petshop.petopia.repository.product.PetCategoryRepository;
 import com.petshop.petopia.repository.product.PetRepository;
-import com.petshop.petopia.repository.product.ProductCategoryRepository;
+import com.petshop.petopia.util.ConvertPet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,11 @@ import java.util.Optional;
 public class PetService {
 
     private final PetRepository petRepository;
-    private final ProductCategoryRepository categoryRepository;
+    private final PetCategoryRepository petCategoryRepository;
     private final FirebaseService firebaseService;
+    private final ConvertPet convertPet;
 
     public PetResponse createPet(PetCreateRequest req) throws IOException {
-        // 🖼 Upload ảnh
         String imageUrl = firebaseService.uploadImagePet(req.getFile());
 
         Pet pet = new Pet();
@@ -42,45 +43,26 @@ public class PetService {
         pet.setImg(imageUrl);
 
         // 🔎 Tìm hoặc tạo category
-        Optional<ProductCategory> categoryOpt = categoryRepository.findByName(req.getProductCategoryName());
-        ProductCategory category = categoryOpt.orElseGet(() -> {
-            ProductCategory newCategory = new ProductCategory();
-            newCategory.setName(req.getProductCategoryName());
+        Optional<PetCategory> categoryOpt = petCategoryRepository.findByName(req.getPetCategoryName());
+        PetCategory category = categoryOpt.orElseGet(() -> {
+            PetCategory newCategory = new PetCategory();
+            newCategory.setName(req.getPetCategoryName());
             newCategory.setDescription("No description available");
             newCategory.setCreatedAt(new Date());
-            return categoryRepository.save(newCategory);
+            return petCategoryRepository.save(newCategory);
         });
-        pet.setPrCategory(category);
+        pet.setPetCategory(category);
 
         // 💾 Lưu pet vào DB
         Pet savedPet = petRepository.save(pet);
 
         // 🔁 Trả về dạng response
-        return convertToResponse(savedPet);
+        return convertPet.convertToResponse(savedPet);
     }
 
     public List<Pet> getAllPets() {
         return petRepository.findAll();
     }
 
-    private PetResponse convertToResponse(Pet pet) {
-        return new PetResponse(
-                pet.getPid(),
-                pet.getName(),
-                pet.getBreed(),
-                pet.getAge(),
-                pet.getGender(),
-                pet.getSize(),
-                pet.getWeight(),
-                pet.getColor(),
-                pet.getPrice(),
-                pet.getStatus() != null && pet.getStatus() ? "Available" : "Ordered",
-                pet.getHealthStatus(),
-                pet.getDescription(),
-                pet.getImg(),
-                pet.getCreatedAt(),
-                pet.getUpdatedAt(),
-                pet.getPrCategory() != null ? pet.getPrCategory().getName() : null
-        );
-    }
+
 }

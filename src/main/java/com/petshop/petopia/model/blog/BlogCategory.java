@@ -9,13 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "blog_categories")
-@Getter @Setter
+@Table(name = "blog_category")
+@Getter
+@Setter
 @NoArgsConstructor @AllArgsConstructor
 public class BlogCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer bigCategoryID;
+    private Integer id;
 
     private String name;
     private String description;

@@ -1,9 +1,12 @@
 package com.petshop.petopia.controller;
 
 import com.petshop.petopia.dto.request.admin.PetCreateRequest;
+import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
 import com.petshop.petopia.dto.response.PetResponse;
+import com.petshop.petopia.dto.response.ProductResponse;
 import com.petshop.petopia.model.product.Pet;
 import com.petshop.petopia.service.PetService;
+import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,8 +22,9 @@ import java.io.IOException;
 public class AdminController {
 
     private final PetService petService;
+    private final ProductService productService;
 
-    @PostMapping(value = "/addPets", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/addPet", consumes = {"multipart/form-data"})
     public ResponseEntity<?> createPet(@ModelAttribute PetCreateRequest petRequest) {
         try {
             PetResponse createdPet = petService.createPet(petRequest);
@@ -28,6 +32,17 @@ public class AdminController {
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
                     .body("❌ Failed to upload image or save pet: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/addProduct", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createProduct(@ModelAttribute ProductCreateRequest productRequest) {
+        try {
+            ProductResponse createProduct = productService.createProduct(productRequest);
+            return ResponseEntity.ok(createProduct);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body("❌ Failed to upload image or save product: " + e.getMessage());
         }
     }
 }

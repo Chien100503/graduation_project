@@ -19,7 +19,6 @@ public class ConvertCart {
         }
         CartResponse cartResponse = new CartResponse();
         cartResponse.setId(cart.getId());
-        // Đảm bảo items không null, ngay cả khi cart.getItems() là null
         List<CartItemResponse> cartItemResponses = (cart.getItems() != null) ?
                 cart.getItems().stream()
                         .map(this::toCartItemResponse)
@@ -33,10 +32,10 @@ public class ConvertCart {
         CartItemResponse cartItemResponse = new CartItemResponse();
         cartItemResponse.setId(cartItem.getId());
         if (cartItem.getProduct() != null) {
-            cartItemResponse.setProductId(cartItem.getProduct().getPid());
+            cartItemResponse.setProductId(cartItem.getProduct().getId());
             cartItemResponse.setProductName(cartItem.getProduct().getName());
         } else if (cartItem.getPet() != null) {
-            cartItemResponse.setPetId(cartItem.getPet().getPid());
+            cartItemResponse.setPetId(cartItem.getPet().getId());
             cartItemResponse.setPetName(cartItem.getPet().getName());
         }
         cartItemResponse.setQuantity(cartItem.getQuantity());

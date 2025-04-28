@@ -11,13 +11,13 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "review")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer rID;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

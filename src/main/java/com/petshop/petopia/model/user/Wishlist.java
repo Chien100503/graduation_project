@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "wishlists")
+@Table(name = "wishlist")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Wishlist {

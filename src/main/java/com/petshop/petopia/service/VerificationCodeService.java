@@ -57,7 +57,7 @@ public class VerificationCodeService {
     }
 
     public String getCode(User user) {
-        Optional<VerificationCode> optional = verificationCodeRepository.findByUser_Uid(user.getUid());
+        Optional<VerificationCode> optional = verificationCodeRepository.findByUser_Id(user.getId());
         if (optional.isEmpty()) return null;
 
         VerificationCode vc = optional.get();

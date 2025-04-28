@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "blog_posts")
+@Table(name = "blog_post")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class BlogPost {

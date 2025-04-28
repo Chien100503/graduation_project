@@ -50,7 +50,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail());
 
-        return new LoginResponse(user.getUid(), token, user.getIsActive());
+        return new LoginResponse(user.getId(), token, user.getIsActive());
     }
 
     public RegisterResponse register(RegisterRequest req) {
@@ -95,7 +95,7 @@ public class AuthService {
         String token = jwtService.generateToken(user.getEmail());
 
         // Trả về thông tin đăng ký, bao gồm UID, token và trạng thái isActive
-        return new RegisterResponse(user.getUid(), token, user.getIsActive());
+        return new RegisterResponse(user.getId(), token, user.getIsActive());
     }
 
     @Transactional

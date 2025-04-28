@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     Optional<Role> findByName(String roleName);
-    Set<Role> findByUsers_Uid(Integer uid);
+    Set<Role> findByUsers_id(Integer uid);
     @Query("SELECT r FROM Role r JOIN r.users u WHERE u.email = :email")
     List<Role> findRolesByEmail(@Param("email") String email);
 }

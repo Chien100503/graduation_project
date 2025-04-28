@@ -91,6 +91,6 @@ public class JwtService {
         String email = extractEmail(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
-        return user.getUid();
+        return user.getId();
     }
 }

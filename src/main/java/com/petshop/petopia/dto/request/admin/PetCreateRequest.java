@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class PetCreateRequest {
     private MultipartFile file;
-    private String productCategoryName;
+    private String petCategoryName;
     private String name;
     private String breed;
     private Integer age;

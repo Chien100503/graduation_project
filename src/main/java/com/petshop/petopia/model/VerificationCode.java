@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "verification_codes")
+@Table(name = "verification_code")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,6 +21,6 @@ public class VerificationCode {
     private Long expiryTime;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "uid", unique = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 }

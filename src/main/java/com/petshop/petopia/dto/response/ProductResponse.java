@@ -1,29 +1,17 @@
-package com.petshop.petopia.model.product;
+package com.petshop.petopia.dto.response;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.util.Date;
 
-@Entity
-@Table(name = "product")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductResponse {
     private Integer id;
-
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "pr_category_id")
-    private ProductCategory prCategory;
-
     private String brand;
     private String type;
     private String description;
@@ -33,10 +21,7 @@ public class Product {
     private Double weight;
     private Date expirationDate;
     private String images;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+    private String category;
 }

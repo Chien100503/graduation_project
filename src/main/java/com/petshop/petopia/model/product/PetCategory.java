@@ -10,12 +10,12 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "product_category")
+@Table(name = "pet_category")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCategory {
+public class PetCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,9 +23,9 @@ public class ProductCategory {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "prCategory")
+    @OneToMany(mappedBy = "petCategory")
     @JsonIgnore
-    private List<Product> products;
+    private List<Pet> pets;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

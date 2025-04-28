@@ -9,13 +9,13 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "role")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer roleId;
+    private Integer id;
 
     private String name;
 
