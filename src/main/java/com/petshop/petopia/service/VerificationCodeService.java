@@ -35,25 +35,27 @@ public class VerificationCodeService {
             System.out.println("Đã gửi lại mã xác thực cũ cho email: " + user.getEmail());
         } else {
             String newCode = generateVerificationCode();
-            saveCode(user, newCode, 300);
+            saveCodeInternal(user, newCode, 300); // Lưu mã mới
             mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT, VERIFICATION_TEXT_PREFIX + newCode);
             System.out.println("Đã tạo và gửi mã xác thực mới cho email: " + user.getEmail());
         }
     }
 
-    public void saveCode(User user, String code, int ttlSeconds) {
+    // Phương thức nội bộ chỉ để lưu code vào DB
+    private void saveCodeInternal(User user, String code, int ttlSeconds) {
         long expiryTime = System.currentTimeMillis() + ttlSeconds * 1000L;
-
         verificationCodeRepository.deleteByUser(user);
-
         VerificationCode vc = new VerificationCode();
         vc.setCode(code);
         vc.setExpiryTime(expiryTime);
         vc.setUser(user);
-
         verificationCodeRepository.save(vc);
+    }
 
-        mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT, VERIFICATION_TEXT_PREFIX + code);
+    // Phương thức công khai để lưu code và trả về code
+    public String saveCode(User user, String code, int ttlSeconds) {
+        saveCodeInternal(user, code, ttlSeconds);
+        return code;
     }
 
     public String getCode(User user) {

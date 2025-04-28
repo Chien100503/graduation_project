@@ -85,11 +85,12 @@ public class AuthService {
 
         // Tạo mã xác thực 6 số
         String code = String.format("%06d", new Random().nextInt(999999));
-        verificationCodeService.saveCode(user, code, VERIFICATION_CODE_TTL);
+        // Lưu mã và lấy mã đã lưu (để gửi email sau)
+        String savedCode = verificationCodeService.saveCode(user, code, VERIFICATION_CODE_TTL);
 
         // Gửi email xác thực
         mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT,
-                VERIFICATION_TEXT_PREFIX + code + " (hết hạn sau " + VERIFICATION_CODE_TTL / 60 + " phút)");
+                VERIFICATION_TEXT_PREFIX + savedCode + " (hết hạn sau " + VERIFICATION_CODE_TTL / 60 + " phút)");
 
         // Tạo token cho người dùng
         String token = jwtService.generateToken(user.getEmail());
