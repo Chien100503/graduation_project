@@ -1,6 +1,6 @@
-package com.petshop.petopia.repository.product;
+package com.petshop.petopia.repository.pet;
 
-import com.petshop.petopia.model.product.PetCategory;
+import com.petshop.petopia.model.pet.PetCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

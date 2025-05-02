@@ -4,7 +4,6 @@ import com.petshop.petopia.dto.request.admin.PetCreateRequest;
 import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
 import com.petshop.petopia.dto.response.PetResponse;
 import com.petshop.petopia.dto.response.ProductResponse;
-import com.petshop.petopia.model.product.Pet;
 import com.petshop.petopia.service.PetService;
 import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;

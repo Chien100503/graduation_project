@@ -3,20 +3,19 @@ package com.petshop.petopia.dto.request.admin;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
+import java.util.List;
 
 @Data
 public class ProductCreateRequest {
-    private MultipartFile file;
-    private String name;
+    private List<MultipartFile> file;
     private String productCategoryName;
-    private String brand;
-    private String type;
+    private String name;
+    private String brandName;
+    private String typeName;
     private String description;
+    private Integer price;
     private Integer stockQuantity;
     private Integer size;
     private Double weight;
-    private Date expirationDate;
-    private Double price;
-    private Boolean healthStatus; // Vẫn giữ, nhưng bạn nên cân nhắc lại sự phù hợp
+    private String expirationDate;
 }

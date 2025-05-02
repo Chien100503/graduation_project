@@ -1,0 +1,18 @@
+package com.petshop.petopia.dto.response.order;
+
+import com.petshop.petopia.model.order.Order;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderCreationResponse {
+    private Order order;
+    private String paymentLink; // Chứa URL thanh toán PayOS nếu paymentMethod là PayOS
+    private String message; // Thông báo kết quả
+    // Có thể thêm các trường khác như status code nội bộ nếu cần
+}

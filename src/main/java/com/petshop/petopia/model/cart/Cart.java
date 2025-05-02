@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,5 +25,5 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
-    private Double totalPrice;
+    private Integer totalPrice;
 }

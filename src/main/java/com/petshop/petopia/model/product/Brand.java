@@ -1,32 +1,32 @@
 package com.petshop.petopia.model.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "product_categories")
+@Table(name = "brands") // Bảng để lưu thông tin về thương hiệu
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCategory {
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String name;
-    private String description;
-
-    @OneToMany(mappedBy = "prCategory")
-    @JsonIgnore
-    private List<Product> products;
+    private String name;  // Tên thương hiệu
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @PreUpdate
+    public void setUpdatedAt() {
+        this.updatedAt = new Date();
+    }
 }

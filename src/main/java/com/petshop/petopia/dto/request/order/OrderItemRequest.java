@@ -1,14 +1,12 @@
 package com.petshop.petopia.dto.request.order;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+import java.util.List;
+
+@Data
 public class OrderItemRequest {
     private Integer productId;
     private Integer petId;
-    private int quantity;
-    private double price;
+    private Integer quantity;
 }

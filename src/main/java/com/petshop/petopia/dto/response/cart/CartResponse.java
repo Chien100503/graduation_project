@@ -8,5 +8,5 @@ import java.util.List;
 public class CartResponse {
     private Integer id;
     private List<CartItemResponse> items;
-    private Double totalPrice;
+    private Integer totalPrice;
 }

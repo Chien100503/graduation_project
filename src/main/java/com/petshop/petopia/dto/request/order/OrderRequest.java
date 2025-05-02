@@ -1,16 +1,12 @@
 package com.petshop.petopia.dto.request.order;
 
-import lombok.*;
-
+import lombok.Data;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class OrderRequest {
-    private String shippingAddress;
-    private String paymentMethod;
-    private String phoneNumber;
     private List<OrderItemRequest> items;
+    private String shippingAddress;
+    private String phoneNumber;
+    private PaymentRequest paymentRequest;
 }

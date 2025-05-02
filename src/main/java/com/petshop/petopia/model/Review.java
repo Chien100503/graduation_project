@@ -1,6 +1,6 @@
 package com.petshop.petopia.model;
 
-import com.petshop.petopia.model.product.Pet;
+import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.product.Product;
 import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "review")
+@Table(name = "reviews")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Review {

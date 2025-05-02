@@ -1,45 +1,39 @@
 package com.petshop.petopia.controller;
 
-import com.petshop.petopia.dto.request.order.OrderRequest;
+import com.petshop.petopia.dto.request.order.CreateOrderRequest;
 import com.petshop.petopia.model.order.Order;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.OrderService;
+import com.petshop.petopia.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static com.google.cloud.firestore.telemetry.MetricsUtil.logger;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/order")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
-    private final JwtService jwtService; // Inject JwtService
+    private final PaymentService paymentService;
+    private final JwtService jwtService;
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    @PostMapping("/place")
-    public ResponseEntity<Order> placeOrder(
-            @RequestBody OrderRequest orderRequest,
-            @RequestHeader("Authorization") String token
-    ) {
+    @PostMapping("/create")
+    public ObjectNode createOrder(
+            @RequestBody CreateOrderRequest request,
+            @RequestHeader("Authorization") String token) {
+        Integer userId = jwtService.extractUserId(token);
+        return orderService.createOrder(request, userId);
+    }
 
-            Integer userId = jwtService.extractUserId(token);
-
-            if (userId != null) {
-                Order placedOrder = orderService.placeOrder(
-                        userId,
-                        orderRequest.getShippingAddress(),
-                        orderRequest.getPhoneNumber()
-                );
-                return new ResponseEntity<>(placedOrder, HttpStatus.CREATED);
-            } else {
-                // Xử lý trường hợp không thể trích xuất userId từ token (ví dụ: token không hợp lệ)
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-
+    @PostMapping("/payos_transfer_handler")
+    public ObjectNode handlePayosWebhook(@RequestBody ObjectNode body) {
+        return paymentService.handlePayosTransferWebhook(body);
     }
 }

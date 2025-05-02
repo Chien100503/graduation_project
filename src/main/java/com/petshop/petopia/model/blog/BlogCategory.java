@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "blog_category")
+@Table(name = "blog_categories")
 @Getter
 @Setter
 @NoArgsConstructor @AllArgsConstructor

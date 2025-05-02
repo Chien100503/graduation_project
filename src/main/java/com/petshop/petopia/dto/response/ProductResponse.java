@@ -1,27 +1,28 @@
 package com.petshop.petopia.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponse {
     private Integer id;
     private String name;
-    private String brand;
-    private String type;
+    private String brandName;
+    private String typeName;
     private String description;
-    private Double price;
+    private Integer price;
     private Integer stockQuantity;
     private Integer size;
     private Double weight;
-    private Date expirationDate;
-    private String images;
+    private String expirationDate;
+    private List<String> imageUrls;
     private Date createdAt;
     private Date updatedAt;
-    private String category;
+    private String productCategoryName;
 }

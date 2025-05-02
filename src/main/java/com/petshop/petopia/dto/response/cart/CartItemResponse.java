@@ -12,6 +12,6 @@ public class CartItemResponse {
     private Integer petId;
     private String petName;
     private Integer quantity;
-    private Double price;
-    private Double itemTotalPrice;
+    private Integer price;
+    private Integer itemTotalPrice;
 }

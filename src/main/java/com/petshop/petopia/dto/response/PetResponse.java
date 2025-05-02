@@ -1,29 +1,29 @@
 package com.petshop.petopia.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class PetResponse {
-    private Integer pid;
+    private Integer id;
     private String name;
-    private String breed;
+    private String breedName;
     private Integer age;
     private String gender;
     private String size;
     private Double weight;
     private String color;
-    private Double price;
-    private String status;         // "Available" hoặc "Ordered"
-    private Boolean healthStatus;
+    private Integer price;
+    private String status;
     private String description;
-    private String img;
+    private List<String> imageUrls;
     private Date createdAt;
     private Date updatedAt;
-    private String categoryName;  // Optional: tên của ProductCategory (nếu cần hiển thị)
+    private String petCategoryName;
 }

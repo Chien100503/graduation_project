@@ -1,12 +1,16 @@
-package com.petshop.petopia.model.product;
+package com.petshop.petopia.model.pet;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "pet")
+@Table(name = "pets")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,21 +22,25 @@ public class Pet {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "pet_category_id") // Sửa tên cột khóa ngoại
-    private PetCategory petCategory; // Sửa tên trường để khớp với PetCategory
+    @JoinColumn(name = "pet_category_id")
+    private PetCategory petCategory;
+
+    @ManyToOne
+    @JoinColumn(name = "breed_id")
+    private Breed breed;
 
     private String name;
-    private String breed;
     private Integer age;
     private String gender;
     private String size;
     private Double weight;
     private String color;
-    private Double price;
+    private Integer price;
     private Boolean status;
-    private Boolean healthStatus;
     private String description;
-    private String img;
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PetImage> petImages;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();

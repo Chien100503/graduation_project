@@ -5,10 +5,10 @@
 //import com.petshop.petopia.model.*;
 //import com.petshop.petopia.model.order.Order;
 //import com.petshop.petopia.model.order.OrderItem;
-//import com.petshop.petopia.model.product.Pet;
+//import com.petshop.petopia.model.pet.Pet;
 //import com.petshop.petopia.model.product.Product;
 //import com.petshop.petopia.repository.order.OrderRepository;
-//import com.petshop.petopia.repository.product.PetRepository;
+//import com.petshop.petopia.repository.pet.PetRepository;
 //import com.petshop.petopia.repository.product.ProductRepository;
 //import com.petshop.petopia.repository.user.UserRepository;
 //import com.petshop.petopia.service.OrderService;

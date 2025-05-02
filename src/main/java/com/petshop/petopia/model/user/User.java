@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +24,6 @@ public class User {
     private String phone;
     private String address;
     private String password;
-    private String wishlist;
     private Boolean isActive;
 
     @ManyToMany(fetch = FetchType.EAGER)
