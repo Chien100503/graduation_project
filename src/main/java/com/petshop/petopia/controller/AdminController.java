@@ -2,7 +2,7 @@ package com.petshop.petopia.controller;
 
 import com.petshop.petopia.dto.request.admin.PetCreateRequest;
 import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
-import com.petshop.petopia.dto.response.PetResponse;
+import com.petshop.petopia.dto.response.PetCreateResponse;
 import com.petshop.petopia.dto.response.ProductResponse;
 import com.petshop.petopia.service.PetService;
 import com.petshop.petopia.service.ProductService;
@@ -26,7 +26,7 @@ public class AdminController {
     @PostMapping(value = "/addPet", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<?> createPet(@ModelAttribute PetCreateRequest petRequest) {
         try {
-            PetResponse createdPet = petService.createPet(petRequest);
+            PetCreateResponse createdPet = petService.createPet(petRequest);
             return ResponseEntity.ok(createdPet);
         } catch (IOException e) {
             return ResponseEntity.internalServerError()

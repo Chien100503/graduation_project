@@ -66,7 +66,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/register", "/api/login", "/api/order/payos_transfer_handler").permitAll()
+                        .requestMatchers("/api/register", "/api/login", "/api/payment/payos_transfer_handler").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/verify", "/api/resend").authenticated()

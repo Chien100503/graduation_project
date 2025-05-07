@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderPendingInfo {
-    private String orderId; // orderCode từ PayOS
+    private String orderId;
     private Integer userId;
 }

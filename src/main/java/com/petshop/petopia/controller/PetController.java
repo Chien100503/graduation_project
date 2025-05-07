@@ -1,5 +1,6 @@
 package com.petshop.petopia.controller;
 
+import com.petshop.petopia.dto.response.pet.GetPetResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.service.PetService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class PetController {
     @GetMapping("/pet")
     public ResponseEntity<?> getPets() {
         try {
-            List<Pet> pets = petService.getAllPets();
+            List<GetPetResponse> pets = petService.getAllPets();
 
             if (pets.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -31,5 +32,18 @@ public class PetController {
         }
     }
 
-
+    @GetMapping("/pet/{petId}")
+    public ResponseEntity<?> getPetDetails(@PathVariable("petId") Integer petId) { // Nên dùng Integer cho PathVariable ID để dễ handle null (mặc dù ở đây luôn có giá trị)
+        try {
+            GetPetResponse petDto = petService.getPetById(petId); // <-- Sửa kiểu dữ liệu trả về
+            return ResponseEntity.ok(petDto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("❌ Lỗi hệ thống khi lấy thông tin Pet: " + e.getMessage());
+        }
+        // Đã loại bỏ check .isEmpty() vì getPetById trả về 1 đối tượng hoặc ném exception
+    }
 }

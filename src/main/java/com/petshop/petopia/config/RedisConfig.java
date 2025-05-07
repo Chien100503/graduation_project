@@ -8,9 +8,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.*;
-import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
@@ -24,7 +23,6 @@ public class RedisConfig {
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        // Cấu hình Redis Cloud
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHost, redisPort);
         configuration.setPassword(redisPassword);
         return new LettuceConnectionFactory(configuration);
@@ -35,15 +33,11 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-
-        // Dùng JSON thay vì serialization mặc định
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
-
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
-
         return template;
     }
 }

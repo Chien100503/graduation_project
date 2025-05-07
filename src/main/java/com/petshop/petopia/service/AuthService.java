@@ -54,18 +54,20 @@ public class AuthService {
     }
 
     public RegisterResponse register(RegisterRequest req) {
-        // Kiểm tra nếu email đã tồn tại
         Optional<User> existing = userRepository.findByEmail(req.getEmail());
         if (existing.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã tồn tại");
         }
 
-        // Tạo mới đối tượng User
         User user = new User();
         user.setEmail(req.getEmail());
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
+        user.setPhone(req.getPhone());
+        user.setAddress(req.getAddress());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setName(req.getName());
-        user.setIsActive(false);  // Mới tạo thì chưa xác thực
+        user.setIsActive(false);
         user.setCreatedAt(new Date());
 
         // Tìm hoặc tạo role "USER"
@@ -75,27 +77,20 @@ public class AuthService {
             return roleRepository.save(newRole);
         });
 
-        // Gán role USER cho người dùng
         user.setRoles(new HashSet<>() {{
             add(userRole);
         }});
 
-        // Lưu người dùng vào cơ sở dữ liệu
         userRepository.save(user);
 
-        // Tạo mã xác thực 6 số
-        String code = String.format("%06d", new Random().nextInt(999999));
-        // Lưu mã và lấy mã đã lưu (để gửi email sau)
+        String code = String.format("%06d", new Random().nextInt(9999));
         String savedCode = verificationCodeService.saveCode(user, code, VERIFICATION_CODE_TTL);
 
-        // Gửi email xác thực
         mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT,
                 VERIFICATION_TEXT_PREFIX + savedCode + " (hết hạn sau " + VERIFICATION_CODE_TTL / 60 + " phút)");
 
-        // Tạo token cho người dùng
         String token = jwtService.generateToken(user.getEmail());
 
-        // Trả về thông tin đăng ký, bao gồm UID, token và trạng thái isActive
         return new RegisterResponse(user.getId(), token, user.getIsActive());
     }
 
@@ -110,16 +105,13 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
 
-        // Lấy mã xác thực của người dùng
-        VerificationCode vcode = verificationCodeRepository.findByUser(user)
+        VerificationCode verifycode = verificationCodeRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mã xác thực cho người dùng: " + user.getEmail()));
 
-        // So sánh mã
-        if (!vcode.getCode().equals(inputCode)) {
+        if (!verifycode.getCode().equals(inputCode)) {
             throw new RuntimeException("Mã xác thực không chính xác");
         }
 
-        // Cập nhật trạng thái và xóa mã xác thực
         user.setIsActive(true);
         userRepository.save(user);
         verificationCodeRepository.deleteByUser(user);

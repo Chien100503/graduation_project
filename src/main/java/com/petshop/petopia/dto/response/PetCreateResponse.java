@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PetResponse {
+public class PetCreateResponse {
     private Integer id;
     private String name;
     private String breedName;

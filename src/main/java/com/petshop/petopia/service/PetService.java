@@ -1,7 +1,8 @@
 package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.admin.PetCreateRequest;
-import com.petshop.petopia.dto.response.PetResponse;
+import com.petshop.petopia.dto.response.PetCreateResponse;
+import com.petshop.petopia.dto.response.pet.GetPetResponse;
 import com.petshop.petopia.model.pet.Breed;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetCategory;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class PetService {
     private final PetImageRepository petImageRepository;
 
     @Transactional
-    public PetResponse createPet(PetCreateRequest req) throws IOException {
+    public PetCreateResponse createPet(PetCreateRequest req) throws IOException {
         // 1. Tìm hoặc tạo Breed
         Breed breed;
         if (req.getBreedName() != null && !req.getBreedName().isEmpty()) {
@@ -97,7 +99,24 @@ public class PetService {
         return convertPet.convertToResponse(savedPet);
     }
 
-    public List<Pet> getAllPets() {
-        return petRepository.findAll();
+    @Transactional(readOnly = true)
+    public GetPetResponse getPetById(Integer petId) {
+        // Tìm Pet entity theo ID
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thú cưng với ID: " + petId));
+
+        GetPetResponse petDto = convertPet.convertToGetPetResponse(pet);
+
+        return petDto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPetResponse> getAllPets() {
+        List<Pet> pets = petRepository.findAll();
+
+        // Chuyển đổi danh sách Pet entities sang danh sách PetResponseDto
+        return pets.stream()
+                .map(convertPet::convertToGetPetResponse) // Sử dụng phương thức chuyển đổi
+                .collect(Collectors.toList());
     }
 }

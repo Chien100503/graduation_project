@@ -26,7 +26,7 @@ public class  CartController {
         return ResponseEntity.ok(updatedCart);
     }
 
-    @PutMapping(value = "/update", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/update", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<CartResponse> updateCartItem(
             @ModelAttribute CartItemUpdateRequest request,
             @RequestHeader("Authorization") String token) {
