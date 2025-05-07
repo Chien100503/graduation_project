@@ -29,7 +29,6 @@ public class FirebaseConfig {
                         .build();
 
                 FirebaseApp.initializeApp(options);
-                System.out.println("✅ Firebase initialized.");
             }
         }
     }

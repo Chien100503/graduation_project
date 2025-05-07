@@ -16,12 +16,12 @@ import com.petshop.petopia.repository.product.ProductRepository;
 import com.petshop.petopia.repository.user.UserRepository;
 import com.petshop.petopia.util.ConvertCart;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils; // Import CollectionUtils
+// Import CollectionUtils
 
-import java.util.ArrayList; // Vẫn cần nếu dùng new ArrayList trong getOrCreateCart
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -42,8 +42,7 @@ public class CartService {
         Cart cart = getOrCreateCart(user);
 
         if (request == null) {
-            throw new IllegalArgumentException("Yêu cầu thêm vào giỏ hàng không hợp lệ: Request không được null.");
-        }
+            throw new IllegalArgumentException("Yêu cầu thêm vào giỏ hàng không hợp lệ: Request không được null.");}
 
         if (request.getPetId() != null && request.getProductId() == null) {
             addPetToCart(cart, request.getPetId());
@@ -69,10 +68,6 @@ public class CartService {
 
         CartItem item = itemOpt.orElseGet(() -> cartItemRepository.findByIdAndCart(request.getItemId(), cart)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy item trong giỏ hàng của người dùng với ID: " + request.getItemId())));
-
-        if (request == null) {
-            throw new IllegalArgumentException("Yêu cầu cập nhật giỏ hàng không hợp lệ: Request không được null.");
-        }
 
         if (request.getQuantity() != null) {
             Integer oldItemTotalPrice = item.getItemTotalPrice();
@@ -142,10 +137,13 @@ public class CartService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thú cưng với ID: " + petId));
 
+        if (pet.getStatus() == null || !pet.getStatus()) {
+            throw new IllegalArgumentException("Thú cưng '" + pet.getName() + "' hiện không có sẵn.");
+        }
+
         Optional<CartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> ItemType.PET.equals(item.getItemType()) && item.getPet() != null && item.getPet().getId().equals(petId))
                 .findFirst();
-
 
         if (existingItemOpt.isEmpty()) {
             CartItem newItem = new CartItem();
@@ -169,40 +167,47 @@ public class CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + productId));
 
+        if (product.getStockQuantity() == null || product.getStockQuantity() < quantity) {
+            throw new IllegalArgumentException("Sản phẩm '" + product.getName() + "' không đủ số lượng tồn kho. Chỉ còn " + (product.getStockQuantity() != null ? product.getStockQuantity() : 0) + " sản phẩm.");
+        }
+
         Optional<CartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> ItemType.PRODUCT.equals(item.getItemType()) && item.getProduct() != null && item.getProduct().getId().equals(productId))
                 .findFirst();
 
 
         if (existingItemOpt.isPresent()) {
-            // Sản phẩm đã có trong giỏ, tăng số lượng và cập nhật tổng giá
             CartItem existingItem = existingItemOpt.get();
 
-            // Lưu lại tổng giá cũ của item trước khi thay đổi số lượng
             Integer oldItemTotalPrice = existingItem.getItemTotalPrice();
+            if (oldItemTotalPrice == null) oldItemTotalPrice = 0; // Xử lý trường hợp null
 
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            Integer newItemTotalPrice = existingItem.getPrice() * existingItem.getQuantity();
+            int newQuantity = existingItem.getQuantity() + quantity;
+
+            if (product.getStockQuantity() < newQuantity) {
+                throw new IllegalArgumentException("Sản phẩm '" + product.getName() + "' không đủ số lượng tồn kho cho tổng số lượng yêu cầu (" + newQuantity + "). Chỉ còn " + product.getStockQuantity() + " sản phẩm.");
+            }
+
+            existingItem.setQuantity(newQuantity); // Cập nhật số lượng
+            int newItemTotalPrice = existingItem.getPrice() * newQuantity; // Tính lại tổng giá item
             existingItem.setItemTotalPrice(newItemTotalPrice);
 
-            // cartItemRepository.save(existingItem); // Có thể bỏ nếu có cascade MERGE trên Cart.items
-
-            // Cập nhật tổng giá giỏ hàng: cộng thêm chênh lệch giá
             cart.setTotalPrice(cart.getTotalPrice() - oldItemTotalPrice + newItemTotalPrice);
-            cartRepository.save(cart); // <<< Lưu cart sau khi cập nhật total price
+            cartRepository.save(cart); // Lưu cart sau khi cập nhật total price
         } else {
-            // Sản phẩm chưa có, tạo CartItem mới và cập nhật tổng giá
             CartItem newItem = new CartItem();
-            newItem.setCart(cart); // Set mối quan hệ ngược
+            newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setItemType(ItemType.PRODUCT);
             newItem.setQuantity(quantity);
-            newItem.setPrice(product.getPrice()); // Lưu giá sản phẩm tại thời điểm thêm
-            newItem.setItemTotalPrice(product.getPrice() * quantity);
+            newItem.setPrice(product.getPrice());
+            Integer newItemTotalPrice = product.getPrice() * quantity;
+            newItem.setItemTotalPrice(newItemTotalPrice);
 
             cart.getItems().add(newItem);
-            cart.setTotalPrice(cart.getTotalPrice() + newItem.getItemTotalPrice());
-            cartRepository.save(cart);
+            cart.setTotalPrice(cart.getTotalPrice() + newItemTotalPrice);
+
+            cartRepository.save(cart); // Lưu cart sau khi thay đổi
         }
     }
 }
