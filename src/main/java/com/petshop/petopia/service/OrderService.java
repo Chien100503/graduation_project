@@ -56,12 +56,11 @@ public class OrderService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    // Sử dụng AtomicLong để tạo orderCode duy nhất trong bộ nhớ (cần cơ chế bền vững hơn trong môi trường phân tán)
     private static final AtomicLong orderCodeCounter = new AtomicLong(new Date().getTime() / 1000);
     private static final int DEFAULT_DESCRIPTION_LENGTH = 8; // Giữ nguyên hằng số này
 
 
-    @Transactional // Đảm bảo toàn bộ quá trình tạo đơn hàng là atomic
+    @Transactional
     public ObjectNode createOrder(CreateOrderRequest request, Integer userId) {
         // 1. Tìm người dùng
         User user = userRepository.findById(userId)
