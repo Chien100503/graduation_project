@@ -32,9 +32,6 @@ public class Order {
     private String shippingAddress;
     private String phoneNumber;
 
-//    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
     private boolean isPaid;
     private boolean isDelivered;
     private boolean isReceived;

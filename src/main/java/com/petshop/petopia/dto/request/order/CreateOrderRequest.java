@@ -13,8 +13,5 @@ public class CreateOrderRequest {
     private String shippingAddress;
     private String phoneNumber;
     private PaymentMethod paymentMethod;
-
-    @JsonProperty("isFromCart")
-    private boolean isFromCart;
     private List<OrderItemRequest> items;
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "order_items")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -41,11 +41,11 @@ public class OrderItem {
     private void onLoad() {
         if (product != null) {
             this.imageUrl = (product.getProductImages() != null && !product.getProductImages().isEmpty())
-                    ? product.getProductImages().get(0).getImageUrl()
+                    ? product.getProductImages().getFirst().getImageUrl()
                     : null;
         } else if (pet != null) {
             this.imageUrl = (pet.getPetImages() != null && !pet.getPetImages().isEmpty())
-                    ? pet.getPetImages().get(0).getImageUrl()
+                    ? pet.getPetImages().getFirst().getImageUrl()
                     : null;
         }
         this.itemTotalPrice = this.price * this.quantity;

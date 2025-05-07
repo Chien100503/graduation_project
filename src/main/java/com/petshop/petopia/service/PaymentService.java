@@ -25,19 +25,19 @@ public class PaymentService {
             Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
             WebhookData webhookData = payOS.verifyPaymentWebhookData(webhookBody);
 
-            System.out.println(webhookData);
+            System.out.println(objectMapper.valueToTree(webhookData));
 
             response.put("error", 0);
             response.put("message", "Webhook delivered");
-            response.set("data", null);
+            response.set("data", objectMapper.valueToTree(webhookData));
+            return response;
         } catch (Exception e) {
             e.printStackTrace();
             response.put("error", -1);
             response.put("message", e.getMessage());
             response.set("data", null);
+            return response;
         }
-
-        return response;
     }
 
     public Payment savePayment(Payment payment) {

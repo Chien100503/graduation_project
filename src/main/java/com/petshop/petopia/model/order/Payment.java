@@ -24,6 +24,9 @@ public class Payment {
     @Column(nullable = false)
     private Date paymentDate;
 
+    @Column(nullable = false)
+    private Long orderCode;
+
     @OneToOne(mappedBy = "payment")
     private Order order;
 

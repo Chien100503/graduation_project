@@ -9,7 +9,7 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Hibernate Properties
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+spring.jpa.show-sql=false
 spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 spring.jpa.properties.hibernate.format_sql=true
 
@@ -40,3 +40,8 @@ petopia.app.jwtExpirationMs=
 # NGROK
 ngrok.authtoken=
 ngrok.domain=
+
+# Payos
+PAYOS_CLIENT_ID=
+PAYOS_API_KEY=
+PAYOS_CHECKSUM_KEY=

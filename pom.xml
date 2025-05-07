@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.1</version>
+		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.petshop</groupId>
@@ -21,13 +21,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Dependency Versions -->
-		<spring-boot.version>3.4.4</spring-boot.version>
+		<spring-boot.version>3.4.5</spring-boot.version>
 		<lombok.version>1.18.38</lombok.version>
 		<firebase-admin.version>9.4.3</firebase-admin.version>
 		<commons-io.version>2.19.0</commons-io.version>
 		<jjwt.version>0.12.6</jjwt.version>
 		<ngrok.version>1.1.1</ngrok.version>
-		<mysql.version>9.2.0</mysql.version>
+		<mysql.version>9.3.0</mysql.version>
 		<os-maven-plugin.version>1.7.0</os-maven-plugin.version>
 		<compiler-plugin.version>3.11.0</compiler-plugin.version>
 	</properties>
@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
-			<version>6.4.4</version>
+			<version>6.4.5</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -140,8 +140,16 @@
 		<dependency>
 			<groupId>vn.payos</groupId>
 			<artifactId>payos-java</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.3</version>
 		</dependency>
+
+		<!-- Redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>3.4.5</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

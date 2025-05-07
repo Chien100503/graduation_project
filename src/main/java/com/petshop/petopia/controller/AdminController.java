@@ -23,7 +23,7 @@ public class AdminController {
     private final PetService petService;
     private final ProductService productService;
 
-    @PostMapping(value = "/addPet", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/addPet", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<?> createPet(@ModelAttribute PetCreateRequest petRequest) {
         try {
             PetResponse createdPet = petService.createPet(petRequest);
@@ -34,7 +34,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/addProduct", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/addProduct", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<?> createProduct(@ModelAttribute ProductCreateRequest productRequest) {
         try {
             ProductResponse createProduct = productService.createProduct(productRequest);
