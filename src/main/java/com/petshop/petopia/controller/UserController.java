@@ -6,11 +6,17 @@ import com.petshop.petopia.dto.request.auth.VerifyRequest;
 import com.petshop.petopia.dto.response.auth.LoginResponse;
 import com.petshop.petopia.dto.response.MessageResponse;
 import com.petshop.petopia.dto.response.auth.RegisterResponse;
+import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.AuthService;
+import com.petshop.petopia.service.UserService;
 import com.petshop.petopia.service.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -19,6 +25,8 @@ public class UserController {
 
     private final AuthService authService;
     private final VerificationCodeService verificationCodeService;
+    private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
@@ -58,6 +66,28 @@ public class UserController {
             return new MessageResponse("Mã xác thực đã được gửi lại");
         } catch (Exception e) {
             throw new RuntimeException("Có lỗi xảy ra khi gửi mã xác thực: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/delete")
+    public ResponseEntity<MessageResponse> deleteUser(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> requestBody
+    ) {
+        String password = requestBody.get("password");
+
+        Integer userId = jwtService.extractUserId(token);
+
+
+        if (password == null || password.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Vui lòng nhập mật khẩu để xác nhận xóa."));
+        }
+
+        try {
+            userService.deleteSelfAccount(userId, password);
+            return ResponseEntity.ok(new MessageResponse("Tài khoản đã được xóa thành công."));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Đã xảy ra lỗi trong quá trình xóa tài khoản."));
         }
     }
 
