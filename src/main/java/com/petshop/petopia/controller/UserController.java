@@ -21,12 +21,12 @@ public class UserController {
     private final VerificationCodeService verificationCodeService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<LoginResponse> login(@ModelAttribute LoginRequest request){
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<RegisterResponse> register(@ModelAttribute RegisterRequest registerRequest) {
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest registerRequest) {
         if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu không khớp!");
         }
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/verify")
-    public MessageResponse verify(@ModelAttribute VerifyRequest req, @RequestHeader("Authorization") String authHeader) {
+    public MessageResponse verify(@RequestBody VerifyRequest req, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
 
         authService.verify(req, token);

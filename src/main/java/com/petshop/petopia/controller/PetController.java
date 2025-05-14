@@ -44,6 +44,5 @@ public class PetController {
             return ResponseEntity.internalServerError()
                     .body("❌ Lỗi hệ thống khi lấy thông tin Pet: " + e.getMessage());
         }
-        // Đã loại bỏ check .isEmpty() vì getPetById trả về 1 đối tượng hoặc ném exception
     }
 }

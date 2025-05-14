@@ -19,18 +19,18 @@ public class  CartController {
     private final CartService cartService;
     private final JwtService jwtService;
 
-    @PostMapping(value = "/add", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/add")
     public ResponseEntity<CartResponse> addToCart(
             @RequestHeader("Authorization") String token,
-            @ModelAttribute CartItemRequest request) {
+            @RequestBody CartItemRequest request) {
         Integer userId = jwtService.extractUserId(token);
         CartResponse addToCart = cartService.addToCart(userId, request);
         return ResponseEntity.ok(addToCart);
     }
 
-    @PutMapping(value = "/update", consumes = {"multipart/form-data", "application/json"})
+    @PutMapping(value = "/update")
     public ResponseEntity<CartResponse> updateCartItem(
-            @ModelAttribute CartItemUpdateRequest request,
+            @RequestBody CartItemUpdateRequest request,
             @RequestHeader("Authorization") String token) {
         Integer userId = jwtService.extractUserId(token);
         CartResponse updatedCart = cartService.updateCartItem(userId, request);
