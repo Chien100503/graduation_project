@@ -1,6 +1,5 @@
-package com.petshop.petopia.model;
+package com.petshop.petopia.model.review;
 
-import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.product.Product;
 import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
@@ -12,8 +11,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "reviews")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +28,6 @@ public class Review {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "pet_id")
-    private Pet pet;
-
-    private Integer rating;
     private String comment;
 
     @Temporal(TemporalType.TIMESTAMP)

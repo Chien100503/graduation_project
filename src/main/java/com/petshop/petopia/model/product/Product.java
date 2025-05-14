@@ -1,5 +1,9 @@
 package com.petshop.petopia.model.product;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.petshop.petopia.model.review.ProductRating;
+import com.petshop.petopia.model.review.Review;
+import com.petshop.petopia.util.JsonNodeConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +50,22 @@ public class Product {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductRating> productRatings;
+
+    @Column(name = "average_rating")
+    private Double averageRating = 0.0;
+
+    @Column(name = "total_ratings")
+    private Integer totalRatings = 0;
+
+    @Convert(converter = JsonNodeConverter.class)
+    @Column(name = "rating_counts", columnDefinition = "JSON")
+    private JsonNode ratingCounts;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
@@ -53,4 +73,5 @@ public class Product {
     public void setUpdatedAt() {
         this.updatedAt = new Date();
     }
+
 }

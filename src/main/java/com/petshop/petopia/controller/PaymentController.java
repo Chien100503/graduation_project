@@ -3,30 +3,22 @@ package com.petshop.petopia.controller;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.OrderService;
 import com.petshop.petopia.service.PaymentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import vn.payos.PayOS;
 import vn.payos.type.PaymentLinkData;
-import vn.payos.type.Webhook;
-import vn.payos.type.WebhookData;
 
 @RestController
 @RequestMapping("/api/payment")
+@RequiredArgsConstructor
 public class PaymentController {
     private final JwtService jwtService;
     private final OrderService orderService;
     private final PaymentService paymentService;
-
-    public PaymentController(JwtService jwtService, OrderService orderService, PaymentService paymentService) {
-        this.jwtService = jwtService;
-        this.orderService = orderService;
-        this.paymentService = paymentService;
-    }
 
 
     @PostMapping("/payos_transfer_handler")

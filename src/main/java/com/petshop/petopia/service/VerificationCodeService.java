@@ -41,7 +41,6 @@ public class VerificationCodeService {
         }
     }
 
-    // Phương thức nội bộ chỉ để lưu code vào DB
     private void saveCodeInternal(User user, String code, int ttlSeconds) {
         long expiryTime = System.currentTimeMillis() + ttlSeconds * 1000L;
         verificationCodeRepository.deleteByUser(user);

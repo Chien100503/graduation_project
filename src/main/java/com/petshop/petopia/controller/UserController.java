@@ -37,13 +37,11 @@ public class UserController {
 
     @PostMapping(value = "/verify", consumes = {"multipart/form-data"})
     public MessageResponse verify(@ModelAttribute VerifyRequest req, @RequestHeader("Authorization") String authHeader) {
-        // Lấy token từ Authorization header
         String token = authHeader.replace("Bearer ", "");
 
-        // Gọi service để xử lý xác thực
         authService.verify(req, token);
 
-        return new MessageResponse("✅ Xác thực thành công");
+        return new MessageResponse("Xác thực thành công");
     }
 
     @PostMapping("/resend")
@@ -52,13 +50,12 @@ public class UserController {
             throw new RuntimeException("Token không hợp lệ");
         }
 
-        // Lấy token từ Authorization header
         String token = authHeader.replace("Bearer ", "");
 
         try {
             // Gửi lại mã xác thực cho người dùng
             verificationCodeService.resendCode(token);
-            return new MessageResponse("✅ Mã xác thực đã được gửi lại");
+            return new MessageResponse("Mã xác thực đã được gửi lại");
         } catch (Exception e) {
             throw new RuntimeException("Có lỗi xảy ra khi gửi mã xác thực: " + e.getMessage());
         }

@@ -35,6 +35,7 @@ public class Order {
     private boolean isPaid;
     private boolean isDelivered;
     private boolean isReceived;
+    private OrderStatus status;
 
     @PrePersist
     protected void onCreate() {

@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/register", "/api/login", "/api/payment/payos_transfer_handler").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**", "/api/review/**", "/api/product/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/verify", "/api/resend").authenticated()
                         .anyRequest().authenticated()
                 )

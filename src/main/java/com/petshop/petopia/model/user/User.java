@@ -1,5 +1,7 @@
 package com.petshop.petopia.model.user;
 
+import com.petshop.petopia.model.review.ProductRating;
+import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +39,12 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    private List<ProductRating> productRatings;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
