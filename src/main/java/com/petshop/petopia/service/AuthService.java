@@ -64,13 +64,12 @@ public class AuthService {
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
         user.setPhone(req.getPhone());
-        user.setAddress(req.getAddress());
+//        user.setAddress(req.getAddress());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setName(req.getName());
         user.setIsActive(false);
         user.setCreatedAt(new Date());
 
-        // Tìm hoặc tạo role "USER"
         Role userRole = roleRepository.findByName("USER").orElseGet(() -> {
             Role newRole = new Role();
             newRole.setName("USER");
@@ -83,7 +82,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String code = String.format("%06d", new Random().nextInt(9999));
+        String code = String.format("%06d", new Random().nextInt(999999));
         String savedCode = verificationCodeService.saveCode(user, code, VERIFICATION_CODE_TTL);
 
         mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT,
@@ -98,10 +97,8 @@ public class AuthService {
     public void verify(VerifyRequest req, String token) {
         String inputCode = req.getCode();
 
-        // Lấy email từ token
         String email = jwtService.extractEmail(token);
 
-        // Tìm user theo email
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
 

@@ -31,7 +31,6 @@ public class JwtService {
         return createToken(claims, email);
     }
 
-    // Create a JWT token with specified claims and subject (email)
     private String createToken(Map<String, Object> claims, String email) {
         return Jwts.builder()
                 .claims(claims)
@@ -42,23 +41,19 @@ public class JwtService {
                 .compact();
     }
 
-    // Get the signing key for JWT token
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Extract the email from the token
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Extract the expiration date from the token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Extract a claim from the token
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

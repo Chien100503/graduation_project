@@ -29,6 +29,7 @@ public class User {
     private String address;
     private String password;
     private Boolean isActive;
+    private String avatar;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -39,6 +40,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
+
 
     @OneToMany(mappedBy = "user")
     private List<ProductRating> productRatings;

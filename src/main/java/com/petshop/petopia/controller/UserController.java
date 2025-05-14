@@ -20,12 +20,12 @@ public class UserController {
     private final AuthService authService;
     private final VerificationCodeService verificationCodeService;
 
-    @PostMapping(value = "/login", consumes = "multipart/form-data")
+    @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@ModelAttribute LoginRequest request){
         return ResponseEntity.ok(authService.login(request));
     }
 
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/register")
     public ResponseEntity<RegisterResponse> register(@ModelAttribute RegisterRequest registerRequest) {
         if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu không khớp!");
@@ -35,7 +35,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/verify", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/verify")
     public MessageResponse verify(@ModelAttribute VerifyRequest req, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
 
