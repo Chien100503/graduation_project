@@ -1,5 +1,6 @@
 package com.petshop.petopia.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.petopia.implement.UserDetailsServiceImpl;
 import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
@@ -7,7 +8,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +20,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -29,12 +37,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        // Chỉ bỏ qua login và register khỏi việc kiểm tra token
         if (path.startsWith("/api/login") || path.startsWith("/api/register")) {
             filterChain.doFilter(request, response);
             return;
@@ -42,47 +51,85 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String email = null;
 
-        // Kiểm tra Bearer token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // Lấy token
-            email = jwtService.extractEmail(token); // Lấy email từ token
+            token = authHeader.substring(7);
         }
 
-        // Kiểm tra token và email có hợp lệ và chưa có authentication trong SecurityContext
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            String email = null;
+            UserDetails userDetails = null;
+            User user = null;
 
-            // Kiểm tra tính hợp lệ của token
-            if (jwtService.validateToken(token, userDetails)) {
-                // Lấy người dùng từ DB để kiểm tra trạng thái isActive
-                User user = userRepository.findByEmail(email).orElse(null);
+            try {
+                email = jwtService.extractEmail(token);
 
-                // Kiểm tra isActive cho các endpoint khác /api/verify và /api/resend
-                if (user != null && !user.getIsActive() && !path.startsWith("/api/verify") && !path.startsWith("/api/resend")) {
-                    // Trả về JSON nếu tài khoản chưa được xác thực
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write("""
-                        {
-                            "error": "AccountNotActive",
-                            "message": "Tài khoản của bạn chưa được xác thực.",
-                            "nextStep": "/api/verify"
+                if (email != null) {
+                    userDetails = userDetailsService.loadUserByUsername(email);
+
+                    if (jwtService.validateToken(token, userDetails)) {
+                        user = userRepository.findByEmail(email).orElse(null);
+
+                        if (user != null) {
+                            if (!user.getIsActive() && !path.startsWith("/api/verify") && !path.startsWith("/api/resend")) {
+                                logger.warn("Attempted access by inactive user: {}", email);
+                                handleInactiveAccount(response);
+                                return;
+                            }
+
+                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authToken);
+                            logger.debug("Authentication successful for user: {}", email);
+                        } else {
+                            logger.error("User entity not found in DB for email extracted from valid token: {}", email);
+                            handleInvalidToken(response, "User associated with token not found.");
+                            return;
                         }
-                    """);
+                    } else {
+                        handleInvalidToken(response, "Token không hợp lệ."); // Trả về lỗi token không hợp lệ
+                        return;
+                    }
+                } else {
+                    handleInvalidToken(response, "Token không hợp lệ hoặc đã hết hạn."); // Trả về lỗi token không hợp lệ
                     return;
                 }
-
-                // Tạo đối tượng Authentication và gán vào SecurityContext
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } catch (Exception e) {
+                logger.error("Unexpected error during JWT filter processing", e);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.getWriter().write("An unexpected error occurred."); // Hoặc JSON lỗi chi tiết hơn
+                return; // Dừng xử lý filter chain
             }
         }
 
-        filterChain.doFilter(request, response); // Tiếp tục chuỗi lọc
+        filterChain.doFilter(request, response);
+    }
+
+    private void handleInvalidToken(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "InvalidToken");
+        errorResponse.put("message", message);
+
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        logger.debug("Responded with InvalidToken: {}", message);
+    }
+
+    private void handleInactiveAccount(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.FORBIDDEN.value()); // Sử dụng 403 Forbidden
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "AccountNotActive");
+        errorResponse.put("message", "Tài khoản của bạn chưa được xác thực.");
+        errorResponse.put("isActive", false);
+
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        logger.warn("Responded with AccountNotActive error.");
     }
 }

@@ -40,20 +40,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             System.out.println("No roles found for user: " + email);
         }
 
-        // Chuyển đổi danh sách roles thành quyền có tiền tố "ROLE_"
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
 
-        System.out.println("Granted Authorities: " + authorities);
-
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                true, // account non-expired
-                true, // credentials non-expired
-                true, // account enabled
-                true, // account not locked
+                true,
+                true,
+                true,
+                true,
                 authorities
         );
     }

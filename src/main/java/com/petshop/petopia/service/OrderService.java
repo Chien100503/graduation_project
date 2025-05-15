@@ -1,5 +1,6 @@
 package com.petshop.petopia.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
@@ -49,6 +50,7 @@ public class OrderService {
     private final PaymentRepository paymentRepository; // Inject PaymentRepository
     private final PayOS payOS;
     private final PayosImpl payOSImpl;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -79,17 +81,14 @@ public class OrderService {
 
         Order order = createAndSaveOrder(user, request, totalPrice);
 
-
         if (isFromCart) {
             cartItemRepository.deleteCartItemsByUserId(userId);
         }
 
         if (PaymentMethod.PAYOS.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
             return handlePayOSPayment(order, user, orderItems, totalPrice, request.getShippingAddress(), request.getPhoneNumber());
-
         } else if (PaymentMethod.COD.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
             return handleCodPayment(order, orderItems);
-
         } else {
             throw new RuntimeException("Phương thức thanh toán không hợp lệ hoặc chưa được xử lý.");
         }
@@ -163,8 +162,8 @@ public class OrderService {
                         .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + requestItem.getProductId()));
                 orderItem.setProduct(product);
                 orderItem.setQuantity(requestItem.getQuantity());
-                orderItem.setPrice(product.getPrice()); // Lấy giá từ Product hiện tại
-            } else if (requestItem.getPetId() != null) { // Sử dụng PetId từ OrderItemRequest
+                orderItem.setPrice(product.getPrice());
+            } else if (requestItem.getPetId() != null) {
                 // Tìm Pet theo ID từ request
                 Pet pet = petRepository.findById(requestItem.getPetId())
                         .orElseThrow(() -> new RuntimeException("Thú cưng không tồn tại với ID: " + requestItem.getPetId()));
@@ -220,11 +219,14 @@ public class OrderService {
         return total;
     }
 
-    private ObjectNode handlePayOSPayment(Order order, User user, List<OrderItem> orderItems, Integer totalPrice, String shippingAddress, String phoneNumber) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    @Transactional
+    public ObjectNode handlePayOSPayment(Order order, User user, List<OrderItem> orderItems, Integer totalPrice, String shippingAddress, String phoneNumber) {
+
         ObjectNode response = objectMapper.createObjectNode();
+        Payment payment = null;
+
         try {
-            long orderCode = order.getId(); // Sử dụng ID của order vừa tạo
+            long orderId = order.getId();
             String description = generateRandomString();
 
             List<ItemData> payosItems = orderItems.stream()
@@ -236,7 +238,7 @@ public class OrderService {
                     .collect(Collectors.toList());
 
             PaymentData paymentData = PaymentData.builder()
-                    .orderCode(orderCode)
+                    .orderCode(orderId)
                     .description(description)
                     .amount(totalPrice)
                     .items(payosItems)
@@ -247,20 +249,32 @@ public class OrderService {
 
             CheckoutResponseData data = payOS.createPaymentLink(paymentData);
 
-            OrderPendingInfo pendingInfo = new OrderPendingInfo(String.valueOf(orderCode), user.getId());
-            redisTemplate.opsForValue().set(String.valueOf(orderCode), pendingInfo, Duration.ofMinutes(30));
+            payment = new Payment();
+            payment.setPaymentMethod(PaymentMethod.PAYOS);
+            payment.setOrderCode(orderId);
+            payment.setTransactionId(data.getPaymentLinkId());
+            payment.setTransactionContent(description);
+
+            payment.setOrder(order);
+            order.setPayment(payment);
+
+            orderRepository.save(order);
 
             response.put("error", 0);
             response.put("message", "success");
             response.set("data", objectMapper.valueToTree(data));
+
             return response;
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error creating PayOS payment link: " + e.getMessage());
-            order.setStatus(OrderStatus.FAILED);
-            orderRepository.save(order);
-            throw new RuntimeException("Lỗi khi tạo yêu cầu thanh toán PayOS: " + e.getMessage(), e);
+            System.err.println("Error handling PayOS payment initiation for Order ID " + (order != null ? order.getId() : "N/A") + ": " + e.getMessage());
+
+            if (order != null) {
+                order.setStatus(OrderStatus.FAILED);
+                orderRepository.save(order);
+            }
+            throw new RuntimeException("Lỗi khi xử lý yêu cầu thanh toán PayOS: " + e.getMessage(), e);
         }
     }
 

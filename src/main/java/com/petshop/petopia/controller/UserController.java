@@ -5,7 +5,9 @@ import com.petshop.petopia.dto.request.auth.RegisterRequest;
 import com.petshop.petopia.dto.request.auth.VerifyRequest;
 import com.petshop.petopia.dto.response.auth.LoginResponse;
 import com.petshop.petopia.dto.response.MessageResponse;
+import com.petshop.petopia.dto.response.auth.ProfileResponse;
 import com.petshop.petopia.dto.response.auth.RegisterResponse;
+import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.AuthService;
 import com.petshop.petopia.service.UserService;
@@ -31,6 +33,12 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/logout")
+    public MessageResponse logout(@RequestHeader("Authorization") String token){
+        authService.logout(token);
+        return new MessageResponse("Đăng xuất thành công");
     }
 
     @PostMapping(value = "/register")
@@ -61,7 +69,6 @@ public class UserController {
         String token = authHeader.replace("Bearer ", "");
 
         try {
-            // Gửi lại mã xác thực cho người dùng
             verificationCodeService.resendCode(token);
             return new MessageResponse("Mã xác thực đã được gửi lại");
         } catch (Exception e) {
@@ -78,7 +85,6 @@ public class UserController {
 
         Integer userId = jwtService.extractUserId(token);
 
-
         if (password == null || password.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResponse("Vui lòng nhập mật khẩu để xác nhận xóa."));
         }
@@ -91,5 +97,9 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/profile")
+    public ProfileResponse profile(@RequestHeader("Authorization") String token) {
+        Integer userId = jwtService.extractUserId(token);
+        return userService.profile(userId);
+    }
 }

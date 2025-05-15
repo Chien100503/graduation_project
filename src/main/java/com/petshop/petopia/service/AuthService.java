@@ -36,9 +36,10 @@ public class AuthService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final RoleRepository roleRepository;
 
+
     private final String VERIFICATION_SUBJECT = "Mã xác thực tài khoản";
     private final String VERIFICATION_TEXT_PREFIX = "Mã của bạn là: ";
-    private final int VERIFICATION_CODE_TTL = 600; // 10 phút
+    private final int VERIFICATION_CODE_TTL = 600;
 
     public LoginResponse login(LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
@@ -51,6 +52,10 @@ public class AuthService {
         String token = jwtService.generateToken(user.getEmail());
 
         return new LoginResponse(user.getId(), token, user.getIsActive());
+    }
+
+    public void logout(String token) {
+        jwtService.invalidateToken(token);
     }
 
     public RegisterResponse register(RegisterRequest req) {

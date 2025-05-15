@@ -47,12 +47,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(List.of("*")); // Cho phép mọi domain
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*")); // Cho mọi header
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Cho phép credentials (JWT, cookie)
-        configuration.setMaxAge(3600L); // cache preflight 1 giờ
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // áp dụng cho tất cả route
@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/register", "/api/login", "/api/payment/payos_transfer_handler").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**", "/api/review/**", "/api/product/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/api/verify", "/api/resend").authenticated()
+                        .requestMatchers("/api/verify", "/api/resend", "/api/logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
