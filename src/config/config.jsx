@@ -1,6 +1,5 @@
-const baseURL = process.env.URL;
 const api = {
-    baseURL: baseURL,
+    baseURL: "https://warthog-subtle-dodo.ngrok-free.app/api",
 
     async request(url, options = {}) {
         const token = window.localStorage.getItem("persist:auth")
