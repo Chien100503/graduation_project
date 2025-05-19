@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/pet")
 @RequiredArgsConstructor
 public class PetController {
 
     private final PetService petService;
 
-    @GetMapping("/pet")
+    @GetMapping
     public ResponseEntity<?> getPets() {
         try {
             List<GetPetResponse> pets = petService.getAllPets();
@@ -32,7 +32,7 @@ public class PetController {
         }
     }
 
-    @GetMapping("/pet/{petId}")
+    @GetMapping("/{petId}")
     public ResponseEntity<?> getPetDetails(@PathVariable("petId") Integer petId) { // Nên dùng Integer cho PathVariable ID để dễ handle null (mặc dù ở đây luôn có giá trị)
         try {
             GetPetResponse petDto = petService.getPetById(petId); // <-- Sửa kiểu dữ liệu trả về

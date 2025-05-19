@@ -144,7 +144,6 @@ public class JwtService {
         final Boolean expired = isTokenExpired(token);
 
         if (email == null || expired == null || expired) {
-            // Logging is already done in extractEmail or isTokenExpired
             return false;
         }
 
@@ -153,8 +152,6 @@ public class JwtService {
             logger.debug("Token not found in Redis: {}", token);
         }
 
-
-        // Final validation based on original logic: email match, in Redis, not expired (by JWT exp)
         return (email.equals(userDetails.getUsername()) && isTokenInRedis);
     }
 
@@ -164,11 +161,9 @@ public class JwtService {
         }
         if (token == null || token.trim().isEmpty()) {
             logger.warn("Attempted to extract userId from null or empty token string (after Bearer check).");
-            // Ném exception hoặc trả về null tùy logic ứng dụng của bạn
             throw new IllegalArgumentException("Token string cannot be null or empty.");
         }
 
-        // extractEmail handles logging for invalid tokens
         String email = extractEmail(token);
         if (email == null) {
             logger.warn("Could not extract valid email from token {} to find user.", token);

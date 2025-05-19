@@ -66,10 +66,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/register", "/api/login", "/api/payment/payos_transfer_handler").permitAll()
+                        .requestMatchers("/api/register", "/api/login", "/api/payment/payos_transfer_handler", "/api/forgot-password", "/api/reset-password/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**", "/api/review/**", "/api/product/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/pet/**", "/api/cart/**", "/api/order/**", "/api/review/**", "/api/product/**", "/api/user").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/verify", "/api/resend", "/api/logout").authenticated()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
