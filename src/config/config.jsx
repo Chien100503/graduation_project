@@ -1,4 +1,4 @@
-const baseURL = process.ENV.REACT_APP_API_URL;
+const baseURL = process.env.REACT_APP_API_URL;
 const api = {
     baseURL: baseURL,
 
