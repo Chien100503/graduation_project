@@ -1,5 +1,5 @@
 const api = {
-    baseURL: "https://warthog-subtle-dodo.ngrok-free.app/api",
+    baseURL: "https://ultimately-magical-mosquito.ngrok-free.app/api",
 
     async request(url, options = {}) {
         const token = window.localStorage.getItem("persist:auth")
