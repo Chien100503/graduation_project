@@ -2,8 +2,6 @@ package com.petshop.petopia.service;
 
 import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +18,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-@AllArgsConstructor
 public class ForgetPasswordService {
 
     private static final Logger logger = LoggerFactory.getLogger(ForgetPasswordService.class);
 
+    @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private RedisTemplate<String, String> redisTemplate; // Sử dụng RedisTemplate cho String key/value
 
+    @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Value("${app.host.url}")
@@ -39,8 +39,6 @@ public class ForgetPasswordService {
 
     private static final String PASSWORD_RESET_TOKEN_PREFIX = "passwordreset:";
     private static final Duration TOKEN_EXPIRATION = Duration.ofMinutes(30); // Thời gian sống 30 phút
-
-
 
     @Transactional
     public void initiatePasswordReset(String userEmail) {
