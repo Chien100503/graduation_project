@@ -1,24 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ResetPasswordForm from './ResetPasswordForm.js';
+import Success from './Success.js';
+import Failure from './Failure.js';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/failure" element={<Failure />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
