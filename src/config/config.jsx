@@ -1,5 +1,6 @@
+const baseURL = process.env.URL;
 const api = {
-    baseURL: "https://ultimately-magical-mosquito.ngrok-free.app/api",
+    baseURL: baseURL,
 
     async request(url, options = {}) {
         const token = window.localStorage.getItem("persist:auth")
