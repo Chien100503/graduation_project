@@ -1,83 +1,95 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../common/widgets/loader/loader.dart';
+import '../../../../data/repositories/user_repository.dart';
+import '../../../../navigation_menu.dart';
+import '../../../personalizations/models/register_model.dart';
+import '../../screens/verify/VerifyPinScreen.dart';
 
 class SignupController extends GetxController {
   static SignupController get instance => Get.find();
 
-  late Rx<User?> user;
-  final hidePassword = true.obs;
-  final privacyPolicy = true.obs;
+  final UserRepository _userRepository = UserRepository();
+
   final email = TextEditingController();
-  final lastName = TextEditingController();
-  final firstName = TextEditingController();
-  final username = TextEditingController();
-  final phoneNumber = TextEditingController();
   final password = TextEditingController();
+  final confirmPassword = TextEditingController();
+  final firstName = TextEditingController();
+  final lastName = TextEditingController();
+  final phoneNumber = TextEditingController();
+  final name = TextEditingController();
 
-  GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
+  final hidePassword = true.obs;
+  final RxBool hideConfirmPassword = true.obs;
+  final privacyPolicy = true.obs;
+  final isLoading = false.obs;
+  final signupFormKey = GlobalKey<FormState>();
 
-  void signup() async {
+  /// Đăng ký
+  Future<void> signup() async {
+    if (!signupFormKey.currentState!.validate()) return;
+
     try {
-      // Start loading
-      EFullScreenLoader.openLoadingDialog(
-        'We\'re processing your information...',
-        EImages.loaderAnimation,
-      );
-
-      // Check network connectivity
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        ECustomSnackBar.showError(
-          title: 'No Internet Connection',
-          message: 'Please check your internet connection and try again.',
-        );
-        EFullScreenLoader.stopLoading();
-        return;
-      }
-
-      if (!signupFormKey.currentState!.validate()) {
-        EFullScreenLoader.stopLoading();
-        return;
-      }
+      isLoading.value = true;
 
       if (!privacyPolicy.value) {
-        EFullScreenLoader.stopLoading();
         ECustomSnackBar.showWarning(
-          title: 'Accept Privacy Policy',
-          message:
-              'In order to create an account, you must accept the privacy policy.',
+          title: 'Chấp nhận điều khoản',
+          message: 'Bạn phải chấp nhận chính sách bảo mật để tiếp tục.',
         );
+        isLoading.value = false;
         return;
       }
 
-      // Register user in the firebase & save user data in the firebase
-      final userCredential = await RepositoriesAuthentication.instance
-          .registerEmailWithPassword(email.text.trim(), password.text.trim());
-
-      final newUser = UserModel(
-        id: userCredential.user!.uid,
+      final model = RegisterModel(
+        email: email.text.trim(),
+        name: name.text.trim(),
+        password: password.text.trim(),
+        confirmPassword: confirmPassword.text.trim(),
         firstName: firstName.text.trim(),
         lastName: lastName.text.trim(),
-        username: username.text.trim(),
-        email: email.text.trim(),
-        phoneNumber: phoneNumber.text.trim(),
-        profilePicture: '',
-        gender: ''
+        phone: phoneNumber.text.trim(),
       );
 
-      final userRepository = Get.put(UserRepository());
-      userRepository.saveUserRecord(newUser);
+      await _userRepository.registerUser(model);
 
-      EFullScreenLoader.stopLoading();
-
-      ECustomSnackBar.showSuccess(
-          title: 'Congratulations',
-          message: 'Your account has been created!, Verify email to continue');
-      Get.to(() => VerifyEmailScreen(email: email.text.trim()));
+      isLoading.value = false;
+      Get.to(() => VerifyPinScreen(email: model.email));
     } catch (e) {
-      EFullScreenLoader.stopLoading();
-      ECustomSnackBar.showError(title: 'Oh Snap', message: e.toString());
+      isLoading.value = false;
+      Get.snackbar('Lỗi đăng ký', e.toString(),
+          backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+  /// Xác minh mã PIN
+  Future<void> verifyPin(String code) async {
+    try {
+      isLoading.value = true;
+      final isActive = await _userRepository.verifyPinCode(code);
+      isLoading.value = false;
+
+      if (isActive) {
+        Get.offAll(() => const NavigationMenu());
+      } else {
+        Get.snackbar('Xác minh thất bại', 'Tài khoản chưa được kích hoạt.',
+            backgroundColor: Colors.orange);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('Lỗi xác minh', e.toString(),
+          backgroundColor: Colors.red, colorText: Colors.white);
+      print('err: ${e.toString()}');
+    }
+  }
+
+  // RESEND PINCODE
+  Future<void> resendCode() async {
+    try {
+      await _userRepository.resendCode();
+      Get.snackbar('Thành công', 'Mã PIN đã được gửi lại.');
+    } catch (e) {
+      Get.snackbar('Lỗi', e.toString());
     }
   }
 }

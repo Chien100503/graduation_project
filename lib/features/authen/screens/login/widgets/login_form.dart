@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pet_shop/features/authen/screens/forget_password/forget_password.dart';
+import 'package:pet_shop/features/authen/screens/signup/signup.dart';
+import 'package:pet_shop/features/shop/home/home.dart';
 
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
@@ -10,9 +13,7 @@ import '../../../../../utils/validators/validation.dart';
 import '../../../controllers/login/login_controller.dart';
 
 class ELoginForm extends StatelessWidget {
-  const ELoginForm({
-    super.key,
-  });
+  const ELoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,34 +24,33 @@ class ELoginForm extends StatelessWidget {
       key: controller.loginFormKey,
       child: Padding(
         padding:
-        const EdgeInsets.symmetric(vertical: ESizes.defaultBetweenSections),
+            const EdgeInsets.symmetric(vertical: ESizes.defaultBetweenSections),
         child: Column(
           children: [
-            // Email Field
+            /// Email Field
             TextFormField(
-              validator: (value) => EValidation.validateEmail(value),
               controller: controller.email,
+              validator: (value) => EValidation.validateEmail(value),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Iconsax.direct_right),
                 labelStyle: const TextStyle(color: Colors.grey),
                 label: Text(
                   ETexts.email,
                   style: TextStyle(
-                      color: dark ? EColors.thirdColor : EColors.primaryColor),
+                    color: dark ? EColors.thirdColor : EColors.primaryColor,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(
-              height: ESizes.inputBetweenFields,
-            ),
+            const SizedBox(height: ESizes.inputBetweenFields),
 
-            // Password Field
+            /// Password Field
             Obx(
-                  () => TextFormField(
-                validator: (value) =>
-                    EValidation.validateEmptyText('Password', value),
+              () => TextFormField(
                 controller: controller.password,
                 obscureText: controller.hidePassword.value,
+                validator: (value) =>
+                    EValidation.validateEmptyText('Password', value),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Iconsax.password_check),
                   labelStyle: const TextStyle(color: Colors.grey),
@@ -61,70 +61,71 @@ class ELoginForm extends StatelessWidget {
                     ),
                   ),
                   suffixIcon: IconButton(
-                    onPressed: () => controller.hidePassword.value =
-                    !controller.hidePassword.value,
                     icon: Icon(controller.hidePassword.value
                         ? Iconsax.eye_slash
                         : Iconsax.eye),
+                    onPressed: () => controller.hidePassword.toggle(),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: ESizes.inputBetweenFields / 2),
 
-            // Remember Me & Forget Password
+            /// Remember Me & Forgot Password
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Remember Me Checkbox
                 Row(
                   children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Obx(
-                            () => Checkbox(
-                          value: controller.remember.value,
-                          onChanged: (value) => controller.remember.value =
-                          !controller.remember.value,
-                        ),
+                    Obx(
+                      () => Checkbox(
+                        value: controller.remember.value,
+                        onChanged: (value) =>
+                            controller.remember.value = value ?? false,
                       ),
                     ),
                     const Text(ETexts.rememberMe),
                   ],
                 ),
-
-                // Forget Password Button
                 TextButton(
-                  onPressed: () => Get.toNamed('/forget-password'),
-                  child: const Text(
-                    ETexts.forgetPassword,
-                  ),
+                  onPressed: () => Get.to(() => ForgotPasswordScreen()),
+                  child: const Text(ETexts.forgetPassword),
                 ),
               ],
             ),
-            const SizedBox(
-              height: ESizes.defaultBetweenSections,
-            ),
+            const SizedBox(height: ESizes.defaultBetweenSections),
 
-            // Sign In Button
+            /// Sign In Button
+            Obx(() => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.emailAndPasswordSignIn,
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                            ),
+                          )
+                        : const Text(ETexts.signIn),
+                  ),
+                )),
+            const SizedBox(height: ESizes.defaultBetweenItem),
+
+            /// Create Account Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => controller.emailAndPasswordSignIn(),
-                child: const Text(ETexts.signIn),
-              ),
-            ),
-            const SizedBox(
-              height: ESizes.defaultBetweenItem,
-            ),
-
-            // Create Account Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Get.toNamed('/signup'),
-                child: const Text(ETexts.createAccount),
+                onPressed: () => Get.to(
+                  const SignupScreen(),
+                ),
+                child: const Text(
+                  ETexts.createAccount,
+                ),
               ),
             ),
           ],

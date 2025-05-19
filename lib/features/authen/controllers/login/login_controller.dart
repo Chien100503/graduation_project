@@ -1,121 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../../data/repositories/user_repository.dart';
+import '../../../../navigation_menu.dart';
 
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
 
-  // Variables for UI state management
+  // UI state
   final remember = false.obs;
   final hidePassword = true.obs;
+  final isLoading = false.obs;
+
+  // Form & controllers
   final localStorage = GetStorage();
   final email = TextEditingController();
   final password = TextEditingController();
+  final loginFormKey = GlobalKey<FormState>();
 
-  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  // Repository
+  final _userRepo = UserRepository();
+
 
   @override
   void onInit() {
-    // Load saved credentials if any
     email.text = localStorage.read('REMEMBER_EMAIL') ?? '';
     password.text = localStorage.read('REMEMBER_PASSWORD') ?? '';
     super.onInit();
   }
 
-  // Mock login function for UI demo only
   Future<void> emailAndPasswordSignIn() async {
+    if (!loginFormKey.currentState!.validate()) return;
+
     try {
-      // Show a mock loading dialog
-      showLoadingDialog('Logging you in...');
+      isLoading.value = true;
 
-      // Validate the form
-      if (!loginFormKey.currentState!.validate()) {
-        hideLoadingDialog();
-        return;
-      }
+      final result = await _userRepo.loginUser(
+        email.text.trim(),
+        password.text.trim(),
+      );
 
-      // Save data if remember is checked
+      final token = result['token'];
+      localStorage.write('JWT_TOKEN', token);
+
       if (remember.value) {
         localStorage.write('REMEMBER_EMAIL', email.text.trim());
         localStorage.write('REMEMBER_PASSWORD', password.text.trim());
+      } else {
+        localStorage.remove('REMEMBER_EMAIL');
+        localStorage.remove('REMEMBER_PASSWORD');
       }
 
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      // Lấy thông tin đơn giản từ response
+      final userEmail = email.text.trim();
 
-      // Hide loading dialog
-      hideLoadingDialog();
-
-      // Show success message
-      showSuccessSnackBar('Login Successful', 'Welcome to the app');
-
-      // Navigate to home or dashboard (mock navigation)
-      Get.offAllNamed('/home');
+      showSuccessSnackBar('Đăng nhập thành công', 'Chào mừng $userEmail');
+      Get.to(() => const NavigationMenu());
 
     } catch (e) {
-      hideLoadingDialog();
-      showErrorSnackBar('Oh Snap', 'Something went wrong');
+      showErrorSnackBar('Đăng nhập thất bại', e.toString().replaceAll('Exception:', '').trim());
+      print('Error during login: ${e.toString()}');
+      print('Email: ${email.text.trim()}');
+      print('Password: ${password.text.trim()}');
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Mock Google Sign In function for UI demo only
-  Future<void> googleSignIn() async {
-    try {
-      // Show loading dialog
-      showLoadingDialog('Logging you in with Google...');
+  // Future<void> logoutUser() async {
+  //   await _userRepo.logout();
+  //   localStorage.remove('JWT_TOKEN');
+  //   Get.offAllNamed('/login');
+  // }
 
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Hide loading dialog
-      hideLoadingDialog();
-
-      // Show success message
-      showSuccessSnackBar('Login Successful', 'Welcome to the app');
-
-      // Navigate to home or dashboard (mock navigation)
-      Get.offAllNamed('/home');
-
-    } catch (e) {
-      hideLoadingDialog();
-      showErrorSnackBar('Oh Snap', 'Something went wrong');
-    }
-  }
-
-  // Helper methods for UI feedback
-  void showLoadingDialog(String message) {
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 20),
-                Text(message),
-              ],
-            ),
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-  }
-
-  void hideLoadingDialog() {
-    if (Get.isDialogOpen ?? false) {
-      Get.back();
-    }
-  }
-
+  // UI feedback
   void showSuccessSnackBar(String title, String message) {
     Get.snackbar(
       title,

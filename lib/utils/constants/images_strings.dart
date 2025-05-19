@@ -1,7 +1,7 @@
 class EImages {
   static const String darkAppLogo = 'assets/logos/logo_dark.png';
   static const String lightAppLogo = 'assets/logos/logo_light.png';
-  static const String logo = 'assets/logos/logos.png';
+  static const String logo = 'assets/logos/logo_light.png';
 
   static const String googleLogo = 'assets/logos/logo_google.png';
   static const String facebookLogo = 'assets/logos/logo_fb.png';
@@ -28,7 +28,7 @@ class EImages {
   static const String electronicsIcon = 'assets/images/categories/phone.png';
 
   // avt
-  static const String avt = 'assets/images/avt_cry.gif';
+  static const String avt = 'assets/logos/pet-night.png';
 
   // Banner
   static const String banner1 = 'assets/images/banner/banner1.jpg';

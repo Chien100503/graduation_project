@@ -5,7 +5,7 @@ import 'package:pet_shop/features/authen/screens/login/widgets/login_form.dart';
 import 'package:pet_shop/features/authen/screens/login/widgets/login_header.dart';
 import 'package:pet_shop/features/authen/screens/login/widgets/login_social_button.dart';
 
-import '../../../../common/widgets/styles/spacing_styles.dart';
+import '../../../../common/styles/spacing_styles.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/texts_strings.dart';
 

@@ -5,6 +5,7 @@ import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/texts_strings.dart';
 import '../../../../../utils/helpers/helper_functions.dart';
+import '../../../controllers/signup/signup_controller.dart';
 
 class ETermConditionsCheckbox extends StatelessWidget {
   const ETermConditionsCheckbox({super.key});

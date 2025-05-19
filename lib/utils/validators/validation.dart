@@ -40,6 +40,15 @@ class EValidation {
 
     return null;
   }
+  static String? validateConfirmPassword(String password, String? confirmPassword) {
+    if (confirmPassword == null || confirmPassword.isEmpty) {
+      return 'Vui lòng xác nhận mật khẩu';
+    }
+    if (password != confirmPassword) {
+      return 'Mật khẩu không khớp';
+    }
+    return null;
+  }
 
   static String? validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {

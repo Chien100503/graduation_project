@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+
+import '../../../../../utils/constants/colors.dart';
+import '../../../../../utils/constants/sizes.dart';
+import '../../../../../utils/helpers/helper_functions.dart';
+
+class EProfileMenu extends StatelessWidget {
+  const EProfileMenu(
+      {super.key,
+      required this.title,
+      required this.subName,
+      this.icon = Icons.arrow_forward_ios_rounded,
+      required this.onPressed});
+
+  final String title, subName;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = EHelperFunctions.isDarkMode(context);
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 8.0, vertical: ESizes.defaultBetweenItem / 1.5),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Text(title),
+            ),
+            Expanded(
+                flex: 9,
+                child:
+                    Text(subName, style: Theme.of(context).textTheme.titleMedium)),
+            const SizedBox(width: 10,),
+            Expanded(
+              child: IconButton(
+                onPressed: onPressed,
+                icon: Icon(icon,color: dark ? EColors.thirdColor : EColors.primaryColor),
+              ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

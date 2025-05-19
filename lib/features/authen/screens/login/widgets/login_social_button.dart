@@ -24,7 +24,8 @@ class ESocialButtons extends StatelessWidget {
               border: Border.all(color: dark ? EColors.thirdColor : EColors.primaryColor),
               borderRadius: BorderRadius.circular(100)),
           child: IconButton(
-            onPressed: () => controller.googleSignIn(),
+            // onPressed: () => controller.googleSignIn(),
+            onPressed: (){},
             icon: const Image(
               fit: BoxFit.cover,
               width: ESizes.iconMd,
