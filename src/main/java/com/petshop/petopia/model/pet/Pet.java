@@ -23,11 +23,11 @@ public class Pet {
 
     @ManyToOne
     @JoinColumn(name = "pet_category_id")
-    private PetCategory petCategory;
+    private PetCategory petCategory; // Quan hệ nhiều-một với PetCategory
 
     @ManyToOne
     @JoinColumn(name = "breed_id")
-    private Breed breed;
+    private Breed breed; // Quan hệ nhiều-một với Breed
 
     private String name;
     private Integer age;

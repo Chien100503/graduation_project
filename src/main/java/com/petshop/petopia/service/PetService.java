@@ -114,7 +114,6 @@ public class PetService {
     public List<GetPetResponse> getAllPets() {
         List<Pet> pets = petRepository.findAll();
 
-        // Chuyển đổi danh sách Pet entities sang danh sách PetResponseDto
         return pets.stream()
                 .map(convertPet::convertToGetPetResponse) // Sử dụng phương thức chuyển đổi
                 .collect(Collectors.toList());
