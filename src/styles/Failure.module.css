@@ -1,20 +1,44 @@
 .failureContainer {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 20px;
-    /* Tùy chọn: thêm margin nếu cần */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fff;
+}
+
+.lottieWrapper {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 20px;
 }
 
 .failureTitle {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 24px;
+  color: #dc3545;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .failureMessage {
-    font-size: 1rem;
+  font-size: 16px;
+  color: #6c757d;
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+.retryButton {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 10px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retryButton:hover {
+  background-color: #c82333;
 }
