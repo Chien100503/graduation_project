@@ -1,6 +1,5 @@
 package com.petshop.petopia.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
@@ -33,7 +32,6 @@ import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
 import vn.payos.type.PaymentLinkData;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong; // Sử dụng AtomicLong để gen orderCode an toàn hơn
 import java.util.stream.Collectors;
@@ -226,7 +224,7 @@ public class OrderService {
         Payment payment = null;
 
         try {
-            long orderId = order.getId();
+            long orderCode = 1000000000L + new Random().nextLong(900000000);
             String description = generateRandomString();
 
             List<ItemData> payosItems = orderItems.stream()
@@ -238,7 +236,7 @@ public class OrderService {
                     .collect(Collectors.toList());
 
             PaymentData paymentData = PaymentData.builder()
-                    .orderCode(orderId)
+                    .orderCode(orderCode)
                     .description(description)
                     .amount(totalPrice)
                     .items(payosItems)
@@ -251,7 +249,7 @@ public class OrderService {
 
             payment = new Payment();
             payment.setPaymentMethod(PaymentMethod.PAYOS);
-            payment.setOrderCode(orderId);
+            payment.setOrderCode(orderCode);
             payment.setTransactionId(data.getPaymentLinkId());
             payment.setTransactionContent(description);
 
@@ -259,10 +257,12 @@ public class OrderService {
             order.setPayment(payment);
 
             orderRepository.save(order);
+//            System.out.println(objectMapper.valueToTree(data));
 
             response.put("error", 0);
             response.put("message", "success");
-            response.set("data", objectMapper.valueToTree(data));
+//            response.set("data", objectMapper.valueToTree(data));
+            response.put("qrCode", data.getQrCode());
 
             return response;
 
@@ -294,7 +294,7 @@ public class OrderService {
 
         response.put("error", 0); // Thêm trường error
         response.put("message", "Đơn hàng COD đã được tạo thành công.");
-        response.set("data", objectMapper.valueToTree(order)); // Trả về thông tin đơn hàng nội bộ
+        response.set("data", objectMapper.valueToTree(order));
         return response;
     }
 

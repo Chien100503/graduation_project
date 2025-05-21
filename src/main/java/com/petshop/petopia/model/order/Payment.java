@@ -24,7 +24,7 @@ public class Payment {
     @Column(nullable = false)
     private Date paymentDate;
 
-    @Column(nullable = false)
+    @Column
     private Long orderCode;
 
     @OneToOne(mappedBy = "payment")

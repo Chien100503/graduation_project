@@ -7,10 +7,8 @@ import com.petshop.petopia.dto.response.auth.LoginResponse;
 import com.petshop.petopia.dto.response.auth.RegisterResponse;
 import com.petshop.petopia.model.user.Role;
 import com.petshop.petopia.model.user.User;
-import com.petshop.petopia.model.VerificationCode;
 import com.petshop.petopia.repository.user.RoleRepository;
 import com.petshop.petopia.repository.user.UserRepository;
-import com.petshop.petopia.repository.verify.VerificationCodeRepository;
 import com.petshop.petopia.security.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +30,6 @@ public class AuthService {
     private final MailService mailService;
     private final VerificationCodeService verificationCodeService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final VerificationCodeRepository verificationCodeRepository;
     private final RoleRepository roleRepository;
 
 
@@ -87,11 +83,11 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String code = String.format("%06d", new Random().nextInt(999999));
-        String savedCode = verificationCodeService.saveCode(user, code, VERIFICATION_CODE_TTL);
+        String code = verificationCodeService.generateVerificationCode();
+        verificationCodeService.saveCode(user, code);
 
         mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT,
-                VERIFICATION_TEXT_PREFIX + savedCode + " (hết hạn sau " + VERIFICATION_CODE_TTL / 60 + " phút)");
+                VERIFICATION_TEXT_PREFIX + code + " (hết hạn sau " + VERIFICATION_CODE_TTL / 60 + " phút)");
 
         String token = jwtService.generateToken(user.getEmail());
 
@@ -107,15 +103,18 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
 
-        VerificationCode verifycode = verificationCodeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy mã xác thực cho người dùng: " + user.getEmail()));
+        String savedCode = verificationCodeService.getCode(user);
 
-        if (!verifycode.getCode().equals(inputCode)) {
+        if (savedCode == null) {
+            throw new RuntimeException("Mã xác thực đã hết hạn hoặc không tồn tại");
+        }
+
+        if (!savedCode.equals(inputCode)) {
             throw new RuntimeException("Mã xác thực không chính xác");
         }
 
         user.setIsActive(true);
         userRepository.save(user);
-        verificationCodeRepository.deleteByUser(user);
+        verificationCodeService.deleteCode(user);
     }
 }

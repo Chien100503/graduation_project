@@ -66,12 +66,39 @@ public class JwtService {
     }
 
     public String extractEmail(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         if (token == null || token.trim().isEmpty()) {
             logger.debug("Attempted to extract email from null or empty token.");
             return null;
         }
         final Claims claims = extractAllClaims(token);
         return claims != null ? claims.getSubject() : null;
+    }
+
+    public Integer extractUserId(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        if (token == null || token.trim().isEmpty()) {
+            logger.warn("Attempted to extract userId from null or empty token string (after Bearer check).");
+            throw new IllegalArgumentException("Token string cannot be null or empty.");
+        }
+
+        String email = extractEmail(token);
+        if (email == null) {
+            logger.warn("Could not extract valid email from token {} to find user.", token);
+            throw new IllegalArgumentException("Invalid token format or signature - cannot extract email.");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.warn("User not found in DB for email extracted from token: {}", email);
+                    // Ném exception runtime hoặc exception tùy chỉnh
+                    return new RuntimeException("Không tìm thấy người dùng với email: " + email);
+                });
+        return user.getId();
     }
 
     public Date extractExpiration(String token) {
@@ -153,30 +180,6 @@ public class JwtService {
         }
 
         return (email.equals(userDetails.getUsername()) && isTokenInRedis);
-    }
-
-    public Integer extractUserId(String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-        if (token == null || token.trim().isEmpty()) {
-            logger.warn("Attempted to extract userId from null or empty token string (after Bearer check).");
-            throw new IllegalArgumentException("Token string cannot be null or empty.");
-        }
-
-        String email = extractEmail(token);
-        if (email == null) {
-            logger.warn("Could not extract valid email from token {} to find user.", token);
-            throw new IllegalArgumentException("Invalid token format or signature - cannot extract email.");
-        }
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> {
-                    logger.warn("User not found in DB for email extracted from token: {}", email);
-                    // Ném exception runtime hoặc exception tùy chỉnh
-                    return new RuntimeException("Không tìm thấy người dùng với email: " + email);
-                });
-        return user.getId();
     }
 
     public void invalidateToken(String token) {

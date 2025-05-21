@@ -15,13 +15,13 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
-    @Value("${valkey.data.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${valkey.data.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int redisPort;
 
-    @Value("${valkey.data.redis.password}")
+    @Value("${spring.data.redis.password}")
     private String redisPassword;
 
     @Bean

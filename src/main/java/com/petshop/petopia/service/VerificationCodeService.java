@@ -2,26 +2,28 @@ package com.petshop.petopia.service;
 
 import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
-import com.petshop.petopia.model.VerificationCode;
-import com.petshop.petopia.repository.verify.VerificationCodeRepository;
 import com.petshop.petopia.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class VerificationCodeService {
 
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final StringRedisTemplate redisTemplate;
+
     private final UserRepository userRepository;
     private final MailService mailService;
     private final JwtService jwtService;
 
     private final String VERIFICATION_SUBJECT = "Mã xác thực";
     private final String VERIFICATION_TEXT_PREFIX = "Mã xác thực của bạn là: ";
+    private final String VERIFICATION_CODE_PREFIX = "verify_code:"; // key prefix
+    private final int VERIFICATION_CODE_TTL_SECONDS = 600;
 
     public void resendCode(String token) {
         String email = jwtService.extractEmail(token);
@@ -32,51 +34,32 @@ public class VerificationCodeService {
 
         if (currentCode != null) {
             mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT, VERIFICATION_TEXT_PREFIX + currentCode);
-            System.out.println("Đã gửi lại mã xác thực cũ cho email: " + user.getEmail());
+            System.out.println("Đã gửi lại mã xác thực cũ cho email: " + email);
         } else {
             String newCode = generateVerificationCode();
-            saveCodeInternal(user, newCode, 300); // Lưu mã mới
+            saveCode(user, newCode);
             mailService.sendMessage(user.getEmail(), VERIFICATION_SUBJECT, VERIFICATION_TEXT_PREFIX + newCode);
-            System.out.println("Đã tạo và gửi mã xác thực mới cho email: " + user.getEmail());
         }
     }
 
-    private void saveCodeInternal(User user, String code, int ttlSeconds) {
-        long expiryTime = System.currentTimeMillis() + ttlSeconds * 1000L;
-        verificationCodeRepository.deleteByUser(user);
-        VerificationCode vc = new VerificationCode();
-        vc.setCode(code);
-        vc.setExpiryTime(expiryTime);
-        vc.setUser(user);
-        verificationCodeRepository.save(vc);
-    }
 
-    // Phương thức công khai để lưu code và trả về code
-    public String saveCode(User user, String code, int ttlSeconds) {
-        saveCodeInternal(user, code, ttlSeconds);
-        return code;
+
+    public void saveCode(User user, String code) {
+        String key = VERIFICATION_CODE_PREFIX + user.getId();
+        redisTemplate.opsForValue().set(key, code, VERIFICATION_CODE_TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public String getCode(User user) {
-        Optional<VerificationCode> optional = verificationCodeRepository.findByUser_Id(user.getId());
-        if (optional.isEmpty()) return null;
-
-        VerificationCode vc = optional.get();
-        if (System.currentTimeMillis() > vc.getExpiryTime()) {
-            verificationCodeRepository.delete(vc);
-            return null;
-        }
-
-        return vc.getCode();
+        String key = VERIFICATION_CODE_PREFIX + user.getId();
+        return redisTemplate.opsForValue().get(key);
     }
 
-    private String generateVerificationCode() {
-        return String.valueOf((int) (Math.random() * 1000000));
+    public String generateVerificationCode() {
+        return String.format("%06d", new Random().nextInt(999999));
     }
 
-    @Transactional
-    public void cleanUp() {
-        long now = System.currentTimeMillis();
-        verificationCodeRepository.deleteAllByExpiryTimeLessThan(now);
+    public void deleteCode(User user) {
+        String key = VERIFICATION_CODE_PREFIX + user.getId();
+        redisTemplate.delete(key);
     }
 }
