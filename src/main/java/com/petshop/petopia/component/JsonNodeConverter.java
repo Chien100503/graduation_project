@@ -1,4 +1,4 @@
-package com.petshop.petopia.util;
+package com.petshop.petopia.component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

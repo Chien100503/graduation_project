@@ -1,4 +1,4 @@
-package com.petshop.petopia.repository;
+package com.petshop.petopia.repository.product;
 
 import com.petshop.petopia.model.review.Rating;
 import org.springframework.data.repository.CrudRepository;

@@ -14,9 +14,8 @@ import com.petshop.petopia.repository.cart.CartRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
 import com.petshop.petopia.repository.user.UserRepository;
-import com.petshop.petopia.util.ConvertCart;
+import com.petshop.petopia.component.ConvertCart;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 // Import CollectionUtils

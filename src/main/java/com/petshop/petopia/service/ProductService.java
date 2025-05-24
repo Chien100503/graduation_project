@@ -1,10 +1,10 @@
 package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
-import com.petshop.petopia.dto.response.ProductResponse;
+import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.model.product.*;
 import com.petshop.petopia.repository.product.*;
-import com.petshop.petopia.util.ConvertProduct;
+import com.petshop.petopia.component.ConvertProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.petshop.petopia.controller;
+package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
 import com.petshop.petopia.security.JwtService;

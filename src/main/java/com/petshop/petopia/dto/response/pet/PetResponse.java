@@ -1,29 +1,26 @@
-package com.petshop.petopia.dto.response;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package com.petshop.petopia.dto.response.pet;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PetCreateResponse {
+public class PetResponse {
     private Integer id;
-    private String name;
+    private String petCategoryName;
     private String breedName;
+    private String name;
     private Integer age;
     private String gender;
     private String size;
     private Double weight;
     private String color;
     private Integer price;
-    private String status;
+    private Boolean status;
     private String description;
     private List<String> imageUrls;
-    private Date createdAt;
-    private Date updatedAt;
-    private String petCategoryName;
 }

@@ -1,31 +1,20 @@
-package com.petshop.petopia.controller;
+package com.petshop.petopia.controller.user;
 
-import com.petshop.petopia.dto.request.auth.LoginRequest;
-import com.petshop.petopia.dto.request.auth.RegisterRequest;
-import com.petshop.petopia.dto.request.auth.VerifyRequest;
 import com.petshop.petopia.dto.request.user.UpdateProfileRequest;
-import com.petshop.petopia.dto.response.auth.LoginResponse;
-import com.petshop.petopia.dto.response.MessageResponse;
 import com.petshop.petopia.dto.response.auth.ProfileResponse;
-import com.petshop.petopia.dto.response.auth.RegisterResponse;
-import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.AuthService;
 import com.petshop.petopia.service.UserService;
 import com.petshop.petopia.service.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class UserController {
+public class ProfileController {
 
     private final AuthService authService;
     private final VerificationCodeService verificationCodeService;

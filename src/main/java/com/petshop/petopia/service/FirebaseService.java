@@ -24,6 +24,9 @@ public class FirebaseService {
     @Value("${firebase.storage.image-avatar}")
     private String imageAvatar;
 
+    @Value("${firebase.storage.image-banner}")
+    private String imageBanner;
+
     public String uploadImagePet(MultipartFile file) throws IOException {
         String fileName = imagePet + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -63,6 +66,19 @@ public class FirebaseService {
         );
     }
 
+    public String uploadImageBanner(MultipartFile file) throws IOException {
+        String fileName = imageBanner + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        StorageClient.getInstance().bucket()
+                .create(fileName, file.getBytes(), file.getContentType());
+
+        return String.format(
+                "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+                StorageClient.getInstance().bucket().getName(),
+                fileName.replace("/", "%2F")
+        );
+    }
+
     public void deleteFileByUrl(String imageUrl) {
         try {
             String encodedPath = imageUrl.substring(
@@ -72,7 +88,6 @@ public class FirebaseService {
 
             String filePath = URLDecoder.decode(encodedPath, StandardCharsets.UTF_8);
 
-            // Lấy thông tin bucket và xóa
             String bucketName = StorageClient.getInstance().bucket().getName();
             Storage storage = StorageClient.getInstance().bucket().getStorage();
             BlobId blobId = BlobId.of(bucketName, filePath);

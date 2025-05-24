@@ -1,8 +1,9 @@
 package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.admin.PetCreateRequest;
-import com.petshop.petopia.dto.response.PetCreateResponse;
-import com.petshop.petopia.dto.response.pet.GetPetResponse;
+import com.petshop.petopia.dto.request.category.PetFilterRequest;
+import com.petshop.petopia.dto.response.admin.PetCreateResponse;
+import com.petshop.petopia.dto.response.pet.PetResponse;
 import com.petshop.petopia.model.pet.Breed;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetCategory;
@@ -11,7 +12,7 @@ import com.petshop.petopia.repository.pet.BreedRepository;
 import com.petshop.petopia.repository.pet.PetCategoryRepository;
 import com.petshop.petopia.repository.pet.PetImageRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
-import com.petshop.petopia.util.ConvertPet;
+import com.petshop.petopia.component.ConvertPet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,6 @@ public class PetService {
 
     @Transactional
     public PetCreateResponse createPet(PetCreateRequest req) throws IOException {
-        // 1. Tìm hoặc tạo Breed
         Breed breed;
         if (req.getBreedName() != null && !req.getBreedName().isEmpty()) {
             Optional<Breed> breedOpt = breedRepository.findByName(req.getBreedName());
@@ -51,7 +51,6 @@ public class PetService {
             breed = null;
         }
 
-        // 2. Tìm hoặc tạo PetCategory
         Optional<PetCategory> categoryOpt = petCategoryRepository.findByName(req.getPetCategoryName());
         PetCategory category = categoryOpt.orElseGet(() -> {
             PetCategory newCategory = new PetCategory();
@@ -61,7 +60,6 @@ public class PetService {
             return petCategoryRepository.save(newCategory);
         });
 
-        // 3. Tạo Pet object
         Pet pet = new Pet();
         pet.setName(req.getName());
         pet.setBreed(breed);
@@ -75,12 +73,8 @@ public class PetService {
         pet.setDescription(req.getDescription());
         pet.setPetCategory(category);
 
-
-        // 4. Lưu Pet (để có ID cho PetImage)
         Pet savedPet = petRepository.save(pet);
 
-
-        // 5. Xử lý hình ảnh: Tải lên, tạo PetImage objects, và lưu
         List<PetImage> petImages = new ArrayList<>();
         if (req.getFile() != null && !req.getFile().isEmpty()) {
             for (MultipartFile file : req.getFile()) {
@@ -94,24 +88,22 @@ public class PetService {
             savedPet.setPetImages(petImages);
         }
 
-
-        // 6. Trả về response
         return convertPet.convertToResponse(savedPet);
     }
 
     @Transactional(readOnly = true)
-    public GetPetResponse getPetById(Integer petId) {
+    public PetResponse getPetById(Integer petId) {
         // Tìm Pet entity theo ID
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thú cưng với ID: " + petId));
 
-        GetPetResponse petDto = convertPet.convertToGetPetResponse(pet);
+        PetResponse petDto = convertPet.convertToGetPetResponse(pet);
 
         return petDto;
     }
 
     @Transactional(readOnly = true)
-    public List<GetPetResponse> getAllPets() {
+    public List<PetResponse> getAllPets() {
         List<Pet> pets = petRepository.findAll();
 
         return pets.stream()

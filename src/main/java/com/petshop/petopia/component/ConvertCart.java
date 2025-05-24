@@ -1,4 +1,4 @@
-package com.petshop.petopia.util;
+package com.petshop.petopia.component;
 
 import com.petshop.petopia.dto.response.cart.CartResponse;
 import com.petshop.petopia.dto.response.cart.CartItemResponse;

@@ -1,6 +1,6 @@
-package com.petshop.petopia.util;
+package com.petshop.petopia.component;
 
-import com.petshop.petopia.dto.response.ProductResponse;
+import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.model.product.Product;
 import org.springframework.stereotype.Component;
 

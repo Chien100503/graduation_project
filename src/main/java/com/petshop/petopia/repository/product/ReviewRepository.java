@@ -1,4 +1,4 @@
-package com.petshop.petopia.repository;
+package com.petshop.petopia.repository.product;
 
 import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.product.Product;

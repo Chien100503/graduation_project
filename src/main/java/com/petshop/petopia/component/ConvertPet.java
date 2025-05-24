@@ -1,7 +1,7 @@
-package com.petshop.petopia.util;
+package com.petshop.petopia.component;
 
-import com.petshop.petopia.dto.response.PetCreateResponse;
-import com.petshop.petopia.dto.response.pet.GetPetResponse;
+import com.petshop.petopia.dto.response.admin.PetCreateResponse;
+import com.petshop.petopia.dto.response.pet.PetResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetImage;
 import org.springframework.stereotype.Component;
@@ -38,8 +38,8 @@ public class ConvertPet {
         );
     }
 
-    public GetPetResponse convertToGetPetResponse(Pet pet) {
-        GetPetResponse dto = new GetPetResponse();
+    public PetResponse convertToGetPetResponse(Pet pet) {
+        PetResponse dto = new PetResponse();
         dto.setId(pet.getId());
 
         if (pet.getPetCategory() != null) {

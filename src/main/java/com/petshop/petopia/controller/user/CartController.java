@@ -1,4 +1,4 @@
-package com.petshop.petopia.controller;
+package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.cart.CartItemRequest;
 import com.petshop.petopia.dto.request.cart.CartItemUpdateRequest;
@@ -6,9 +6,7 @@ import com.petshop.petopia.dto.response.cart.CartResponse;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

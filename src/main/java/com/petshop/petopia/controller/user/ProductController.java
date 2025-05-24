@@ -1,7 +1,9 @@
-package com.petshop.petopia.controller;
+package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
-import com.petshop.petopia.dto.response.ProductResponse;
+import com.petshop.petopia.dto.request.category.ProductFilterRequest;
+import com.petshop.petopia.dto.response.product.ProductResponse;
+import com.petshop.petopia.service.ProductCategoryService;
 import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductCategoryService productCategoryService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> createProduct(
@@ -49,7 +52,13 @@ public class ProductController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-
-
-
+    @PostMapping("/filter")
+    public ResponseEntity<?> filterProducts(@RequestBody ProductFilterRequest filterRequest) {
+        try {
+            List<ProductResponse> result = productCategoryService.filterProducts(filterRequest);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

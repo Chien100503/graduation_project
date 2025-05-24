@@ -257,7 +257,6 @@ public class OrderService {
             order.setPayment(payment);
 
             orderRepository.save(order);
-//            System.out.println(objectMapper.valueToTree(data));
 
             response.put("error", 0);
             response.put("message", "success");

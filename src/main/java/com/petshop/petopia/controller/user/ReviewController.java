@@ -1,4 +1,4 @@
-package com.petshop.petopia.controller;
+package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.ReviewService;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
