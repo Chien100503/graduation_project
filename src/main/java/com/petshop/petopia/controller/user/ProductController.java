@@ -2,6 +2,8 @@ package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
 import com.petshop.petopia.dto.request.category.ProductFilterRequest;
+import com.petshop.petopia.dto.response.product.BrandResponse;
+import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
 import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.service.ProductCategoryService;
 import com.petshop.petopia.service.ProductService;
@@ -50,6 +52,16 @@ public class ProductController {
         Optional<ProductResponse> product = productService.getProductById(id);
         return product.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<ProductCategoryResponse>> getAllProductCategories() {
+        return ResponseEntity.ok(productCategoryService.getAllProductCategories());
+    }
+
+    @GetMapping("/brands")
+    public ResponseEntity<List<BrandResponse>> getAllProductBrands() {
+        return ResponseEntity.ok(productCategoryService.getAllProductBrands());
     }
 
     @PostMapping("/filter")

@@ -1,9 +1,13 @@
 package com.petshop.petopia.service;
 
 import com.petshop.petopia.dto.request.category.ProductFilterRequest;
+import com.petshop.petopia.dto.response.product.BrandResponse;
+import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
 import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.model.product.Product;
 import com.petshop.petopia.model.product.ProductImage;
+import com.petshop.petopia.repository.product.BrandRepository;
+import com.petshop.petopia.repository.product.ProductCategoryRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductCategoryService {
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
+    private final BrandRepository brandRepository;
 
     @Transactional(readOnly = true)
     public List<ProductResponse> filterProducts(ProductFilterRequest filterRequest) {
@@ -41,6 +47,20 @@ public class ProductCategoryService {
 
         return productRepository.findAll(spec).stream()
                 .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductCategoryResponse> getAllProductCategories() {
+        return productCategoryRepository.findAll().stream()
+                .map(category -> new ProductCategoryResponse(category.getId(), category.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BrandResponse> getAllProductBrands() {
+        return brandRepository.findAll().stream()
+                .map(brand -> new BrandResponse(brand.getId(), brand.getName()))
                 .collect(Collectors.toList());
     }
 
