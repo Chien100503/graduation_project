@@ -1,6 +1,6 @@
 import '../../../utils/formatters/formatter.dart';
 
-class UserProfileModel {
+class UserModel {
   final int id;
   final String name;
   final String firstName;
@@ -9,7 +9,7 @@ class UserProfileModel {
   final String phone;
   final String avatar;
 
-  UserProfileModel({
+  UserModel({
     required this.id,
     required this.name,
     required this.firstName,
@@ -36,11 +36,12 @@ class UserProfileModel {
     return 'cwt_${first}${last}';
   }
 
+
   /// Parse từ JSON
-  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     print('📦 JSON from server: $json');
 
-    return UserProfileModel(
+    return UserModel(
       id: _parseId(json['id']),
       name: _parseString(json['name']),
       firstName: _parseString(json['firstName']),
@@ -66,7 +67,7 @@ class UserProfileModel {
   }
 
   /// Mặc định rỗng
-  static UserProfileModel empty() => UserProfileModel(
+  static UserModel empty() => UserModel(
     id: 0,
     name: '',
     firstName: '',
@@ -88,5 +89,26 @@ class UserProfileModel {
       'phone': phone,
       'avatar': avatar,
     };
+  }
+
+  /// Bản sao mới với giá trị cập nhật
+  UserModel copyWith({
+    int? id,
+    String? name,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? phone,
+    String? avatar,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      avatar: avatar ?? this.avatar,
+    );
   }
 }

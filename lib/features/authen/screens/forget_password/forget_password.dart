@@ -10,6 +10,7 @@ import '../../controllers/forget_password/forget_password_controller.dart';
 class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
     final dark = EHelperFunctions.isDarkMode(context);
     final ForgotPasswordController controller = Get.put(ForgotPasswordController());
 
@@ -20,45 +21,50 @@ class ForgotPasswordScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Enter your email to receive your password recovery code.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) => EValidation.validateEmail(value),
-                onChanged: (value) {
-                  controller.email.value = value;
-                },
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Iconsax.direct_right),
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  label: Text(
-                    ETexts.email,
-                    style: TextStyle(
-                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+          return Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Enter your email to receive your password recovery code.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  validator: (value) => EValidation.validateEmail(value),
+                  onChanged: (value) {
+                    controller.email.value = value;
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Iconsax.direct_right),
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    label: Text(
+                      ETexts.email,
+                      style: TextStyle(
+                        color: dark ? EColors.thirdColor : EColors.primaryColor,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () async {
-                    await controller.requestPasswordReset();
-                  },
-                  child: controller.isLoading.value
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text('Reset'),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () async {
+                      if (_formKey.currentState!.validate()) {
+                        await controller.requestPasswordReset();
+                      }
+                    },
+                    child: controller.isLoading.value
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Reset'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }),
       ),

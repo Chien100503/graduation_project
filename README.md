@@ -1,16 +1,41 @@
-# pet_shop
+# 📱 Pet Shop application integrated Chat-bot [PET SHOP AI]
 
-A new Flutter project.
+This is the Front-end of the PetShop application built using Flutter Framework. The application
+provides an online shopping store. The application also has AI Chat-bot functionality.
 
-## Getting Started
+## Main features
+- 🔐 User registration, login, authentication via PIN sent via email
+- 👤 Personal Profile Management
+- 🛒 Shopping cart and checkout functionality
+- 💳 Pay with PayOs
+- 📦 Android & iOS compatible
+- 🔎 Product search and filtering features
+- 🤖 AI Chat-bot system
 
-This project is a starting point for a Flutter application.
+## 🛠️ Technology used
+- [Flutter](https://flutter.dev/) (Dart Language)
+- [GetX](https://pub.dev/packages/get) – State management and navigation
+- [PayOS](https://payos.vn/) – Payment
 
-A few resources to get you started if this is your first Flutter project:
+## 📂 Flutter Folder Structure
+- asset/
+- lib/
+ ├── bindings/
+ ├── common/
+ ├── data/
+ ├── features/
+ │ ├── authentication/
+ │ ├── checkout/
+ │ ├── personalization/
+ │ ├── shop/
+ ├── routes/
+ ├── utils/
+ ├── app.dart
+ ├── main.dart
+ ├── navigation_menu.dart
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ⚙️ Install & Run Application
+### Install Dependencies
+- flutter pub get
+### Run app
+- flutter run

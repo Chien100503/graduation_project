@@ -34,7 +34,6 @@ class LoginController extends GetxController {
 
     try {
       isLoading.value = true;
-
       final result = await _userRepo.loginUser(
         email.text.trim(),
         password.text.trim(),

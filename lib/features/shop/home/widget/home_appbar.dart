@@ -26,7 +26,7 @@ class EHomeAppBar extends StatelessWidget {
       ),
       actions: [
         // Avatar icon
-        const AvatarIcon(),
+        AvatarIcon(),
         // CartCounterIcon(
         //   icons: const Icon(Iconsax.shopping_bag),
         //   onPressed: () => Get.to(

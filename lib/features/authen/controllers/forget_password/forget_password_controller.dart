@@ -17,18 +17,23 @@ class ForgotPasswordController extends GetxController {
 
     isLoading.value = true;
     try {
-      await _userRepository.forgotPassword(email.value);
-      errorMessage.value = '';  // Clear error message if successful
-      // Hiển thị thông báo cho người dùng đã gửi mã reset
-      ECustomSnackBar.showSuccess(title: 'Thành công' ,message: 'Mã khôi phục đã được gửi đến email của bạn.');
-      // Get.snackbar('Thành công', 'Mã khôi phục đã được gửi đến email của bạn.',
-      //     snackPosition: SnackPosition.BOTTOM, animationDuration: const Duration(seconds: 3));
+      await _userRepository.forgotPassword(email.value); // Nếu lỗi, sẽ vào catch
+      errorMessage.value = '';
+      ECustomSnackBar.showSuccess(
+        title: 'Thành công',
+        message: 'Mã khôi phục đã được gửi đến email của bạn.',
+      );
       Get.offAll(const LoginScreen());
     } catch (e) {
-      errorMessage.value = e.toString();
-      ECustomSnackBar.showError(title: 'Error', message: e.toString());
+      errorMessage.value = e.toString().replaceAll('Exception: ', '');
+      ECustomSnackBar.showError(
+        title: 'Lỗi',
+        message: errorMessage.value,
+      );
     } finally {
       isLoading.value = false;
     }
   }
+
+
 }

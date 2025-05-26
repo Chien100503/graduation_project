@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/custom_shape/containers/primary_header_container.dart';
 import 'package:pet_shop/features/shop/home/widget/home_appbar.dart';
 
@@ -43,7 +42,7 @@ Future<void> _refresh(){
                           ESectionHeading(
                             title: 'Popular Categories',
                             showActionButton: false,
-                            textColor: EColors.textPrimary,
+                            textColor: EColors.primaryColor,
                           ),
                           SizedBox(height: ESizes.defaultBetweenItem),
                           // Categories

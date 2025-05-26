@@ -29,6 +29,9 @@ dependencies:
   pinput: ^5.0.1
   shared_preferences: ^2.3.3
   animations: ^2.0.11
+  dio: ^5.3.3
+  image_picker: ^1.1.2
+  mime: ^2.0.0
 # --------- icon -------------------#
   iconsax: ^0.0.8
 # ---------------- State management ---------- #

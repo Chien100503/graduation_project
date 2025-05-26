@@ -38,7 +38,7 @@ class EUserProfile extends StatelessWidget {
         controller.profile.value.email,
         style: Theme.of(context)
             .textTheme
-            .bodyMedium!
+            .bodyLarge!
             .apply(color: EColors.primaryColor),
       )),
       trailing: IconButton(

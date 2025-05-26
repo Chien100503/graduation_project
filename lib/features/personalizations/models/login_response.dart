@@ -2,7 +2,7 @@ import 'user_model.dart';
 
 class LoginResponse {
   final String accessToken;
-  final UserProfileModel user;
+  final UserModel user;
 
   LoginResponse({
     required this.accessToken,
@@ -12,7 +12,7 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
       accessToken: json['token'],
-      user: UserProfileModel.fromJson(json['user']),
+      user: UserModel.fromJson(json['user']),
     );
   }
 }
