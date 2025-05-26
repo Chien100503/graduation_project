@@ -4,16 +4,22 @@ import com.petshop.petopia.dto.request.category.PetFilterRequest;
 import com.petshop.petopia.dto.response.pet.BreedResponse;
 import com.petshop.petopia.dto.response.pet.CategoryResponse;
 import com.petshop.petopia.dto.response.pet.PetResponse;
+import com.petshop.petopia.model.pet.Breed;
 import com.petshop.petopia.model.pet.Pet;
+import com.petshop.petopia.model.pet.PetCategory;
 import com.petshop.petopia.model.pet.PetImage;
 import com.petshop.petopia.repository.pet.BreedRepository;
 import com.petshop.petopia.repository.pet.PetCategoryRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +35,24 @@ public class PetCategoryService {
     public List<PetResponse> filterActivePets(PetFilterRequest filterRequest) {
         filterRequest.validate();
 
-        Specification<Pet> spec = Specification.where(isActive()); // Chỉ lấy pet có status = true
+        Specification<Pet> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("status"), true));
 
-        if (filterRequest.getCategory() != null && !filterRequest.getCategory().isBlank()) {
-            spec = spec.and(hasCategory(filterRequest.getCategory()));
-        }
+            if (StringUtils.hasText(filterRequest.getCategory())) {
+                Join<Pet, PetCategory> petCategoryJoin = root.join("petCategory");
+                predicates.add(cb.equal(petCategoryJoin.get("name"), filterRequest.getCategory()));
+            }
 
-        if (filterRequest.getBreed() != null && !filterRequest.getBreed().isBlank()) {
-            spec = spec.and(hasBreed(filterRequest.getBreed()));
-        }
+            if (StringUtils.hasText(filterRequest.getBreed())) {
+                Join<Pet, Breed> breedJoin = root.join("breed");
+                predicates.add(cb.equal(breedJoin.get("name"), filterRequest.getBreed()));
+            }
 
-        return petCategoryRepository.findAll(spec).stream()
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return petRepository.findAll(spec).stream()
                 .map(this::mapToPetResponse)
                 .collect(Collectors.toList());
     }
@@ -56,20 +69,6 @@ public class PetCategoryService {
         return breedRepository.findByPetCategoryId(categoryId).stream()
                 .map(breed -> new BreedResponse(breed.getId(), breed.getName()))
                 .collect(Collectors.toList());
-    }
-
-    private Specification<Pet> isActive() {
-        return (root, query, cb) -> cb.equal(root.get("status"), true);
-    }
-
-    private Specification<Pet> hasCategory(String categoryName) {
-        return (root, query, cb) ->
-                cb.equal(root.get("petCategory").get("name"), categoryName);
-    }
-
-    private Specification<Pet> hasBreed(String breedName) {
-        return (root, query, cb) ->
-                cb.equal(root.get("breed").get("name"), breedName);
     }
 
     private PetResponse mapToPetResponse(Pet pet) {

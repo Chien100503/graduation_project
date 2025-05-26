@@ -24,7 +24,10 @@ public class PetCategory {
     private String description;
 
     @OneToMany(mappedBy = "petCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Breed> breeds; // Thêm quan hệ một-nhiều với Breed
+    private List<Breed> breeds;
+
+    @OneToMany(mappedBy = "petCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pet> pets;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
