@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../features/shop/models/products/pet_model.dart';
+import '../../../utils/constants/enums.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../custom_shape/containers/round_container.dart';
 import '../images/round_images.dart';
+import '../texts/bran_title_with_verify_icon.dart';
 import '../texts/brand_title_text.dart';
 
 class EProductCardsHorizontal extends StatelessWidget {
@@ -84,14 +87,16 @@ class EProductCardsHorizontal extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // EBrandTitleText(
-                    //   title: product.title,
-                    //   brandTextSize: TextSizes.medium,
-                    // ),
+                    EBrandTitleText(
+                      title: 'Tên: ${product.name}',
+                      brandTextSize: TextSizes.medium,
+                    ),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    // EBrandTitleWithVerifyIcon(title: product.brand?.name ?? ''),
+                    EBrandTitleWithVerifyIcon(title: product.breed.name ?? ''),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    Row(
+                    Text('Price ${product.price.toInt()}'),
+                    const SizedBox(height: ESizes.defaultBetweenItem / 2),
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -120,20 +125,7 @@ class EProductCardsHorizontal extends StatelessWidget {
                         //     ],
                         //   ),
                         // ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: dark ? EColors.thirdColor : EColors.accent,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: SizedBox(
-                            width: ESizes.iconLg * 1.2,
-                            height: ESizes.iconLg * 1.2,
-                            child: Icon(
-                              Iconsax.add,
-                              color: dark ? EColors.primaryColor : EColors.thirdColor,
-                            ),
-                          ),
-                        ),
+
                       ],
                     ),
                   ],

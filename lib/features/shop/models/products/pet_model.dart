@@ -16,13 +16,31 @@ class PetModel {
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
+    // Kiểm tra các field bắt buộc
+    if (json['id'] == null) throw Exception('Pet ID is null');
+    if (json['name'] == null) throw Exception('Pet name is null');
+    if (json['price'] == null) throw Exception('Pet price is null');
+    if (json['imageUrl'] == null) throw Exception('Pet imageUrl is null');
+    if (json['breed'] == null) throw Exception('Pet breed is null');
+
     return PetModel(
-      id: json['id'],
-      name: json['name'],
-      price: (json['price'] as num).toDouble(), // đảm bảo là double
-      imageUrl: json['imageUrl'],
-      breed: BreedModel.fromJson(json['breed']),
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      name: json['name'].toString(),
+      price: _parsePrice(json['price']),
+      imageUrl: json['imageUrl'].toString(),
+      breed: BreedModel.fromJson(json['breed'] as Map<String, dynamic>),
     );
+  }
+
+  // Helper method để parse price an toàn
+  static double _parsePrice(dynamic price) {
+    if (price == null) return 0.0;
+    if (price is double) return price;
+    if (price is int) return price.toDouble();
+    if (price is String) {
+      return double.tryParse(price) ?? 0.0;
+    }
+    return (price as num).toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -40,6 +58,6 @@ class PetModel {
 
   @override
   String toString() {
-    return 'PetModel(id: $id, name: $name, price: $price, imageUrl: $imageUrl)';
+    return 'PetModel(id: $id, name: $name, price: $price, imageUrl: $imageUrl, breed: ${breed.name})';
   }
 }

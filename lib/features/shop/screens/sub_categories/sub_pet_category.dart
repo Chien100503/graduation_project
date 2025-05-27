@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/appbar/appbar.dart';
+import 'package:pet_shop/common/widgets/images/round_images.dart';
+import 'package:pet_shop/common/widgets/products_card/product_cards_horizontal.dart';
+import 'package:pet_shop/common/widgets/shimmer/horizontal_product_shimmer.dart';
+import 'package:pet_shop/common/widgets/texts/section_heading.dart';
 import 'package:pet_shop/features/shop/controllers/categories_controller/pet_category_controller.dart';
 import 'package:pet_shop/features/shop/models/categories/category_models.dart';
-import 'package:pet_shop/features/shop/models/categories/breed_model.dart';
-import 'package:pet_shop/features/shop/models/products/pet_model.dart';
+import 'package:pet_shop/utils/constants/images_strings.dart';
+import 'package:pet_shop/utils/constants/sizes.dart';
 
-import '../../../../common/widgets/products_card/product_cards_horizontal.dart';
+import '../../../../utils/helpers/cloud_helper_functions.dart';
 
 class SubPetCategoryScreen extends StatelessWidget {
   final int petCategoryId;
@@ -26,78 +30,83 @@ class SubPetCategoryScreen extends StatelessWidget {
       appBar: EAppBar(
         title: Text(
           category.name,
-          style: Theme.of(context).textTheme.headlineMedium,
         ),
         showBackArrow: true,
       ),
-      body: FutureBuilder<List<BreedModel>>(
-        future: controller.fetchBreedsByCategory(petCategoryId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(ESizes.defaultSpace),
+          child: Column(
+            children: [
+              const ERoundImages(
+                imageUrl: EImages.banner2,
+                bg: Colors.transparent,
+                applyImageRadius: true,
+                width: double.infinity,
+              ),
+              const SizedBox(height: ESizes.defaultBetweenSections),
+              FutureBuilder(
+                future: controller.fetchBreedsByCategory(petCategoryId),
+                builder: (context, snapshot) {
+                  const loader = EHorizontalProductShimmer();
+                  final widget = CloudHelperFunctions.checkMultiRecordState(
+                      snapshot: snapshot, loader: loader);
+                  if (widget != null) return widget;
 
-          if (snapshot.hasError) {
-            print('Lỗi khi tải giống thú cưng: ${snapshot.error}');
-            return const Center(child: Text("Lỗi khi tải giống thú cưng"));
-          }
+                  final breeds = snapshot.data!;
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: breeds.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (_, index) {
+                      final breed = breeds[index];
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            print('Không có giống thú cưng nào');
-            return const Center(child: Text("Không có giống thú cưng nào."));
-          }
+                      return FutureBuilder(
+                        future: controller.fetchPetsByBreed(petCategoryId, breed.id),
+                        builder: (context, snapshot) {
+                          final widget = CloudHelperFunctions.checkMultiRecordState(
+                              snapshot: snapshot, loader: loader);
+                          if (widget != null) return widget;
 
-          final breeds = snapshot.data!;
-          print('Breeds: ${breeds.map((e) => e.name).toList()}');
+                          final pets = snapshot.data!;
+                          return Column(
+                            children: [
+                              ESectionHeading(
+                                title: 'Giống chó: ${breed.name}',
+                                titleButton: 'View all',
 
-          return ListView.builder(
-            itemCount: breeds.length,
-            itemBuilder: (context, i) {
-              final breed = breeds[i];
-
-              return FutureBuilder<List<PetModel>>(
-                future: controller.fetchPetsByBreed(petCategoryId, breed.id),
-                builder: (context, petSnapshot) {
-                  if (petSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  if (petSnapshot.hasError) {
-                    print('Lỗi khi tải pets của giống ${breed.name}: ${petSnapshot.error}');
-                    return const SizedBox();
-                  }
-
-                  if (!petSnapshot.hasData || petSnapshot.data!.isEmpty) {
-                    print('Không có pet nào cho giống ${breed.name}');
-                    return const SizedBox();
-                  }
-
-                  final pets = petSnapshot.data!;
-                  print('Pets for ${breed.name}: ${pets.map((e) => e.name).toList()}');
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          breed.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      Column(
-                        children: pets.map((pet) => EProductCardsHorizontal(product: pet)).toList(),
-                      ),
-                    ],
+                                // onPressed: () => Get.to(
+                                //       () => AllProductScreen(
+                                //     title: breed.name,
+                                //     futureMethod: controller.fetchPetsByBreed(
+                                //         petCategoryId, breed.id),
+                                //   ),
+                                // ),
+                              ),
+                              const SizedBox(height: ESizes.defaultBetweenItem / 2),
+                              SizedBox(
+                                height: 121,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  separatorBuilder: (_, __) => const SizedBox(
+                                      width: ESizes.defaultBetweenItem),
+                                  itemCount: pets.length,
+                                  itemBuilder: (context, index) =>
+                                      EProductCardsHorizontal(product: pets[index]),
+                                ),
+                              ),
+                              const SizedBox(height: ESizes.defaultBetweenSections),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   );
                 },
-              );
-            },
-          );
-        },
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

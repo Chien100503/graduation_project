@@ -13,10 +13,19 @@ class PetCategoryController extends GetxController {
   final baseUrl = Config.baseUrl;
   final _storage = GetStorage();
 
+  // Cache để lưu breeds theo category
+  final Map<int, List<BreedModel>> _breedsCache = {};
+
   Future<List<BreedModel>> fetchBreedsByCategory(int petCategoryId) async {
+    // Kiểm tra cache trước
+    if (_breedsCache.containsKey(petCategoryId)) {
+      return _breedsCache[petCategoryId]!;
+    }
+
     final url = Uri.parse('$baseUrl/pet/categories/$petCategoryId/breeds');
-    final token = await _storage.read('TOKEN'); // Sử dụng await
+    final token = await _storage.read('TOKEN');
     if (token == null) throw Exception('Token không tồn tại.');
+
     final response = await http.get(
       url,
       headers: {
@@ -24,30 +33,96 @@ class PetCategoryController extends GetxController {
         'Authorization': 'Bearer $token',
       },
     );
+
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
-      return jsonList.map((json) => BreedModel.fromJson(json)).toList();
+      final breeds = jsonList.map((json) => BreedModel.fromJson(json)).toList();
+
+      _breedsCache[petCategoryId] = breeds;
+      return breeds;
     } else {
-      throw Exception('Failed to load breedssss');
+      throw Exception('Failed to load breeds');
     }
   }
 
   Future<List<PetModel>> fetchPetsByBreed(int categoryId, int breedId) async {
     final url = ('$baseUrl/pet/categories/$categoryId/breeds/$breedId');
     final token = await _storage.read('TOKEN');
-    print(url);
-    final response = await http.get(Uri.parse(url,),  headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },);
-    
-    print('g: $response');
-    if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
-      
-      return data.map((json) => PetModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load pets for breed $breedId');
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        if (response.body.isEmpty) {
+          print('Response body is empty');
+          return [];
+        }
+
+        final dynamic decodedData = json.decode(response.body);
+        print('Decoded data type: ${decodedData.runtimeType}');
+
+        if (decodedData is List) {
+          if (decodedData.isEmpty) {
+            print('Data list is empty');
+            return [];
+          }
+
+          // Lấy breed info từ cache hoặc fetch mới
+          List<BreedModel> breeds;
+          if (_breedsCache.containsKey(categoryId)) {
+            breeds = _breedsCache[categoryId]!;
+          } else {
+            breeds = await fetchBreedsByCategory(categoryId);
+          }
+
+          final currentBreed = breeds.firstWhere(
+                (breed) => breed.id == breedId,
+            orElse: () => BreedModel(id: breedId, name: 'Unknown Breed',petCategoryId: categoryId),
+          );
+
+          return decodedData
+              .where((item) => item != null)
+              .map((json) {
+            try {
+              final Map<String, dynamic> petData = Map<String, dynamic>.from(json);
+              petData['breed'] = {
+                'id': currentBreed.id,
+                'name': currentBreed.name,
+              };
+
+              return PetModel.fromJson(petData);
+            } catch (e) {
+              print('Error parsing pet item: $e');
+              print('Item data: $json');
+              return null;
+            }
+          })
+              .where((pet) => pet != null)
+              .cast<PetModel>()
+              .toList();
+        } else {
+          print('Response data is not a List: ${decodedData.runtimeType}');
+          return [];
+        }
+      } else {
+        print('HTTP Error: ${response.statusCode}');
+        print('Error body: ${response.body}');
+        throw Exception('Failed to load pets for breed $breedId. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception in fetchPetsByBreed: $e');
+      rethrow;
     }
+  }
+
+  // Method để clear cache khi cần
+  void clearCache() {
+    _breedsCache.clear();
   }
 }
