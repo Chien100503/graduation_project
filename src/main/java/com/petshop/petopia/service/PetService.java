@@ -1,5 +1,6 @@
 package com.petshop.petopia.service;
 
+import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.pet.PetDetailResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.repository.pet.PetRepository;
@@ -30,6 +31,14 @@ public class PetService {
         List<Pet> pets = petRepository.findAll();
         return pets.stream()
                 .map(convertPet::convertToGetPetDetailResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetAllPetResponse> getPetByBreed(Integer categoryId, Integer breedId) {
+        List<Pet> pets = petRepository.findByPetCategory_IdAndBreed_Id(categoryId, breedId);
+        return pets.stream()
+                .map(convertPet::convertToGetAllPetResponse)
                 .collect(Collectors.toList());
     }
 }

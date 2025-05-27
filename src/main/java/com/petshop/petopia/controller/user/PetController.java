@@ -8,6 +8,7 @@ import com.petshop.petopia.dto.response.pet.PetDetailResponse;
 import com.petshop.petopia.service.category.PetCategoryService;
 import com.petshop.petopia.service.PetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +39,9 @@ public class PetController {
     }
 
     @GetMapping("/{petId}")
-    public ResponseEntity<?> getPetDetails(@PathVariable("petId") Integer petId) { // Nên dùng Integer cho PathVariable ID để dễ handle null (mặc dù ở đây luôn có giá trị)
+    public ResponseEntity<?> getPetDetails(@PathVariable("petId") Integer petId) {
         try {
-            PetDetailResponse petDto = petService.getPetById(petId); // <-- Sửa kiểu dữ liệu trả về
+            PetDetailResponse petDto = petService.getPetById(petId);
             return ResponseEntity.ok(petDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -58,6 +59,18 @@ public class PetController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(pets);
+    }
+
+    @GetMapping("/categories/{categoryId}/breeds/{breedId}")
+    public ResponseEntity<List<GetAllPetResponse>> getPetsByCategoryAndBreed(
+            @PathVariable Integer categoryId,
+            @PathVariable Integer breedId) {
+        List<GetAllPetResponse> pets = petService.getPetByBreed(categoryId, breedId);
+        if (!pets.isEmpty()) {
+            return new ResponseEntity<>(pets, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/filter")
