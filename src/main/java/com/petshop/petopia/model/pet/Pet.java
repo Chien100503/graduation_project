@@ -42,6 +42,9 @@ public class Pet {
     private String color;
     private BigDecimal price;
     private Boolean status;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)

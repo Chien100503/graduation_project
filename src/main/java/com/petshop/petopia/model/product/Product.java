@@ -44,7 +44,10 @@ public class Product {
     @JoinColumn(name = "type_id")
     private Type type;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
+
     private BigDecimal price;
     private Integer stockQuantity;
     private Integer size;
