@@ -50,7 +50,7 @@ public class Product {
 
     private BigDecimal price;
     private Integer stockQuantity;
-    private Integer size;
+    private String size;
     private Double weight;
     private String expirationDate;
 
