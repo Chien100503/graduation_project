@@ -1,8 +1,11 @@
 package com.petshop.petopia.model.order;
 
+import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -28,14 +31,14 @@ public class Order {
     private Payment payment;
 
     private Date orderDate;
-    private Integer totalPrice;
+    private BigDecimal totalPrice;
     private String shippingAddress;
     private String phoneNumber;
 
     private boolean isPaid;
     private boolean isDelivered;
     private boolean isReceived;
-    private OrderStatus status;
+    private Global.OrderStatus status;
 
     @PrePersist
     protected void onCreate() {

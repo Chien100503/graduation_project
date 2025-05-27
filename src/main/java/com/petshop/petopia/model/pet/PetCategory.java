@@ -1,5 +1,6 @@
 package com.petshop.petopia.model.pet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,12 +22,14 @@ public class PetCategory {
     private Integer id;
 
     private String name;
-    private String description;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "petCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Breed> breeds;
 
     @OneToMany(mappedBy = "petCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Pet> pets;
 
     @Temporal(TemporalType.TIMESTAMP)

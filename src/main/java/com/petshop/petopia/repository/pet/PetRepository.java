@@ -10,4 +10,5 @@ public interface PetRepository extends JpaRepository<Pet, Integer>, JpaSpecifica
     List<Pet> findByBannerId(Integer id);
     List<Pet> findByPetCategory_Name(String name);
     List<Pet> findByBreed_Name(String name);
+    List<Pet> findByPetCategory_Id(Integer categoryId);
 }

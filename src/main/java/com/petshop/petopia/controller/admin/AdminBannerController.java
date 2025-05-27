@@ -2,28 +2,26 @@ package com.petshop.petopia.controller.admin;
 
 import com.petshop.petopia.dto.request.banner.CUBannerRequest;
 import com.petshop.petopia.dto.response.banner.*;
-import com.petshop.petopia.service.BannerService;
+import com.petshop.petopia.service.admin.AdminBannerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/banner")
 @RequiredArgsConstructor
 public class AdminBannerController {
 
-    private final BannerService bannerService;
+    private final AdminBannerService adminBannerService;
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> createBanner(@ModelAttribute CUBannerRequest request) {
         try {
             validateBannerDates(request);
-            CUBannerResponse response = bannerService.createBanner(request);
+            CUBannerResponse response = adminBannerService.createBanner(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -38,7 +36,7 @@ public class AdminBannerController {
             @ModelAttribute CUBannerRequest request) {
         try {
             validateBannerDates(request);
-            CUBannerResponse response = bannerService.updateBanner(id, request);
+            CUBannerResponse response = adminBannerService.updateBanner(id, request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -50,7 +48,7 @@ public class AdminBannerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBanner(@PathVariable Integer id) {
         try {
-            bannerService.deleteBanner(id);
+            adminBannerService.deleteBanner(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -59,13 +57,12 @@ public class AdminBannerController {
         }
     }
 
-    // Pet endpoints
     @PostMapping("/{bannerId}/pets/{petId}")
     public ResponseEntity<?> addPetToBanner(
             @PathVariable Integer bannerId,
             @PathVariable Integer petId) {
         try {
-            bannerService.addPetToBanner(bannerId, petId);
+            adminBannerService.addPetToBanner(bannerId, petId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -77,7 +74,7 @@ public class AdminBannerController {
     @DeleteMapping("/pets/{petId}")
     public ResponseEntity<?> removePetFromBanner(@PathVariable Integer petId) {
         try {
-            bannerService.removePetFromBanner(petId);
+            adminBannerService.removePetFromBanner(petId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -86,13 +83,12 @@ public class AdminBannerController {
         }
     }
 
-    // Product endpoints
     @PostMapping("/{bannerId}/products/{productId}")
     public ResponseEntity<?> addProductToBanner(
             @PathVariable Integer bannerId,
             @PathVariable Integer productId) {
         try {
-            bannerService.addProductToBanner(bannerId, productId);
+            adminBannerService.addProductToBanner(bannerId, productId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -104,7 +100,7 @@ public class AdminBannerController {
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<?> removeProductFromBanner(@PathVariable Integer productId) {
         try {
-            bannerService.removeProductFromBanner(productId);
+            adminBannerService.removeProductFromBanner(productId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -113,11 +109,10 @@ public class AdminBannerController {
         }
     }
 
-    // Bulk operations
     @PostMapping("/{bannerId}/pets")
     public ResponseEntity<?> addAllPetsToBanner(@PathVariable Integer bannerId) {
         try {
-            bannerService.addAllPetsToBanner(bannerId);
+            adminBannerService.addAllPetsToBanner(bannerId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -127,20 +122,19 @@ public class AdminBannerController {
     @PostMapping("/{bannerId}/products")
     public ResponseEntity<?> addAllProductsToBanner(@PathVariable Integer bannerId) {
         try {
-            bannerService.addAllProductsToBanner(bannerId);
+            adminBannerService.addAllProductsToBanner(bannerId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Category/type operations
     @PostMapping("/{bannerId}/pets/category/{categoryName}")
     public ResponseEntity<?> addPetsByCategoryToBanner(
             @PathVariable Integer bannerId,
             @PathVariable String categoryName) {
         try {
-            bannerService.addPetsByCategoryToBanner(bannerId, categoryName);
+            adminBannerService.addPetsByCategoryToBanner(bannerId, categoryName);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -152,7 +146,7 @@ public class AdminBannerController {
             @PathVariable Integer bannerId,
             @PathVariable String breedName) {
         try {
-            bannerService.addPetsByBreedToBanner(bannerId, breedName);
+            adminBannerService.addPetsByBreedToBanner(bannerId, breedName);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -164,7 +158,7 @@ public class AdminBannerController {
             @PathVariable Integer bannerId,
             @PathVariable String categoryName) {
         try {
-            bannerService.addProductsByCategoryToBanner(bannerId, categoryName);
+            adminBannerService.addProductsByCategoryToBanner(bannerId, categoryName);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -176,7 +170,7 @@ public class AdminBannerController {
             @PathVariable Integer bannerId,
             @PathVariable String brandName) {
         try {
-            bannerService.addProductsByBrandToBanner(bannerId, brandName);
+            adminBannerService.addProductsByBrandToBanner(bannerId, brandName);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -188,7 +182,7 @@ public class AdminBannerController {
             @PathVariable Integer bannerId,
             @PathVariable String typeName) {
         try {
-            bannerService.addProductsByTypeToBanner(bannerId, typeName);
+            adminBannerService.addProductsByTypeToBanner(bannerId, typeName);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

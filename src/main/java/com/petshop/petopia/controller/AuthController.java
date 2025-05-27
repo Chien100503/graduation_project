@@ -5,13 +5,10 @@ import com.petshop.petopia.dto.request.auth.RegisterRequest;
 import com.petshop.petopia.dto.request.auth.VerifyRequest;
 import com.petshop.petopia.dto.response.auth.LoginResponse;
 import com.petshop.petopia.dto.response.MessageResponse;
-import com.petshop.petopia.dto.response.auth.ProfileResponse;
 import com.petshop.petopia.dto.response.auth.RegisterResponse;
-import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.AuthService;
-import com.petshop.petopia.service.UserService;
-import com.petshop.petopia.service.VerificationCodeService;
+import com.petshop.petopia.service.auth.AuthService;
+import com.petshop.petopia.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +23,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final VerificationCodeService verificationCodeService;
+    private final AuthService.VerificationCodeService verificationCodeService;
     private final UserService userService;
     private final JwtService jwtService;
 

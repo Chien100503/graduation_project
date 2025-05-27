@@ -3,9 +3,8 @@ package com.petshop.petopia.controller.user;
 import com.petshop.petopia.dto.request.user.UpdateProfileRequest;
 import com.petshop.petopia.dto.response.auth.ProfileResponse;
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.AuthService;
-import com.petshop.petopia.service.UserService;
-import com.petshop.petopia.service.VerificationCodeService;
+import com.petshop.petopia.service.auth.AuthService;
+import com.petshop.petopia.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
 
     private final AuthService authService;
-    private final VerificationCodeService verificationCodeService;
+    private final AuthService.VerificationCodeService verificationCodeService;
     private final UserService userService;
     private final JwtService jwtService;
 

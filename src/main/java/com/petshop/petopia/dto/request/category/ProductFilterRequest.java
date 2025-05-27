@@ -12,7 +12,6 @@ public class ProductFilterRequest {
     private String brand;
     private String type;
 
-    // Validate request
     public void validate() {
         if ((category == null || category.isBlank()) &&
                 (brand == null || brand.isBlank()) &&

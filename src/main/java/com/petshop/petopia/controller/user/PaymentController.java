@@ -1,7 +1,7 @@
 package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.OrderService;
+import com.petshop.petopia.service.user.OrderService;
 import com.petshop.petopia.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 
 @Component
@@ -30,7 +31,7 @@ public class NgrokConfig implements CommandLineRunner {
             HttpBuilder httpBuilder = session.httpEndpoint()
                     .domain(reservedDomain);
 
-            URL localUrl = new URL("http://localhost:8080");
+            URL localUrl = new URI("http://localhost:8080").toURL();
 
             Forwarder.Endpoint forwarder = session.forwardHttp(httpBuilder, localUrl);  // Cổng 8080
 
@@ -40,7 +41,7 @@ public class NgrokConfig implements CommandLineRunner {
                 try {
                     forwarder.join();
                 } catch (IOException e) {
-                    System.err.println("❌ Ngrok forwarder lỗi: " + e.getMessage());
+                    System.err.println("Ngrok forwarder lỗi: " + e.getMessage());
                 }
             }).start();
         } catch (IOException e) {

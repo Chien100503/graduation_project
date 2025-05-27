@@ -95,7 +95,6 @@ public class JwtService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     logger.warn("User not found in DB for email extracted from token: {}", email);
-                    // Ném exception runtime hoặc exception tùy chỉnh
                     return new RuntimeException("Không tìm thấy người dùng với email: " + email);
                 });
         return user.getId();
@@ -170,7 +169,7 @@ public class JwtService {
         final String email = extractEmail(token);
         final Boolean expired = isTokenExpired(token);
 
-        if (email == null || expired == null || expired) {
+        if (email == null || expired) {
             return false;
         }
 

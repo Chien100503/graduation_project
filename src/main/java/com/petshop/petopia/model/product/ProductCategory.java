@@ -20,8 +20,14 @@ public class ProductCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true, nullable = false)
     private String name;
-    private String description;
+
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Type> types;
 
     @OneToMany(mappedBy = "prCategory")
     @JsonIgnore

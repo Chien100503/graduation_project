@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "types") // Bảng để lưu thông tin về loại sản phẩm
+@Table(name = "types")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +18,10 @@ public class Type {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_category_id", nullable = false)
+    private ProductCategory productCategory;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

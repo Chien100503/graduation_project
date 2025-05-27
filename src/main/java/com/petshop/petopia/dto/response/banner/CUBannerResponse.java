@@ -3,6 +3,7 @@ package com.petshop.petopia.dto.response.banner;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -10,7 +11,7 @@ import java.util.Date;
 public class CUBannerResponse {
     private Integer id;
     private String image;
-    private Double salePercent;
+    private BigDecimal salePercent;
     private Date startDate;
     private Date endDate;
 }

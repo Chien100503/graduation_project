@@ -1,5 +1,6 @@
 package com.petshop.petopia.model.order;
 
+import com.petshop.petopia.component.Global;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ public class Payment {
     private Integer id;
 
     @Column(nullable = false)
-    private PaymentMethod paymentMethod;
+    private Global.PaymentMethod paymentMethod;
 
     private String transactionId;
     private String transactionContent;

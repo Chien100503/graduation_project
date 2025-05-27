@@ -2,14 +2,20 @@ package com.petshop.petopia.model.sale;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @Entity
+@Table(name = "banners")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,21 +26,30 @@ public class Banner {
     private Integer id;
 
     private String image;
-    private Double salePercent;
 
+    @NotNull(message = "Phần trăm giảm giá không được để trống")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Phần trăm giảm giá phải lớn hơn hoặc bằng 0")
+    @DecimalMax(value = "1.0", inclusive = true, message = "Phần trăm giảm giá phải nhỏ hơn hoặc bằng 1")
+    @Column(precision = 5, scale = 4)
+    private BigDecimal salePercent;
+
+    @NotNull(message = "Ngày bắt đầu không được để trống")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startDate;
 
+    @NotNull(message = "Ngày kết thúc không được để trống")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endDate;
 
     private Boolean isActive = true;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt = new Date();
+    private Date updatedAt;
 
     @PreUpdate
     public void setUpdatedAt() {
@@ -42,14 +57,13 @@ public class Banner {
     }
 
     @PrePersist
-    public void setCreatedAt() {
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-    }
-
-    @AssertTrue(message = "Banner phải được liên kết với ít nhất một sản phẩm hoặc một thú cưng")
-    public boolean isLinkedToProductOrPet() {
-        return true;
+    public void setCreatedAtAndUpdatedAt() {
+        if (this.createdAt == null) {
+            this.createdAt = new Date();
+        }
+        if (this.updatedAt == null) {
+            this.updatedAt = new Date();
+        }
     }
 
     @AssertTrue(message = "Ngày bắt đầu phải trước ngày kết thúc")
@@ -58,10 +72,5 @@ public class Banner {
             return true;
         }
         return startDate.before(endDate);
-    }
-
-    @AssertTrue(message = "Phần trăm giảm giá phải nằm trong khoảng 0 đến 1")
-    public boolean isValidSalePercent() {
-        return salePercent == null || (salePercent >= 0 && salePercent <= 1);
     }
 }

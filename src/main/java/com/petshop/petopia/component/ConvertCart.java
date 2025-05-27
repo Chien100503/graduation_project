@@ -40,7 +40,7 @@ public class ConvertCart {
         }
         cartItemResponse.setQuantity(cartItem.getQuantity());
         cartItemResponse.setPrice(cartItem.getPrice());
-        cartItemResponse.setItemTotalPrice(cartItem.getItemTotalPrice()); // Sao chép itemTotalPrice
+        cartItemResponse.setItemTotalPrice(cartItem.getItemTotalPrice());
         return cartItemResponse;
     }
 }

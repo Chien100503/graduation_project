@@ -1,11 +1,10 @@
 package com.petshop.petopia.model.review;
 
+import com.petshop.petopia.model.product.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,11 +15,33 @@ import java.util.List;
 @AllArgsConstructor
 public class Rating {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "product_id", unique = true)
+    private Product product;
 
-    @OneToMany(mappedBy = "rating")
-    private List<ProductRating> productRatings;
+    private Integer oneStarCount = 0;
+    private Integer twoStarCount = 0;
+    private Integer threeStarCount = 0;
+    private Integer fourStarCount = 0;
+    private Integer fiveStarCount = 0;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+         this.updatedAt = new Date();
+    }
 }

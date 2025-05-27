@@ -17,7 +17,9 @@ public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;  // Tên thương hiệu
+
+    @Column(unique = true, nullable = false)
+    private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

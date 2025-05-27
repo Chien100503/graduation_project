@@ -1,7 +1,6 @@
 package com.petshop.petopia.dto.request.order;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.petshop.petopia.model.order.PaymentMethod;
+import com.petshop.petopia.component.Global;
 import lombok.*;
 
 import java.util.List;
@@ -12,6 +11,6 @@ import java.util.List;
 public class CreateOrderRequest {
     private String shippingAddress;
     private String phoneNumber;
-    private PaymentMethod paymentMethod;
+    private Global.PaymentMethod paymentMethod;
     private List<OrderItemRequest> items;
 }

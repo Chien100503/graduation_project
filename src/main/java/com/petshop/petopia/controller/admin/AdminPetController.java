@@ -1,39 +1,51 @@
 package com.petshop.petopia.controller.admin;
 
-import com.petshop.petopia.dto.request.admin.PetCreateRequest;
-import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
-import com.petshop.petopia.dto.response.admin.PetCreateResponse;
-import com.petshop.petopia.dto.response.product.ProductResponse;
-import com.petshop.petopia.service.BannerService;
-import com.petshop.petopia.service.PetService;
-import com.petshop.petopia.service.ProductService;
+import com.petshop.petopia.dto.request.pet.CreateBreedRequest;
+import com.petshop.petopia.dto.request.admin.CreateCategoryRequest;
+import com.petshop.petopia.dto.request.pet.CreatePetRequest;
+import com.petshop.petopia.dto.response.pet.CreateBreedResponse;
+import com.petshop.petopia.dto.response.admin.CreateCategoryResponse;
+import com.petshop.petopia.dto.response.admin.CreatePetResponse;
+import com.petshop.petopia.service.category.PetCategoryService;
+import com.petshop.petopia.service.admin.AdminPetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminPetController {
-
-    private final PetService petService;
-    private final ProductService productService;
-    private final BannerService bannerService;
+    private final AdminPetService adminPetService;
+    private final PetCategoryService petCategoryService;
 
     @PostMapping(value = "/pet/add", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> createPet(@ModelAttribute PetCreateRequest petRequest) {
+    public ResponseEntity<?> createPet(@ModelAttribute CreatePetRequest petRequest) {
         try {
-            PetCreateResponse createdPet = petService.createPet(petRequest);
+            CreatePetResponse createdPet = adminPetService.createPet(petRequest);
             return ResponseEntity.ok(createdPet);
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
                     .body("Failed to upload image or save pet: " + e.getMessage());
         }
+    }
+
+    @PostMapping(value = "/pet-category/add", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createPetCategory(@ModelAttribute CreateCategoryRequest petRequest) {
+        try {
+            CreateCategoryResponse createdPet = petCategoryService.createPetCategory(petRequest);
+            return ResponseEntity.ok(createdPet);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body("Failed to upload image or save pet: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/pet-breed/add", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createPetBreed(@ModelAttribute CreateBreedRequest petRequest) {
+        CreateBreedResponse createdPet = petCategoryService.createBreed(petRequest);
+        return ResponseEntity.ok(createdPet);
     }
 }

@@ -2,8 +2,8 @@ package com.petshop.petopia.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.order.Order;
-import com.petshop.petopia.model.order.OrderStatus;
 import com.petshop.petopia.model.order.Payment;
 import com.petshop.petopia.repository.order.OrderRepository;
 import com.petshop.petopia.repository.order.PaymentRepository;
@@ -43,7 +43,7 @@ public class PaymentService {
                         Payment payment = optionalPayment.get();
                         Order order = payment.getOrder();
                         if (order != null) {
-                            order.setStatus(OrderStatus.CONFIRMED);
+                            order.setStatus(Global.OrderStatus.CONFIRMED);
                             order.setPaid(true);
                             orderRepository.save(order);
                         }

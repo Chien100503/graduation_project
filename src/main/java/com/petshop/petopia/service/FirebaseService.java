@@ -27,6 +27,9 @@ public class FirebaseService {
     @Value("${firebase.storage.image-banner}")
     private String imageBanner;
 
+    @Value("${firebase.storage.image-category}")
+    private String imageCategory;
+
     public String uploadImagePet(MultipartFile file) throws IOException {
         String fileName = imagePet + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -68,6 +71,19 @@ public class FirebaseService {
 
     public String uploadImageBanner(MultipartFile file) throws IOException {
         String fileName = imageBanner + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        StorageClient.getInstance().bucket()
+                .create(fileName, file.getBytes(), file.getContentType());
+
+        return String.format(
+                "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+                StorageClient.getInstance().bucket().getName(),
+                fileName.replace("/", "%2F")
+        );
+    }
+
+    public String uploadImageCategory(MultipartFile file) throws IOException {
+        String fileName = imageCategory + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
         StorageClient.getInstance().bucket()
                 .create(fileName, file.getBytes(), file.getContentType());

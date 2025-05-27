@@ -4,7 +4,7 @@ import com.petshop.petopia.dto.request.cart.CartItemRequest;
 import com.petshop.petopia.dto.request.cart.CartItemUpdateRequest;
 import com.petshop.petopia.dto.response.cart.CartResponse;
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.CartService;
+import com.petshop.petopia.service.user.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

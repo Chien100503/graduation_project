@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "order_items")
 @Getter
@@ -29,25 +31,21 @@ public class OrderItem {
     private Pet pet;
 
     private Integer quantity;
-    private Integer price;
+    private BigDecimal price;
 
     @Transient
     private String imageUrl;
 
     @Transient
-    private Integer itemTotalPrice;
+    private BigDecimal itemTotalPrice;
 
     @PostLoad
     private void onLoad() {
-        if (product != null) {
-            this.imageUrl = (product.getProductImages() != null && !product.getProductImages().isEmpty())
-                    ? product.getProductImages().getFirst().getImageUrl()
-                    : null;
-        } else if (pet != null) {
-            this.imageUrl = (pet.getPetImages() != null && !pet.getPetImages().isEmpty())
-                    ? pet.getPetImages().getFirst().getImageUrl()
-                    : null;
-        }
-        this.itemTotalPrice = this.price * this.quantity;
+        imageUrl = (product != null && product.getProductImages() != null && !product.getProductImages().isEmpty())
+                ? product.getProductImages().getFirst().getImageUrl()
+                : (pet != null && pet.getPetImages() != null && !pet.getPetImages().isEmpty())
+                ? pet.getPetImages().getFirst().getImageUrl()
+                : null;
+        itemTotalPrice = price != null && quantity != null ? price.multiply(BigDecimal.valueOf(quantity)) : BigDecimal.ZERO;
     }
 }

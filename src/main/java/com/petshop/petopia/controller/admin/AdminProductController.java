@@ -1,9 +1,10 @@
 package com.petshop.petopia.controller.admin;
 
-import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
+import com.petshop.petopia.dto.request.product.CreateProductRequest;
 import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.service.BannerService;
 import com.petshop.petopia.service.PetService;
+import com.petshop.petopia.service.category.ProductCategoryService;
 import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,10 @@ public class AdminProductController {
     private final PetService petService;
     private final ProductService productService;
     private final BannerService bannerService;
+    private final ProductCategoryService productCategoryService;
 
     @PostMapping(value = "/product/add", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> createProduct(@ModelAttribute ProductCreateRequest productRequest) {
+    public ResponseEntity<?> createProduct(@ModelAttribute CreateProductRequest productRequest) {
         try {
             ProductResponse createProduct = productService.createProduct(productRequest);
             return ResponseEntity.ok(createProduct);
@@ -47,7 +49,7 @@ public class AdminProductController {
     @PutMapping(value = "/product/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Integer id,
-            @RequestPart("product") ProductCreateRequest productCreateRequest,
+            @RequestPart("product") CreateProductRequest productCreateRequest,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         try {
             if (files != null && !files.isEmpty()) {

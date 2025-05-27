@@ -1,7 +1,8 @@
 package com.petshop.petopia.model.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.petshop.petopia.model.ItemType;
+import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.review.ProductRating;
 import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.sale.Banner;
@@ -11,6 +12,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -35,14 +38,14 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    private ItemType itemType = ItemType.PRODUCT;
+    private Global.ItemType itemType = Global.ItemType.PRODUCT;
 
     @ManyToOne
     @JoinColumn(name = "type_id")
     private Type type;
 
     private String description;
-    private Integer price;
+    private BigDecimal price;
     private Integer stockQuantity;
     private Integer size;
     private Double weight;
@@ -50,9 +53,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
 
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
@@ -75,7 +75,18 @@ public class Product {
     private JsonNode ratingCounts;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
     private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
 
     @PreUpdate
     public void setUpdatedAt() {

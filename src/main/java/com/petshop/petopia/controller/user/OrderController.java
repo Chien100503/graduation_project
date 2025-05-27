@@ -2,7 +2,7 @@ package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.OrderService;
+import com.petshop.petopia.service.user.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

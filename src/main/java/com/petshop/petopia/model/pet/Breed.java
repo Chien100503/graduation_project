@@ -1,5 +1,6 @@
 package com.petshop.petopia.model.pet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +26,11 @@ public class Breed {
 
     @ManyToOne
     @JoinColumn(name = "pet_category_id")
-    private PetCategory petCategory; // Thêm quan hệ nhiều-một với PetCategory
+    private PetCategory petCategory;
 
     @OneToMany(mappedBy = "breed", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pet> pets; // Thêm quan hệ một-nhiều với Pet
+    @JsonIgnore
+    private List<Pet> pets;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();

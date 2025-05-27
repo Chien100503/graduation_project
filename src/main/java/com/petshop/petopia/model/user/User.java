@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Review> reviews;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 

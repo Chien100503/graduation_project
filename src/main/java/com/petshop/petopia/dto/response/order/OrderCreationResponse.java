@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class OrderCreationResponse {
     private Order order;
-    private String paymentLink; // Chứa URL thanh toán PayOS nếu paymentMethod là PayOS
-    private String message; // Thông báo kết quả
-    // Có thể thêm các trường khác như status code nội bộ nếu cần
+    private String paymentLink;
+    private String message;
 }

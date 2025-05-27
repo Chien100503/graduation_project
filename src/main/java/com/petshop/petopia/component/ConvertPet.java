@@ -1,7 +1,8 @@
 package com.petshop.petopia.component;
 
-import com.petshop.petopia.dto.response.admin.PetCreateResponse;
-import com.petshop.petopia.dto.response.pet.PetResponse;
+import com.petshop.petopia.dto.response.admin.CreatePetResponse;
+import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
+import com.petshop.petopia.dto.response.pet.PetDetailResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetImage;
 import org.springframework.stereotype.Component;
@@ -12,14 +13,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class ConvertPet {
-    public PetCreateResponse convertToResponse(Pet pet) {
+    public CreatePetResponse convertToResponse(Pet pet) {
         List<String> imageUrls = pet.getPetImages() != null
                 ? pet.getPetImages().stream()
                 .map(PetImage::getImageUrl)
                 .collect(Collectors.toList())
                 : List.of();
 
-        return new PetCreateResponse(
+        return new CreatePetResponse(
                 pet.getId(),
                 pet.getName(),
                 pet.getBreed() != null ? pet.getBreed().getName() : null,
@@ -38,15 +39,28 @@ public class ConvertPet {
         );
     }
 
-    public PetResponse convertToGetPetResponse(Pet pet) {
-        PetResponse dto = new PetResponse();
+    public GetAllPetResponse convertToGetAllPetResponse(Pet pet) {
+        String firstImageUrl = null;
+        if (pet.getPetImages() != null && !pet.getPetImages().isEmpty()) {
+            firstImageUrl = pet.getPetImages().getFirst().getImageUrl();
+        }
+        return new GetAllPetResponse(
+                pet.getId(),
+                pet.getName(),
+                pet.getPrice(),
+                firstImageUrl
+        );
+    }
+
+    public PetDetailResponse convertToGetPetDetailResponse(Pet pet) {
+        PetDetailResponse dto = new PetDetailResponse();
         dto.setId(pet.getId());
 
         if (pet.getPetCategory() != null) {
-            dto.setPetCategoryName(pet.getPetCategory().getName()); // Lấy tên danh mục
+            dto.setPetCategoryName(pet.getPetCategory().getName());
         }
         if (pet.getBreed() != null) {
-            dto.setBreedName(pet.getBreed().getName()); // Lấy tên giống loài
+            dto.setBreedName(pet.getBreed().getName());
         }
 
         dto.setName(pet.getName());
@@ -59,7 +73,6 @@ public class ConvertPet {
         dto.setStatus(pet.getStatus());
         dto.setDescription(pet.getDescription());
 
-        // Xử lý danh sách ảnh
         if (pet.getPetImages() != null && !pet.getPetImages().isEmpty()) {
             List<String> urls = new ArrayList<>();
             for (PetImage image : pet.getPetImages()) {
@@ -71,7 +84,6 @@ public class ConvertPet {
         } else {
             dto.setImageUrls(new ArrayList<>());
         }
-
         return dto;
     }
 }

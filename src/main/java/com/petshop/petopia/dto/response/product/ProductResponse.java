@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ProductResponse {
     private String brandName;
     private String typeName;
     private String description;
-    private Integer price;
+    private BigDecimal price;
     private Integer stockQuantity;
     private Integer size;
     private Double weight;
@@ -24,5 +25,5 @@ public class ProductResponse {
     private List<String> imageUrls;
     private Date createdAt;
     private Date updatedAt;
-    private String productCategoryName;
+    private String categoryName;
 }

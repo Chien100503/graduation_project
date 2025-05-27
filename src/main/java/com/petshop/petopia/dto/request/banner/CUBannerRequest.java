@@ -4,12 +4,13 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 public class CUBannerRequest {
     private MultipartFile file;
-    private Double salePercent;
+    private BigDecimal salePercent;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date startDate;

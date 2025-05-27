@@ -1,12 +1,14 @@
 package com.petshop.petopia.model.pet;
 
-import com.petshop.petopia.model.ItemType;
+import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.sale.Banner;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class Pet {
     @JoinColumn(name = "breed_id")
     private Breed breed;
 
-    private ItemType itemType = ItemType.PET;
+    private Global.ItemType itemType = Global.ItemType.PET;
 
     private String name;
     private Integer age;
@@ -38,7 +40,7 @@ public class Pet {
     private String size;
     private Double weight;
     private String color;
-    private Integer price;
+    private BigDecimal price;
     private Boolean status;
     private String description;
 
@@ -46,7 +48,7 @@ public class Pet {
     private List<PetImage> petImages;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "banner_id") // Khóa ngoại trỏ đến Banner
+    @JoinColumn(name = "banner_id")
     private Banner banner;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -55,14 +57,14 @@ public class Pet {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @PreUpdate
-    public void setUpdatedAt() {
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = new Date();
         this.updatedAt = new Date();
     }
 
-    @PrePersist
-    public void setCreatedAt() {
-        this.createdAt = new Date();
+    @PreUpdate
+    public void onUpdate() {
         this.updatedAt = new Date();
     }
 }

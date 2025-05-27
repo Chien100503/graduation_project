@@ -1,11 +1,11 @@
 package com.petshop.petopia.controller.user;
 
-import com.petshop.petopia.dto.request.admin.ProductCreateRequest;
+import com.petshop.petopia.dto.request.product.CreateProductRequest;
 import com.petshop.petopia.dto.request.category.ProductFilterRequest;
 import com.petshop.petopia.dto.response.product.BrandResponse;
 import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
 import com.petshop.petopia.dto.response.product.ProductResponse;
-import com.petshop.petopia.service.ProductCategoryService;
+import com.petshop.petopia.service.category.ProductCategoryService;
 import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class ProductController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> createProduct(
-            @RequestPart("product") ProductCreateRequest productCreateRequest,
+            @RequestPart("product") CreateProductRequest productCreateRequest,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         try {
             if (files != null && !files.isEmpty()) {
@@ -61,10 +61,10 @@ public class ProductController {
 
     @GetMapping("/brands")
     public ResponseEntity<List<BrandResponse>> getAllProductBrands() {
-        return ResponseEntity.ok(productCategoryService.getAllProductBrands());
+        return ResponseEntity.ok(productCategoryService.getAllBrands());
     }
 
-    @PostMapping("/filter")
+    @GetMapping("/filter")
     public ResponseEntity<?> filterProducts(@RequestBody ProductFilterRequest filterRequest) {
         try {
             List<ProductResponse> result = productCategoryService.filterProducts(filterRequest);

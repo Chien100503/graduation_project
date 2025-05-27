@@ -28,8 +28,23 @@ public class Review {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String comment;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt = new Date();
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
 }

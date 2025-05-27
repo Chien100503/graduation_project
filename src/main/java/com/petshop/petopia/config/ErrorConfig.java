@@ -1,5 +1,6 @@
 package com.petshop.petopia.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +22,22 @@ public class ErrorConfig {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage()); // 403 Forbidden
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
         ex.printStackTrace();
-        return ResponseEntity.internalServerError().body("Lỗi hệ thống không xác định: " + ex.getMessage()); // 500 Internal Server Error
+        return ResponseEntity.internalServerError().body("Lỗi hệ thống không xác định: " + ex.getMessage());
     }
 
     @InitBinder
