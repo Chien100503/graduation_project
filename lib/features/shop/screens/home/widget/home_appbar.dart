@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pet_shop/common/widgets/avatar/avatar_icon_home.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
-import '../../../../common/widgets/avatar/avatar_icon_home.dart';
-import '../../../../utils/constants/images_strings.dart';
+import '../../../../../utils/constants/images_strings.dart';
 
 class EHomeAppBar extends StatelessWidget {
   const EHomeAppBar({

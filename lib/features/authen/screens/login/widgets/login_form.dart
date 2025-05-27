@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pet_shop/features/authen/screens/forget_password/forget_password.dart';
 import 'package:pet_shop/features/authen/screens/signup/signup.dart';
-import 'package:pet_shop/features/shop/home/home.dart';
 
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';

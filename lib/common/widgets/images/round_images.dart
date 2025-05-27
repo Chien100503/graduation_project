@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/sizes.dart';
-import '../../shimmer/shimmer.dart';
+import '../shimmer/shimmer.dart';
 
 class ERoundImages extends StatelessWidget {
   const ERoundImages({

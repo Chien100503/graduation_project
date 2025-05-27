@@ -17,6 +17,12 @@ provides an online shopping store. The application also has AI Chat-bot function
 - [GetX](https://pub.dev/packages/get) – State management and navigation
 - [PayOS](https://payos.vn/) – Payment
 
+## ⚙️ Install & Run Application
+### Install Dependencies
+- flutter pub get
+### Run app
+- flutter run
+
 ## 📂 Flutter Folder Structure
 - asset/
 - lib/
@@ -33,9 +39,3 @@ provides an online shopping store. The application also has AI Chat-bot function
  ├── app.dart
  ├── main.dart
  ├── navigation_menu.dart
-
-## ⚙️ Install & Run Application
-### Install Dependencies
-- flutter pub get
-### Run app
-- flutter run

@@ -1,8 +1,7 @@
-import 'package:pet_shop/common/shimmer/shimmer.dart';
-
-import '../../utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
+import 'package:pet_shop/common/widgets/shimmer/shimmer.dart';
 
+import '../../../utils/constants/sizes.dart';
 import '../layouts/grid_layout.dart';
 
 class EVerticalProductCardShimmer extends StatelessWidget {

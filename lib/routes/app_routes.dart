@@ -4,7 +4,7 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:pet_shop/routes/routes.dart';
 
 import '../features/authen/screens/login/login.dart';
-import '../features/shop/home/home.dart';
+import '../features/shop/screens/home/home.dart';
 
 class AppRoutes {
   static final pages =[

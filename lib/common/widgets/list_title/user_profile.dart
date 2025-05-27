@@ -18,13 +18,13 @@ class EUserProfile extends StatelessWidget {
 
     return ListTile(
       leading: Obx(() {
-        final avatar = controller.profile.value.avatar ?? '';
-        final image = (avatar != null && avatar.isNotEmpty) ? avatar : EImages.avt;
+        final avatar = controller.profile.value.avatar;
+        final image = (avatar.isNotEmpty) ? avatar : EImages.avt;
         return ECircleImage(
           height: 60,
           width: 60,
           image: image,
-          isNetworkImage: (avatar != null && avatar.isNotEmpty),
+          isNetworkImage: (avatar.isNotEmpty),
         );
       }),
       title: Obx(() => Text(

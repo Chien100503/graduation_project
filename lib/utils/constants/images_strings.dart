@@ -32,7 +32,7 @@ class EImages {
 
   // Banner
   static const String banner1 = 'assets/images/banner/banner1.jpg';
-  static const String banner2 = 'assets/images/banner/banner2.jpg';
+  static const String banner2 = 'assets/images/banner/banner.jpg';
   static const String banner3 = 'assets/images/banner/banner3.jpg';
   static const String banner4 = 'assets/images/banner/banner4.jpg';
   static const String banner5 = 'assets/images/banner/banner5.jpg';

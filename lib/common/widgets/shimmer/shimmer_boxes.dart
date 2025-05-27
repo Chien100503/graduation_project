@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pet_shop/common/shimmer/shimmer.dart';
-import '../../utils/constants/sizes.dart';
+import 'package:pet_shop/common/widgets/shimmer/shimmer.dart';
+
+import '../../../utils/constants/sizes.dart';
 class ShimmerBoxes extends StatelessWidget {
   const ShimmerBoxes({super.key});
 

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pet_shop/common/widgets/appbar/appbar.dart';
 import 'package:pet_shop/features/authen/screens/login/login.dart';
 
-import '../../../common/widgets/appbar/appbar.dart';
-import '../../../common/widgets/custom_shape/containers/primary_header_container.dart';
-import '../../../common/widgets/list_title/setting_menu_title.dart';
-import '../../../common/widgets/list_title/user_profile.dart';
-import '../../../common/widgets/texts/section_heading.dart';
-import '../../../data/repositories/user_repository.dart';
-import '../../../utils/constants/colors.dart';
-import '../../../utils/constants/sizes.dart';
-import '../../../utils/helpers/helper_functions.dart';
-import '../../personalizations/screens/profile/profile.dart';
+import '../../../../common/widgets/custom_shape/containers/primary_header_container.dart';
+import '../../../../common/widgets/list_title/setting_menu_title.dart';
+import '../../../../common/widgets/list_title/user_profile.dart';
+import '../../../../common/widgets/texts/section_heading.dart';
+import '../../../../data/repositories/user_repository.dart';
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/sizes.dart';
+import '../../../../utils/helpers/helper_functions.dart';
+import '../../../personalizations/screens/profile/profile.dart';
+
 
 class Setting extends StatelessWidget {
   const Setting({super.key});

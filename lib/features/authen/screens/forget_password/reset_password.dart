@@ -16,7 +16,6 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ForgotPasswordController controller = Get.put(ForgotPasswordController());
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(

@@ -1,11 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:pet_shop/common/widgets/custom_shape/containers/primary_header_container.dart';
-import 'package:pet_shop/features/shop/home/widget/home_appbar.dart';
+import 'package:pet_shop/features/shop/screens/home/widget/home_categories.dart';
+import 'package:pet_shop/utils/constants/colors.dart';
 
-import '../../../common/widgets/texts/section_heading.dart';
-import '../../../utils/constants/colors.dart';
-import '../../../utils/constants/sizes.dart';
+import '../../../../common/widgets/texts/section_heading.dart';
+import '../../../../utils/constants/sizes.dart';
+import 'widget/home_appbar.dart';
 import 'widget/home_slider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -46,7 +47,7 @@ Future<void> _refresh(){
                           ),
                           SizedBox(height: ESizes.defaultBetweenItem),
                           // Categories
-                          // EHomeCategories()
+                          EHomeCategories()
                         ],
                       ),
                     ),
@@ -58,7 +59,7 @@ Future<void> _refresh(){
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Column(
                   children: [
-                    // const ESlider(),
+                    const ESlider(),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     // Popular text -view all
                     ESectionHeading(

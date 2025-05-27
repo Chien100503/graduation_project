@@ -2,13 +2,14 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:pet_shop/features/shop/stores/store.dart';
-import 'package:pet_shop/features/shop/wishlist/wishlist.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 import 'package:pet_shop/utils/helpers/helper_functions.dart';
 
-import 'features/shop/home/home.dart';
-import 'features/shop/settings/setting.dart';
+import 'features/shop/screens/home/home.dart';
+import 'features/shop/screens/settings/setting.dart';
+import 'features/shop/screens/stores/store.dart';
+import 'features/shop/screens/wishlist/wishlist.dart';
+
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});

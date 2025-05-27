@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pet_shop/common/shimmer/shimmer.dart';
+import 'package:pet_shop/common/widgets/shimmer/shimmer.dart';
 
-import '../../utils/constants/sizes.dart';
+import '../../../utils/constants/sizes.dart';
 
 class EHorizontalProductShimmer extends StatelessWidget {
   const EHorizontalProductShimmer({super.key, this.itemCount = 4});

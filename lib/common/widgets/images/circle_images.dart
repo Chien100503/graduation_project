@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../utils/constants/sizes.dart';
-import '../../shimmer/shimmer.dart';
+import '../shimmer/shimmer.dart';
 
 class ECircleImage extends StatelessWidget {
   const ECircleImage(
