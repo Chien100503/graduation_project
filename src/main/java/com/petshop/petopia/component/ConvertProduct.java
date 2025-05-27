@@ -1,7 +1,9 @@
 package com.petshop.petopia.component;
 
+import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
 import com.petshop.petopia.dto.response.product.ProductResponse;
 import com.petshop.petopia.model.product.Product;
+import com.petshop.petopia.model.product.ProductImage;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public class ConvertProduct {
     public ProductResponse convertToResponse(Product product) {
         List<String> imageUrls = product.getProductImages() != null
                 ? product.getProductImages().stream()
-                .map(productImage -> productImage.getImageUrl()) // Corrected line
+                .map(ProductImage::getImageUrl)
                 .collect(Collectors.toList())
                 : List.of();
 
@@ -31,6 +33,15 @@ public class ConvertProduct {
                 product.getCreatedAt(),
                 product.getUpdatedAt(),
                 product.getPrCategory() != null ? product.getPrCategory().getName() : null
+        );
+    }
+
+    public ProductCategoryResponse convertToProductResponse(Product product) {
+        return new ProductCategoryResponse(
+                product.getId(),
+                product.getName(),
+                product.getProductImages() != null && !product.getProductImages().isEmpty()
+                        ? product.getProductImages().getFirst().getImageUrl() : null
         );
     }
 }

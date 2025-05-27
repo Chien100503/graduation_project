@@ -2,10 +2,7 @@ package com.petshop.petopia.controller.admin;
 
 import com.petshop.petopia.dto.request.product.CreateProductRequest;
 import com.petshop.petopia.dto.response.product.ProductResponse;
-import com.petshop.petopia.service.BannerService;
-import com.petshop.petopia.service.PetService;
-import com.petshop.petopia.service.category.ProductCategoryService;
-import com.petshop.petopia.service.ProductService;
+import com.petshop.petopia.service.admin.AdminProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,15 +17,12 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminProductController {
-    private final PetService petService;
-    private final ProductService productService;
-    private final BannerService bannerService;
-    private final ProductCategoryService productCategoryService;
+    private final AdminProductService adminProductService;
 
     @PostMapping(value = "/product/add", consumes = {"multipart/form-data"})
     public ResponseEntity<?> createProduct(@ModelAttribute CreateProductRequest productRequest) {
         try {
-            ProductResponse createProduct = productService.createProduct(productRequest);
+            ProductResponse createProduct = adminProductService.createProduct(productRequest);
             return ResponseEntity.ok(createProduct);
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
@@ -38,7 +32,7 @@ public class AdminProductController {
 
     @DeleteMapping("/product/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
-        boolean deleted = productService.deleteProduct(id);
+        boolean deleted = adminProductService.deleteProduct(id);
         if (deleted) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -55,7 +49,7 @@ public class AdminProductController {
             if (files != null && !files.isEmpty()) {
                 productCreateRequest.setFile(files);
             }
-            ProductResponse updatedProduct = productService.updateProduct(id, productCreateRequest);
+            ProductResponse updatedProduct = adminProductService.updateProduct(id, productCreateRequest);
             if (updatedProduct != null) {
                 return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
             } else {
