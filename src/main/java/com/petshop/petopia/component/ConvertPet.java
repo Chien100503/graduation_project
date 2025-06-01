@@ -32,7 +32,7 @@ public class ConvertPet {
                 pet.getPrice(),
                 pet.getStatus() != null && pet.getStatus() ? "Available" : "Ordered",
                 pet.getDescription(),
-                pet.getThumnail(),
+                pet.getThumbnail(),
                 imageUrls,
                 pet.getCreatedAt(),
                 pet.getUpdatedAt(),

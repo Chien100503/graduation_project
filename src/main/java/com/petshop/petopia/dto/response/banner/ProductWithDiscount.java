@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductWithDiscount {
     private Integer id;
-    private String thumnail;
+    private String thumbnail;
     private String name;
     private BigDecimal originalPrice;
     private BigDecimal discountedPrice;

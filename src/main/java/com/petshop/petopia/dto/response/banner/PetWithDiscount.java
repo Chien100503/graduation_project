@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class PetWithDiscount {
     private Integer id;
-    private String thumnail;
+    private String thumbnail;
     private String name;
     private BigDecimal originalPrice;
     private BigDecimal discountedPrice;

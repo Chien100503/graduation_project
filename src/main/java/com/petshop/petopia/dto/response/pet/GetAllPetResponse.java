@@ -13,5 +13,5 @@ public class GetAllPetResponse {
     private Integer id;
     private String name;
     private BigDecimal price;
-    private String thumnail;
+    private String thumbnail;
 }

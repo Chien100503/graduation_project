@@ -27,8 +27,8 @@ public class FirebaseService {
     @Value("${firebase.storage.image-banner}")
     private String imageBanner;
 
-    @Value("${firebase.storage.image-thumnail}")
-    private String imageThumnail;
+    @Value("${firebase.storage.image-thumbnail}")
+    private String imageThumbnail;
 
     @Value("${firebase.storage.image-category}")
     private String imageCategory;
@@ -85,8 +85,8 @@ public class FirebaseService {
         );
     }
 
-    public String uploadImageThumnail(MultipartFile file) throws IOException {
-        String fileName = imageThumnail + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+    public String uploadImageThumbnail(MultipartFile file) throws IOException {
+        String fileName = imageThumbnail + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
         StorageClient.getInstance().bucket()
                 .create(fileName, file.getBytes(), file.getContentType());

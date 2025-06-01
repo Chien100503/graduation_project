@@ -15,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,9 +51,9 @@ public class AdminProductService {
         product.setExpirationDate(req.getExpirationDate());
         product.setPrCategory(category);
 
-        if (req.getThumnail() != null && !req.getThumnail().isEmpty()) {
-            String thumnailUrl = firebaseService.uploadImageThumnail(req.getThumnail());
-            product.setThumnail(thumnailUrl);
+        if (req.getThumbnail() != null && !req.getThumbnail().isEmpty()) {
+            String thumbnailUrl = firebaseService.uploadImageThumbnail(req.getThumbnail());
+            product.setThumbnail(thumbnailUrl);
         }
 
         Product savedProduct = productRepository.save(product);
@@ -70,7 +68,7 @@ public class AdminProductService {
                 productImages.add(productImage);
             }
             productImageRepository.saveAll(productImages);
-            savedProduct.setProductImages(productImages); // Corrected variable name here.
+            savedProduct.setProductImages(productImages);
         }
 
         return convertProduct.convertToResponse(savedProduct);
