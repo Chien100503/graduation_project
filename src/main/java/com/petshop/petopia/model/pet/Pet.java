@@ -42,6 +42,7 @@ public class Pet {
     private String color;
     private BigDecimal price;
     private Boolean status;
+    private String thumnail;
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")

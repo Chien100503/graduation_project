@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class CreatePetRequest {
     private List<MultipartFile> file;
+    private MultipartFile thumbnail;
     private String petCategoryName;
     private String name;
     private String breedName;

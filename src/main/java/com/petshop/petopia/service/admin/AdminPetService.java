@@ -62,6 +62,12 @@ public class AdminPetService {
         pet.setStatus("Available".equalsIgnoreCase(req.getStatus()));
         pet.setDescription(req.getDescription());
         pet.setPetCategory(category);
+
+        if (req.getThumbnail() != null && !req.getThumbnail().isEmpty()) {
+            String thumbnailUrl = firebaseService.uploadImageThumnail(req.getThumbnail());
+            pet.setThumnail(thumbnailUrl);
+        }
+
         Pet savedPet = petRepository.save(pet);
 
         List<PetImage> petImages = new ArrayList<>();

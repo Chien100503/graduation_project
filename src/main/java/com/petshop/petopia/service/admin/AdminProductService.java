@@ -53,6 +53,11 @@ public class AdminProductService {
         product.setExpirationDate(req.getExpirationDate());
         product.setPrCategory(category);
 
+        if (req.getThumnail() != null && !req.getThumnail().isEmpty()) {
+            String thumnailUrl = firebaseService.uploadImageThumnail(req.getThumnail());
+            product.setThumnail(thumnailUrl);
+        }
+
         Product savedProduct = productRepository.save(product);
 
         List<ProductImage> productImages = new ArrayList<>();

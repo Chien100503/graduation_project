@@ -3,6 +3,7 @@ package com.petshop.petopia.service.auth;
 import com.petshop.petopia.dto.request.auth.LoginRequest;
 import com.petshop.petopia.dto.request.auth.RegisterRequest;
 import com.petshop.petopia.dto.request.auth.VerifyRequest;
+import com.petshop.petopia.dto.response.auth.AdminLoginResponse;
 import com.petshop.petopia.dto.response.auth.LoginResponse;
 import com.petshop.petopia.dto.response.auth.RegisterResponse;
 import com.petshop.petopia.model.user.Role;
@@ -42,6 +43,24 @@ public class AuthService {
     private final String VERIFICATION_TEXT_PREFIX = "Mã của bạn là: ";
     private final int VERIFICATION_CODE_TTL = 600;
 
+    public AdminLoginResponse loginAdmin(LoginRequest req) {
+        User user = userRepository.findByEmail(req.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+        }
+
+        Role role = user.getRole();
+        if (role == null || !role.getName().equalsIgnoreCase("ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Admins only");
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new AdminLoginResponse(user.getId(), token);
+    }
+
     public LoginResponse login(LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -70,7 +89,6 @@ public class AuthService {
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
         user.setPhone(req.getPhone());
-//        user.setAddress(req.getAddress());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setName(req.getName());
         user.setIsActive(false);
@@ -82,9 +100,7 @@ public class AuthService {
             return roleRepository.save(newRole);
         });
 
-        user.setRoles(new HashSet<>() {{
-            add(userRole);
-        }});
+        user.setRole(userRole);
 
         userRepository.save(user);
 

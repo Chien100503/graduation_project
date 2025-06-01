@@ -29,6 +29,7 @@ public class Product {
     private Integer id;
 
     private String name;
+    private String thumnail;
 
     @ManyToOne
     @JoinColumn(name = "pr_category_id")

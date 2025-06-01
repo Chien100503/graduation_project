@@ -1,5 +1,6 @@
 package com.petshop.petopia.config;
 
+import com.petshop.petopia.dto.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
@@ -17,27 +18,29 @@ import java.util.Date;
 public class ErrorConfig {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<MessageResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+    public ResponseEntity<MessageResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
         ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<MessageResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
+    public ResponseEntity<MessageResponse> handleGeneralException(Exception ex) {
         ex.printStackTrace();
-        return ResponseEntity.internalServerError().body("Lỗi hệ thống không xác định: " + ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new MessageResponse("Lỗi hệ thống không xác định: " + ex.getMessage()));
     }
 
     @InitBinder

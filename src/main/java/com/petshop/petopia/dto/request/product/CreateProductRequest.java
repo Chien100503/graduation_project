@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class CreateProductRequest {
     private List<MultipartFile> file;
+    private MultipartFile thumnail;
     private String productCategoryName;
     private String name;
     private String brandName;

@@ -34,16 +34,16 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPhone("0000000000");
             admin.setAddress("Petopia HQ");
             admin.setPassword(new BCryptPasswordEncoder().encode("admin123"));
-            admin.setRoles(new HashSet<>() {{
-                add(adminRole);
-            }});
+            admin.setRole(adminRole);
             admin.setCreatedAt(new Date());
             admin.setUpdatedAt(new Date());
             admin.setIsActive(true);
             userRepository.save(admin);
+
             System.out.println("Created default admin user: admin@petopia.com / admin123");
         } else {
             System.out.println("Admin user already exists.");
         }
     }
+
 }

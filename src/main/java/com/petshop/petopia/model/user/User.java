@@ -5,10 +5,10 @@ import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @Table(name = "users")
@@ -31,12 +31,9 @@ public class User {
     private Boolean isActive;
     private String avatar;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Order> orders;

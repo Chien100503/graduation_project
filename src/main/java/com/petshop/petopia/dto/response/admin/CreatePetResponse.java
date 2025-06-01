@@ -23,6 +23,7 @@ public class CreatePetResponse {
     private BigDecimal price;
     private String status;
     private String description;
+    private String thumnail;
     private List<String> imageUrls;
     private Date createdAt;
     private Date updatedAt;
