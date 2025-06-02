@@ -61,7 +61,7 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
-    @GetMapping("/categories/{categoryId}/breeds/{breedId}")
+    @GetMapping("/category/{categoryId}/breeds/{breedId}")
     public ResponseEntity<List<GetAllPetResponse>> getPetsByCategoryAndBreed(
             @PathVariable Integer categoryId,
             @PathVariable Integer breedId) {
@@ -83,12 +83,12 @@ public class PetController {
         }
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/category")
     public ResponseEntity<List<PetCategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(petCategoryService.getAllCategories());
     }
 
-    @GetMapping("/categories/{categoryId}/breeds")
+    @GetMapping("/category/{categoryId}/breeds")
     public ResponseEntity<List<BreedResponse>> getBreedsByCategory(
             @PathVariable Integer categoryId) {
         return ResponseEntity.ok(petCategoryService.getBreedsByCategory(categoryId));

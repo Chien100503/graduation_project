@@ -41,7 +41,7 @@ public class ProductController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/category")
     public ResponseEntity<List<ProductCategoryResponse>> getAllProductCategories() {
         return ResponseEntity.ok(productCategoryService.getAllProductCategories());
     }
@@ -51,14 +51,14 @@ public class ProductController {
         return ResponseEntity.ok(productCategoryService.getAllBrands());
     }
 
-    @GetMapping("/categories/{categoryId}/types")
+    @GetMapping("/category/{categoryId}/type")
     public ResponseEntity<List<TypeResponse>> getTypesByCategory(@PathVariable Integer categoryId) {
         Optional<List<TypeResponse>> typesResponse = productService.getTypesByCategoryId(categoryId);
         return typesResponse.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/categories/{categoryId}/type/{typeId}")
+    @GetMapping("/category/{categoryId}/type/{typeId}")
     public ResponseEntity<List<ProductCategoryResponse>> getProductsByCategoryAndType(
             @PathVariable Integer categoryId,
             @PathVariable Integer typeId) {
