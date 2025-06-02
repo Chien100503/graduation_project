@@ -16,10 +16,6 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -37,7 +33,41 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# IOS
+ios/Flutter/ephemeral/
+ios/.symlinks/
+ios/Pods/
+ios/Runner.xcworkspace/
+ios/Podfile.lock
+
+# MacOs
+macos/Flutter/ephemeral/
+macos/.symlinks/
+macos/Pods/
+macos/Podfile.lock
+
+# Linux & Window
+linux/flutter/
+linux/.dart_tool/
+windows/flutter/
+windows/.dart_tool/
+
+# Web
+web/generated_plugin_registrant.dart
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
+android/.gradle/
+android/.idea/
+
+# VSCode
+.vscode/
+
+# Coverage / Testing
+coverage/
+test_output/
+
+# Generated plugin registrants (sometimes duplicated)
+**/generated_plugin_registrant.dart
