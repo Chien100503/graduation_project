@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 
 import '../../../../data/repositories/categories/category_repository.dart';
 import '../../models/categories/category_models.dart';
-import '../../screens/sub_categories/sub_categories.dart';
 
 class CategoryController extends GetxController {
   final CategoryRepository _repository = CategoryRepository();

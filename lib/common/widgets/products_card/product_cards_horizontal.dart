@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:iconsax/iconsax.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -51,7 +48,7 @@ class EProductCardsHorizontal extends StatelessWidget {
                     boxFit: BoxFit.contain,
                     applyImageRadius: true,
                     isNetworkImage: true,
-                    imageUrl: product.imageUrl,
+                    imageUrl: product.thumbnail,
                     bg: Colors.transparent,
                   ),
                   Positioned(

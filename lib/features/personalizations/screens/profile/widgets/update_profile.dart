@@ -6,8 +6,6 @@ import 'package:pet_shop/data/repositories/user_repository.dart';
 import 'package:pet_shop/features/personalizations/controllers/profile/user_controller.dart';
 import 'package:pet_shop/utils/constants/images_strings.dart';
 import 'package:pet_shop/utils/constants/sizes.dart';
-import 'package:pet_shop/utils/constants/colors.dart';
-import 'package:pet_shop/common/widgets/loader/loader.dart';
 import 'package:pet_shop/utils/popups/full_screen_loader.dart';
 import '../../../../../common/widgets/images/circle_images.dart';
 

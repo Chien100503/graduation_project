@@ -69,6 +69,7 @@ class SubPetCategoryScreen extends StatelessWidget {
                           if (widget != null) return widget;
 
                           final pets = snapshot.data!;
+                          print(' giong cho ${breed.name}');
                           return Column(
                             children: [
                               ESectionHeading(

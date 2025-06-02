@@ -63,6 +63,7 @@ flutter:
     - assets/logos/
     - assets/images/onboarding/
     - assets/images/banner/
+    - assets/animation/
 
 
   # fonts:

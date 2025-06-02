@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/images_strings.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/helpers/helper_functions.dart';
-import '../../../controllers/login/login_controller.dart';
 
 class ESocialButtons extends StatelessWidget {
   const ESocialButtons({

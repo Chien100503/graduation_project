@@ -1,9 +1,7 @@
-import 'package:flutter/services.dart'; // Add this import
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:pet_shop/features/personalizations/screens/profile/widgets/change_name.dart';
-import 'package:pet_shop/features/personalizations/screens/profile/widgets/change_phone_number.dart';
 import 'package:pet_shop/features/personalizations/screens/profile/widgets/update_profile.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 

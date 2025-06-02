@@ -72,7 +72,7 @@ class EImages {
   static const String searchNoFound = 'assets/images/searchNoFound.gif';
 
   // Loader
-  static const String loaderAnimation = 'assets/images/loader.json';
+  static const String loaderAnimation = 'assets/animation/loader.json';
   static const String loaderAnimationOne = 'assets/images/animate.json';
   static const String emptyAnimation = 'assets/images/empty.json';
 

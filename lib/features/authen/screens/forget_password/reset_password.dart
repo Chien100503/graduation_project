@@ -6,7 +6,6 @@ import '../../../../utils/constants/images_strings.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/texts_strings.dart';
 import '../../../../utils/helpers/helper_functions.dart';
-import '../../controllers/forget_password/forget_password_controller.dart';
 import '../login/login.dart';
 
 class ResetPasswordScreen extends StatelessWidget {

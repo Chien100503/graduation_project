@@ -8,7 +8,6 @@ import '../../../features/shop/models/products/pet_model.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../custom_shape/containers/round_container.dart';
 import '../images/round_images.dart';
-import '../texts/brand_title_text.dart';
 
 class EProductCardsHorizontal extends StatelessWidget {
   const EProductCardsHorizontal({super.key, required this.product});
@@ -59,7 +58,7 @@ class EProductCardsHorizontal extends StatelessWidget {
                       boxFit: BoxFit.cover,
                       applyImageRadius: true,
                       isNetworkImage: true,
-                      imageUrl: product.imageUrl,
+                      imageUrl: product.imageUrls,
                       bg: Colors.transparent,
                     ),
                   ),

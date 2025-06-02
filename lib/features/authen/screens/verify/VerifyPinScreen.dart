@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pet_shop/common/widgets/appbar/appbar.dart';
-import 'package:pet_shop/utils/constants/sizes.dart';
 import 'package:pet_shop/utils/helpers/helper_functions.dart';
 import 'package:pinput/pinput.dart';
 import '../../../../utils/constants/colors.dart';
