@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
-
 import '../../../../data/repositories/categories/category_repository.dart';
 import '../../models/categories/category_models.dart';
 
 class CategoryController extends GetxController {
   final CategoryRepository _repository = CategoryRepository();
 
-  // Observable variables
   var allCategories = <CategoryModel>[].obs;
   var isLoading = false.obs;
   var selectedType = Rx<String?>(null);
@@ -20,14 +18,12 @@ class CategoryController extends GetxController {
 
   List<CategoryModel> get featuredCategories => allCategories;
 
-  // Lấy tất cả categories từ API
   void fetchAllCategories() async {
     try {
       isLoading.value = true;
 
       final data = await _repository.fetchAllCategories();
 
-      // Convert to List<CategoryModel>
       final List<CategoryModel> fetchedCategories = data
           .map<CategoryModel>((json) => CategoryModel.fromJson(json))
           .toList();

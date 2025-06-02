@@ -9,20 +9,23 @@ class ProductCategoryController extends GetxController {
   final baseUrl = Config.baseUrl;
   final _storage = GetStorage();
 
-  Future<List<TypeModel>> getBreedsByProductCategoryId(int productCategoryId) async {
-    final url = Uri.parse('$baseUrl/product/categories/$productCategoryId/types');
+  Future<List<TypeModel>> getBreedsByProductCategoryId(
+      int productCategoryId) async {
+    final url = Uri.parse('$baseUrl/product/category/$productCategoryId/type');
     print('url $url');
-    final token = await _storage.read('TOKEN'); // Sử dụng await
+    final token = await _storage.read('TOKEN');
     if (token == null) throw Exception('Token không tồn tại.');
-    final response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
     print('Respomse $response');
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
       return jsonList.map((json) => TypeModel.fromJson(json)).toList();
-
     } else {
       throw Exception('Failed to load breedssss');
     }

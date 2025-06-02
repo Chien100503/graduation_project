@@ -17,12 +17,11 @@ class PetCategoryController extends GetxController {
   final Map<int, List<BreedModel>> _breedsCache = {};
 
   Future<List<BreedModel>> fetchBreedsByCategory(int petCategoryId) async {
-    // Kiểm tra cache trước
     if (_breedsCache.containsKey(petCategoryId)) {
       return _breedsCache[petCategoryId]!;
     }
 
-    final url = Uri.parse('$baseUrl/pet/categories/$petCategoryId/breeds');
+    final url = Uri.parse('$baseUrl/pet/category/$petCategoryId/breeds');
     final token = await _storage.read('TOKEN');
     if (token == null) throw Exception('Token không tồn tại.');
 
@@ -46,7 +45,7 @@ class PetCategoryController extends GetxController {
   }
 
   Future<List<PetModel>> fetchPetsByBreed(int categoryId, int breedId) async {
-    final url = ('$baseUrl/pet/categories/$categoryId/breeds/$breedId');
+    final url = ('$baseUrl/pet/category/$categoryId/breeds/$breedId');
     final token = await _storage.read('TOKEN');
 
     try {

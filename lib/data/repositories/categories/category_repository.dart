@@ -7,7 +7,6 @@ class CategoryRepository {
   final String _baseUrl = Config.baseUrl;
   final GetStorage _storage = GetStorage();
 
-  // Lấy tất cả danh mục có dùng token
   Future<List<dynamic>> fetchAllCategories() async {
     final token = _storage.read('TOKEN');
     if (token == null) throw Exception('Token không tồn tại.');

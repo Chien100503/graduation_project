@@ -1,4 +1,4 @@
 class Config {
   static const baseUrl =
-      'https://ultimately-magical-mosquito.ngrok-free.app/api';
+      'https://warthog-subtle-dodo.ngrok-free.app/api';
 }
