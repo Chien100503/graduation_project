@@ -1,0 +1,15 @@
+google-generativeai
+python-dotenv
+fastapi
+uvicorn
+pyjwt
+mysql-connector-python
+sentence-transformers
+chromadb
+firebase-admin
+numpy
+pydantic
+python-multipart
+huggingface-hub
+pinecone-client
+pyngrok

@@ -1,0 +1,7 @@
+__pycache__/
+.env
+venv/
+chroma_db/
+data/
+models/
+serviceAccountKey.json
