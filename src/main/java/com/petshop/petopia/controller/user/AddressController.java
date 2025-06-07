@@ -43,6 +43,16 @@ public class AddressController {
         return ResponseEntity.ok(addressService.updateAddress(userId, addressId, request));
     }
 
+    @PutMapping("/{addressId}/default")
+    public ResponseEntity<AddressResponse> setDefaultAddress(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer addressId)
+    {
+        Integer userId = jwtService.extractUserId(token);
+        return ResponseEntity.ok(addressService.setDefaultAddress(userId, addressId));
+    }
+
+
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteExistingAddress(
             @RequestHeader("Authorization") String token,

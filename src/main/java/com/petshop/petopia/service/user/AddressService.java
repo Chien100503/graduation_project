@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +23,6 @@ public class AddressService {
     private final ConvertAddress convertAddress;
 
     public List<AddressResponse> getAllAddresses(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + userId));
         return addressRepository.findByUserId(userId)
                 .stream()
                 .map(convertAddress::convertToResponse)
@@ -69,6 +68,26 @@ public class AddressService {
         }
 
         Address updatedAddress = addressRepository.save(existingAddress);
+        return convertAddress.convertToResponse(updatedAddress);
+    }
+
+    @Transactional
+    public AddressResponse setDefaultAddress(Integer userId, Integer addressId) {
+        Optional<Address> targetAddressOpt = addressRepository.findByIdAndUser_Id(addressId, userId);
+
+        Address targetAddress = targetAddressOpt
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy địa chỉ với ID: " + addressId + " thuộc về người dùng: " + userId));
+        List<Address> currentDefaultAddresses = addressRepository.findByUserIdAndIsDefaultTrue(userId);
+
+        for (Address oldDefaultAddress : currentDefaultAddresses) {
+            if (!oldDefaultAddress.getId().equals(addressId)) {
+                oldDefaultAddress.setDefault(false);
+                addressRepository.save(oldDefaultAddress);
+            }
+        }
+
+        targetAddress.setDefault(true);
+        Address updatedAddress = addressRepository.save(targetAddress);
         return convertAddress.convertToResponse(updatedAddress);
     }
 
