@@ -25,7 +25,7 @@ public class PetController {
     @GetMapping
     public ResponseEntity<?> getPets() {
         try {
-            List<PetDetailResponse> pets = petService.getAllPets();
+            List<GetAllPetResponse> pets = petService.getAllPets();
 
             if (pets.isEmpty()) {
                 return ResponseEntity.noContent().build();

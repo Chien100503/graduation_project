@@ -1,23 +1,14 @@
 package com.petshop.petopia.controller.user;
 
-import com.petshop.petopia.dto.request.product.CreateProductRequest;
 import com.petshop.petopia.dto.request.category.ProductFilterRequest;
-import com.petshop.petopia.dto.response.product.BrandResponse;
-import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
-import com.petshop.petopia.dto.response.product.ProductResponse;
-import com.petshop.petopia.dto.response.product.TypeResponse;
-import com.petshop.petopia.model.product.Product;
-import com.petshop.petopia.model.product.Type;
+import com.petshop.petopia.dto.response.product.*;
 import com.petshop.petopia.service.category.ProductCategoryService;
 import com.petshop.petopia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +20,14 @@ public class ProductController {
     private final ProductCategoryService productCategoryService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> products = productService.getAllProducts();
+    public ResponseEntity<List<GetAllProductResponse>> getAllProducts() {
+        List<GetAllProductResponse> products = productService.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Integer id) {
-        Optional<ProductResponse> product = productService.getProductById(id);
+    public ResponseEntity<GetProductDetailResponse> getProductById(@PathVariable Integer id) {
+        Optional<GetProductDetailResponse> product = productService.getProductById(id);
         return product.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -47,7 +38,7 @@ public class ProductController {
     }
 
     @GetMapping("/brands")
-    public ResponseEntity<List<BrandResponse>> getAllBrands() {
+    public ResponseEntity<List<GetBrandResponse>> getAllBrands() {
         return ResponseEntity.ok(productCategoryService.getAllBrands());
     }
 
@@ -73,7 +64,7 @@ public class ProductController {
     @GetMapping("/filter")
     public ResponseEntity<?> filterProducts(@RequestBody ProductFilterRequest filterRequest) {
         try {
-            List<ProductResponse> result = productCategoryService.filterProducts(filterRequest);
+            List<GetAllProductResponse> result = productCategoryService.filterProducts(filterRequest);
             return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

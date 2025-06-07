@@ -33,7 +33,7 @@ public class NgrokConfig implements CommandLineRunner {
 
             URL localUrl = new URI("http://localhost:8080").toURL();
 
-            Forwarder.Endpoint forwarder = session.forwardHttp(httpBuilder, localUrl);  // Cổng 8080
+            Forwarder.Endpoint forwarder = session.forwardHttp(httpBuilder, localUrl);
 
             System.out.println("Ngrok đang forward đến: " + forwarder.getUrl());
 

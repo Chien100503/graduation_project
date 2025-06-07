@@ -1,5 +1,6 @@
 package com.petshop.petopia.service.user;
 
+import com.petshop.petopia.component.CalculateRating;
 import com.petshop.petopia.dto.request.review.RatingRequest;
 import com.petshop.petopia.dto.response.review.RatingOverviewResponse;
 import com.petshop.petopia.model.product.Product;
@@ -56,6 +57,11 @@ public class RatingService {
                 .orElseGet(() -> {
                     Rating newRating = new Rating();
                     newRating.setProduct(product);
+                    newRating.setOneStarCount(0);
+                    newRating.setTwoStarCount(0);
+                    newRating.setThreeStarCount(0);
+                    newRating.setFourStarCount(0);
+                    newRating.setFiveStarCount(0);
                     return ratingRepository.save(newRating);
                 });
 
@@ -66,10 +72,12 @@ public class RatingService {
             case 4 -> rating.setFourStarCount(rating.getFourStarCount() + increment);
             case 5 -> rating.setFiveStarCount(rating.getFiveStarCount() + increment);
         }
+        ratingRepository.save(rating);
     }
 
     public RatingOverviewResponse getRatingOverview(Integer productId) {
         Rating rating = ratingRepository.findByProductId(productId).orElse(null);
+
         RatingOverviewResponse.RatingOverviewResponseBuilder builder = RatingOverviewResponse.builder()
                 .productId(productId)
                 .oneStarPercentage(0.0)
@@ -81,24 +89,14 @@ public class RatingService {
                 .averageRating(0.0);
 
         if (rating != null) {
-            int oneStarCount = rating.getOneStarCount();
-            int twoStarCount = rating.getTwoStarCount();
-            int threeStarCount = rating.getThreeStarCount();
-            int fourStarCount = rating.getFourStarCount();
-            int fiveStarCount = rating.getFiveStarCount();
-
-            int totalRatings = oneStarCount + twoStarCount + threeStarCount + fourStarCount + fiveStarCount;
-
+            int totalRatings = CalculateRating.calculateTotalRatings(rating);
             builder.totalRatings(totalRatings);
 
             if (totalRatings > 0) {
-                builder.oneStarPercentage((double) oneStarCount / totalRatings * 100)
-                        .twoStarPercentage((double) twoStarCount / totalRatings * 100)
-                        .threeStarPercentage((double) threeStarCount / totalRatings * 100)
-                        .fourStarPercentage((double) fourStarCount / totalRatings * 100)
-                        .fiveStarPercentage((double) fiveStarCount / totalRatings * 100)
-                        .averageRating((oneStarCount * 1.0 + twoStarCount * 2.0 + threeStarCount * 3.0 +
-                                fourStarCount * 4.0 + fiveStarCount * 5.0) / totalRatings);
+                CalculateRating.populateStarPercentages(rating, builder);
+
+                double averageRating = CalculateRating.calculateAverageRating(rating);
+                builder.averageRating(CalculateRating.roundToTwoDecimalPlaces(averageRating)); // Đảm bảo làm tròn
             }
         }
 

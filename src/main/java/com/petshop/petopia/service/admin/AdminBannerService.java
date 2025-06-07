@@ -14,10 +14,14 @@ import com.petshop.petopia.service.FirebaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional; // Đảm bảo đã import Optional
 
 @Service
 @AllArgsConstructor
@@ -38,13 +42,6 @@ public class AdminBannerService {
             throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
         }
 
-        if (cuBannerRequest.getSalePercent() != null) {
-            BigDecimal salePercent = cuBannerRequest.getSalePercent();
-            if (salePercent.compareTo(BigDecimal.ZERO) < 0 || salePercent.compareTo(BigDecimal.ONE) > 0) {
-                throw new IllegalArgumentException("Phần trăm giảm giá phải từ 0 đến 1");
-            }
-        }
-
         if (cuBannerRequest.getFile() != null && !cuBannerRequest.getFile().isEmpty()) {
             imageUrl = firebaseService.uploadImageBanner(cuBannerRequest.getFile());
         }
@@ -55,7 +52,7 @@ public class AdminBannerService {
         banner.setStartDate(cuBannerRequest.getStartDate());
         banner.setEndDate(cuBannerRequest.getEndDate());
 
-        Banner savedBanner = bannerRepository.save(banner);
+        Banner savedBanner = bannerRepository.save(banner); // Validation sẽ chạy khi save
         return convertBanner.mapBannerToCUBannerResponse(savedBanner);
     }
 
@@ -64,36 +61,34 @@ public class AdminBannerService {
         Banner existingBanner = bannerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + id));
 
-        if (cuBannerRequest.getStartDate() != null && cuBannerRequest.getEndDate() != null
-                && cuBannerRequest.getStartDate().after(cuBannerRequest.getEndDate())) {
-            throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
-        }
-
-        String oldImageUrl = existingBanner.getImage();
         if (cuBannerRequest.getFile() != null && !cuBannerRequest.getFile().isEmpty()) {
+            String oldImageUrl = existingBanner.getImage();
             String newImageUrl = firebaseService.uploadImageBanner(cuBannerRequest.getFile());
             existingBanner.setImage(newImageUrl);
-            if (oldImageUrl != null) {
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
                 firebaseService.deleteFileByUrl(oldImageUrl);
             }
         }
+        Optional.ofNullable(cuBannerRequest.getSalePercent()).ifPresent(existingBanner::setSalePercent);
 
-        if (cuBannerRequest.getSalePercent() != null) {
-            BigDecimal salePercent = cuBannerRequest.getSalePercent();
-            if (salePercent.compareTo(BigDecimal.ZERO) >= 0 && salePercent.compareTo(BigDecimal.ONE) <= 0) {
-                existingBanner.setSalePercent(salePercent);
-            } else {
-                throw new IllegalArgumentException("Phần trăm giảm giá phải từ 0 đến 1");
-            }
+        boolean newStartDateProvided = cuBannerRequest.getStartDate() != null;
+        boolean newEndDateProvided = cuBannerRequest.getEndDate() != null;
+
+        Date tempStartDate = newStartDateProvided ? cuBannerRequest.getStartDate() : existingBanner.getStartDate();
+        Date tempEndDate = newEndDateProvided ? cuBannerRequest.getEndDate() : existingBanner.getEndDate();
+
+        if (tempStartDate != null && tempEndDate != null && tempStartDate.after(tempEndDate)) {
+            throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc.");
         }
-        if (cuBannerRequest.getStartDate() != null) {
+
+        if (newStartDateProvided) {
             existingBanner.setStartDate(cuBannerRequest.getStartDate());
         }
-        if (cuBannerRequest.getEndDate() != null) {
+        if (newEndDateProvided) {
             existingBanner.setEndDate(cuBannerRequest.getEndDate());
         }
 
-        Banner updatedBanner = bannerRepository.save(existingBanner);
+        Banner updatedBanner = bannerRepository.save(existingBanner); // Lưu banner đã cập nhật
         return convertBanner.mapBannerToCUBannerResponse(updatedBanner);
     }
 
@@ -104,13 +99,15 @@ public class AdminBannerService {
 
         List<Pet> petsInBanner = petRepository.findByBannerId(id);
         petsInBanner.forEach(pet -> pet.setBanner(null));
+        petRepository.saveAll(petsInBanner);
 
         List<Product> productsInBanner = productRepository.findByBannerId(id);
         productsInBanner.forEach(product -> product.setBanner(null));
+        productRepository.saveAll(productsInBanner);
 
         bannerRepository.delete(banner);
 
-        if (banner.getImage() != null) {
+        if (banner.getImage() != null && !banner.getImage().isEmpty()) {
             firebaseService.deleteFileByUrl(banner.getImage());
         }
     }
@@ -123,7 +120,7 @@ public class AdminBannerService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thú cưng với ID: " + petId));
 
-        if (!pet.getStatus()) {
+        if (!pet.getStatus()) { // Giả định getStatus() là true nếu đang bán
             throw new IllegalStateException("Không thể thêm thú cưng đã ngừng bán");
         }
 
@@ -166,6 +163,7 @@ public class AdminBannerService {
         }
 
         product.setBanner(banner);
+        productRepository.save(product); // Cần save product để cập nhật mối quan hệ
     }
 
     @Transactional
@@ -178,6 +176,7 @@ public class AdminBannerService {
         }
 
         product.setBanner(null);
+        productRepository.save(product); // Cần save product để cập nhật mối quan hệ
     }
 
     @Transactional
@@ -186,11 +185,15 @@ public class AdminBannerService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
 
         List<Pet> allPets = petRepository.findAll();
+        List<Pet> petsToUpdate = new ArrayList<>();
         allPets.forEach(pet -> {
-            if (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId) || pet.getStatus()) {
+            // Chỉ thêm vào banner nếu chưa có banner hoặc thuộc banner khác VÀ đang bán
+            if (pet.getStatus() && (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId))) {
                 pet.setBanner(banner);
+                petsToUpdate.add(pet);
             }
         });
+        petRepository.saveAll(petsToUpdate); // Lưu tất cả thay đổi một lần
     }
 
     @Transactional
@@ -199,11 +202,15 @@ public class AdminBannerService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
 
         List<Product> allProducts = productRepository.findAll();
+        List<Product> productsToUpdate = new ArrayList<>();
         allProducts.forEach(product -> {
-            if (product.getBanner() == null || !product.getBanner().getId().equals(bannerId) || product.getStockQuantity() > 0) {
+            // Chỉ thêm vào banner nếu chưa có banner hoặc thuộc banner khác VÀ còn hàng
+            if (product.getStockQuantity() > 0 && (product.getBanner() == null || !product.getBanner().getId().equals(bannerId))) {
                 product.setBanner(banner);
+                productsToUpdate.add(product);
             }
         });
+        productRepository.saveAll(productsToUpdate); // Lưu tất cả thay đổi một lần
     }
 
     @Transactional
@@ -216,11 +223,14 @@ public class AdminBannerService {
         }
 
         List<Pet> petsByCategory = petRepository.findByPetCategory_Name(categoryName);
+        List<Pet> petsToUpdate = new ArrayList<>();
         petsByCategory.forEach(pet -> {
-            if (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId)) {
+            if (pet.getStatus() && (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId))) {
                 pet.setBanner(banner);
+                petsToUpdate.add(pet);
             }
         });
+        petRepository.saveAll(petsToUpdate);
     }
 
     @Transactional
@@ -228,10 +238,14 @@ public class AdminBannerService {
         Banner banner = bannerRepository.findById(bannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
         List<Pet> petsByBreed = petRepository.findByBreed_Name(breedName);
+        List<Pet> petsToUpdate = new ArrayList<>();
         petsByBreed.forEach(pet -> {
-            pet.setBanner(banner);
-            petRepository.save(pet);
+            if (pet.getStatus() && (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId))) {
+                pet.setBanner(banner);
+                petsToUpdate.add(pet);
+            }
         });
+        petRepository.saveAll(petsToUpdate);
     }
 
     @Transactional
@@ -239,10 +253,14 @@ public class AdminBannerService {
         Banner banner = bannerRepository.findById(bannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
         List<Product> productsByCategory = productRepository.findByPrCategory_Name(categoryName);
+        List<Product> productsToUpdate = new ArrayList<>();
         productsByCategory.forEach(product -> {
-            product.setBanner(banner);
-            productRepository.save(product);
+            if (product.getStockQuantity() > 0 && (product.getBanner() == null || !product.getBanner().getId().equals(bannerId))) {
+                product.setBanner(banner);
+                productsToUpdate.add(product);
+            }
         });
+        productRepository.saveAll(productsToUpdate);
     }
 
     @Transactional
@@ -250,10 +268,14 @@ public class AdminBannerService {
         Banner banner = bannerRepository.findById(bannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
         List<Product> productsByBrand = productRepository.findByBrand_Name(brandName);
+        List<Product> productsToUpdate = new ArrayList<>();
         productsByBrand.forEach(product -> {
-            product.setBanner(banner);
-            productRepository.save(product);
+            if (product.getStockQuantity() > 0 && (product.getBanner() == null || !product.getBanner().getId().equals(bannerId))) {
+                product.setBanner(banner);
+                productsToUpdate.add(product);
+            }
         });
+        productRepository.saveAll(productsToUpdate);
     }
 
     @Transactional
@@ -261,9 +283,13 @@ public class AdminBannerService {
         Banner banner = bannerRepository.findById(bannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
         List<Product> productsByType = productRepository.findByType_Name(typeName);
+        List<Product> productsToUpdate = new ArrayList<>();
         productsByType.forEach(product -> {
-            product.setBanner(banner);
-            productRepository.save(product);
+            if (product.getStockQuantity() > 0 && (product.getBanner() == null || !product.getBanner().getId().equals(bannerId))) {
+                product.setBanner(banner);
+                productsToUpdate.add(product);
+            }
         });
+        productRepository.saveAll(productsToUpdate);
     }
 }

@@ -1,7 +1,7 @@
 package com.petshop.petopia.service.admin;
 
 import com.petshop.petopia.dto.request.product.CreateProductRequest;
-import com.petshop.petopia.dto.response.product.ProductResponse;
+import com.petshop.petopia.dto.response.product.CreateProductResponse;
 import com.petshop.petopia.model.product.*;
 import com.petshop.petopia.repository.product.*;
 import com.petshop.petopia.component.ConvertProduct;
@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class AdminProductService {
     private final ProductImageRepository productImageRepository;
 
     @Transactional
-    public ProductResponse createProduct(CreateProductRequest req) throws IOException {
+    public CreateProductResponse createProduct(CreateProductRequest req) throws IOException {
         Brand brand = brandRepository.findByName(req.getBrandName())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy thương hiệu: " + req.getBrandName()));
 
@@ -71,34 +72,55 @@ public class AdminProductService {
             savedProduct.setProductImages(productImages);
         }
 
-        return convertProduct.convertToResponse(savedProduct);
+        return convertProduct.convertToCreateAndUpdateProductResponse(savedProduct);
     }
 
     @Transactional
-    public ProductResponse updateProduct(Integer id, CreateProductRequest req) throws IOException {
+    public CreateProductResponse updateProduct(Integer id, CreateProductRequest req) throws IOException {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
 
-        Brand brand = brandRepository.findByName(req.getBrandName())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy thương hiệu: " + req.getBrandName()));
-        existingProduct.setBrand(brand);
+        Optional.ofNullable(req.getName()).ifPresent(existingProduct::setName);
+        Optional.ofNullable(req.getDescription()).ifPresent(existingProduct::setDescription);
+        Optional.ofNullable(req.getSize()).ifPresent(existingProduct::setSize);
+        Optional.ofNullable(req.getWeight()).ifPresent(existingProduct::setWeight);
+        Optional.ofNullable(req.getPrice()).ifPresent(existingProduct::setPrice);
+        Optional.ofNullable(req.getStockQuantity()).ifPresent(existingProduct::setStockQuantity);
+        Optional.ofNullable(req.getExpirationDate()).ifPresent(existingProduct::setExpirationDate);
 
-        ProductCategory category = productCategoryRepository.findByName(req.getProductCategoryName())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy danh mục sản phẩm: " + req.getProductCategoryName()));
-        existingProduct.setPrCategory(category);
+        if (req.getBrandName() != null) {
+            Brand brand = brandRepository.findByName(req.getBrandName())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy thương hiệu: " + req.getBrandName()));
+            existingProduct.setBrand(brand);
+        }
 
-        Type type = typeRepository.findByNameAndProductCategory(req.getTypeName(), category)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy loại '" + req.getTypeName() + "' trong danh mục '" + req.getProductCategoryName() + "'."));
-        existingProduct.setType(type);
+        if (req.getProductCategoryName() != null) {
+            ProductCategory category = productCategoryRepository.findByName(req.getProductCategoryName())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy danh mục sản phẩm: " + req.getProductCategoryName()));
+            existingProduct.setPrCategory(category);
 
-        existingProduct.setName(req.getName());
-        existingProduct.setDescription(req.getDescription());
-        existingProduct.setSize(req.getSize());
-        existingProduct.setWeight(req.getWeight());
-        existingProduct.setPrice(req.getPrice());
-        existingProduct.setStockQuantity(req.getStockQuantity());
-        existingProduct.setExpirationDate(req.getExpirationDate());
-
+            if (req.getTypeName() != null) {
+                Type type = typeRepository.findByNameAndProductCategory(req.getTypeName(), category)
+                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy loại '" + req.getTypeName() + "' trong danh mục '" + req.getProductCategoryName() + "'."));
+                existingProduct.setType(type);
+            }
+        } else if (req.getTypeName() != null) {
+            ProductCategory currentCategory = existingProduct.getPrCategory();
+            if (currentCategory == null) {
+                throw new IllegalArgumentException("Không thể cập nhật loại sản phẩm khi danh mục sản phẩm hiện tại không xác định.");
+            }
+            Type type = typeRepository.findByNameAndProductCategory(req.getTypeName(), currentCategory)
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy loại '" + req.getTypeName() + "' trong danh mục '" + currentCategory.getName() + "'."));
+            existingProduct.setType(type);
+        }
+        if (req.getThumbnail() != null && !req.getThumbnail().isEmpty()) {
+            // Nếu có thumbnail cũ, xóa nó khỏi Firebase
+            if (existingProduct.getThumbnail() != null && !existingProduct.getThumbnail().isEmpty()) {
+                firebaseService.deleteFileByUrl(existingProduct.getThumbnail());
+            }
+            String newThumbnailUrl = firebaseService.uploadImageThumbnail(req.getThumbnail());
+            existingProduct.setThumbnail(newThumbnailUrl);
+        }
         if (req.getFile() != null && !req.getFile().isEmpty()) {
             List<ProductImage> newProductImages = new ArrayList<>();
             for (MultipartFile file : req.getFile()) {
@@ -109,18 +131,29 @@ public class AdminProductService {
                 newProductImages.add(productImage);
             }
             productImageRepository.saveAll(newProductImages);
+
+            if (existingProduct.getProductImages() == null) {
+                existingProduct.setProductImages(new ArrayList<>());
+            }
             existingProduct.getProductImages().addAll(newProductImages);
         }
-
         Product updatedProduct = productRepository.save(existingProduct);
-        return convertProduct.convertToResponse(updatedProduct);
+        return convertProduct.convertToCreateAndUpdateProductResponse(updatedProduct);
     }
 
     @Transactional
     public boolean deleteProduct(Integer id) {
         return productRepository.findById(id)
                 .map(product -> {
-                    productImageRepository.deleteAll(product.getProductImages());
+                    if (product.getThumbnail() != null && !product.getThumbnail().isEmpty()) {
+                        firebaseService.deleteFileByUrl(product.getThumbnail());
+                    }
+                    if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
+                        for (ProductImage img : product.getProductImages()) {
+                            firebaseService.deleteFileByUrl(img.getImageUrl());
+                        }
+                        productImageRepository.deleteAll(product.getProductImages());
+                    }
                     productRepository.delete(product);
                     return true;
                 })

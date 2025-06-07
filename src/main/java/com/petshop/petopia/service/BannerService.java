@@ -2,21 +2,15 @@ package com.petshop.petopia.service;
 
 import com.petshop.petopia.component.CalculateDiscount;
 import com.petshop.petopia.component.ConvertBanner;
-import com.petshop.petopia.dto.request.banner.CUBannerRequest;
 import com.petshop.petopia.dto.response.banner.*;
-import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetImage;
-import com.petshop.petopia.model.product.Product;
 import com.petshop.petopia.model.product.ProductImage;
-import com.petshop.petopia.model.sale.Banner;
 import com.petshop.petopia.repository.BannerRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +46,7 @@ public class BannerService {
                                 firstImageUrl,
                                 pet.getName(),
                                 pet.getPrice(),
-                                calculateDiscount.calculatePetDiscount(pet.getPrice(), banner.getSalePercent())
+                                calculateDiscount.calculatePriceDiscount(pet.getPrice(), banner.getSalePercent())
                         );
                     })
                     .collect(Collectors.toList());
@@ -69,7 +63,7 @@ public class BannerService {
                                 firstImageUrl,
                                 product.getName(),
                                 product.getPrice(),
-                                calculateDiscount.calculateProductDiscount(product.getPrice(), banner.getSalePercent())
+                                calculateDiscount.calculatePriceDiscount(product.getPrice(), banner.getSalePercent())
                         );
                     })
                     .collect(Collectors.toList());

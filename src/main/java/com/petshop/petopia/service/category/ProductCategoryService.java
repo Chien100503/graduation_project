@@ -6,10 +6,7 @@ import com.petshop.petopia.dto.request.category.ProductFilterRequest;
 import com.petshop.petopia.dto.request.product.CreateBrandRequest;
 import com.petshop.petopia.dto.request.product.CreateTypeRequest;
 import com.petshop.petopia.dto.response.admin.CreateCategoryResponse;
-import com.petshop.petopia.dto.response.product.BrandResponse;
-import com.petshop.petopia.dto.response.product.CreateTypeResponse;
-import com.petshop.petopia.dto.response.product.ProductCategoryResponse;
-import com.petshop.petopia.dto.response.product.ProductResponse;
+import com.petshop.petopia.dto.response.product.*;
 import com.petshop.petopia.model.product.Brand;
 import com.petshop.petopia.model.product.Product;
 import com.petshop.petopia.model.product.ProductCategory;
@@ -89,7 +86,7 @@ public class ProductCategoryService {
     }
 
     @Transactional
-    public BrandResponse createBrand(CreateBrandRequest req) {
+    public GetBrandResponse createBrand(CreateBrandRequest req) {
         Optional<Brand> existingBrand = brandRepository.findByName(req.getName());
         if (existingBrand.isPresent()) {
             throw new IllegalArgumentException("Tên thương hiệu '" + req.getName() + "' đã tồn tại.");
@@ -100,14 +97,14 @@ public class ProductCategoryService {
         newBrand.setCreatedAt(new Date());
         Brand savedBrand = brandRepository.save(newBrand);
 
-        return new BrandResponse(
+        return new GetBrandResponse(
                 savedBrand.getId(),
                 savedBrand.getName()
         );
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> filterProducts(ProductFilterRequest filterRequest) {
+    public List<GetAllProductResponse> filterProducts(ProductFilterRequest filterRequest) {
         filterRequest.validate();
 
         Specification<Product> spec = Specification.where(null);
@@ -128,7 +125,7 @@ public class ProductCategoryService {
         }
 
         return productRepository.findAll(spec).stream()
-                .map(convertProduct::convertToResponse)
+                .map(convertProduct::convertToGetProductResponse)
                 .collect(Collectors.toList());
     }
 
@@ -140,9 +137,9 @@ public class ProductCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<BrandResponse> getAllBrands() {
+    public List<GetBrandResponse> getAllBrands() {
         return brandRepository.findAll().stream()
-                .map(brand -> new BrandResponse(brand.getId(), brand.getName()))
+                .map(brand -> new GetBrandResponse(brand.getId(), brand.getName()))
                 .collect(Collectors.toList());
     }
 }

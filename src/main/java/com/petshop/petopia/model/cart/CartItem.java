@@ -35,8 +35,6 @@ public class CartItem {
     private Global.ItemType itemType;
 
     private Integer quantity;
-    private BigDecimal price;
-    private BigDecimal itemTotalPrice;
 
     @AssertTrue(message = "Một mục giỏ hàng chỉ có thể chứa pet hoặc product, không cả hai.")
     private boolean isPetOrProduct() {

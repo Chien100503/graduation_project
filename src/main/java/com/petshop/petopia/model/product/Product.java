@@ -1,12 +1,11 @@
 package com.petshop.petopia.model.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.review.ProductRating;
+import com.petshop.petopia.model.review.Rating;
 import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.sale.Banner;
-import com.petshop.petopia.component.JsonNodeConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +44,9 @@ public class Product {
     @JoinColumn(name = "type_id")
     private Type type;
 
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rating rating;
+
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String description;
@@ -67,16 +69,6 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_id")
     private Banner banner;
-
-    @Column(name = "average_rating")
-    private Double averageRating = 0.0;
-
-    @Column(name = "total_ratings")
-    private Integer totalRatings = 0;
-
-    @Convert(converter = JsonNodeConverter.class)
-    @Column(name = "rating_counts", columnDefinition = "JSON")
-    private JsonNode ratingCounts;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore

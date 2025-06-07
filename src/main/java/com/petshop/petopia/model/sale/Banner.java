@@ -29,8 +29,8 @@ public class Banner {
 
     @NotNull(message = "Phần trăm giảm giá không được để trống")
     @DecimalMin(value = "0.0", inclusive = true, message = "Phần trăm giảm giá phải lớn hơn hoặc bằng 0")
-    @DecimalMax(value = "1.0", inclusive = true, message = "Phần trăm giảm giá phải nhỏ hơn hoặc bằng 1")
-    @Column(precision = 5, scale = 4)
+    @DecimalMax(value = "100.0", inclusive = true, message = "Phần trăm giảm giá phải nhỏ hơn hoặc bằng 100")
+    @Column(precision = 5, scale = 2)
     private BigDecimal salePercent;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")

@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class CartService {
     private final ProductRepository productRepository;
     private final PetRepository petRepository;
     private final UserRepository userRepository;
-    private final ConvertCart convert;
+    private final ConvertCart convert; // ConvertCart sẽ lo việc tính toán giá
 
     @Transactional
     public CartResponse addToCart(Integer userId, CartItemRequest request) {
@@ -40,7 +39,8 @@ public class CartService {
         Cart cart = getOrCreateCart(user);
 
         if (request == null) {
-            throw new IllegalArgumentException("Yêu cầu thêm vào giỏ hàng không hợp lệ: Request không được null.");}
+            throw new IllegalArgumentException("Yêu cầu thêm vào giỏ hàng không hợp lệ: Request không được null.");
+        }
 
         if (request.getPetId() != null && request.getProductId() == null) {
             addPetToCart(cart, request.getPetId());
@@ -49,6 +49,7 @@ public class CartService {
         } else {
             throw new IllegalArgumentException("Yêu cầu thêm vào giỏ hàng không hợp lệ. Chỉ cung cấp PetId hoặc ProductId.");
         }
+        cartRepository.save(cart);
 
         return convert.toCartResponse(cart);
     }
@@ -68,35 +69,26 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy item trong giỏ hàng của người dùng với ID: " + request.getItemId())));
 
         if (request.getQuantity() != null) {
-            BigDecimal oldItemTotalPrice = item.getItemTotalPrice();
             if (item.getItemType() == Global.ItemType.PRODUCT) {
                 Product product = item.getProduct();
                 if (request.getQuantity() <= 0) {
                     cart.getItems().remove(item);
-                    cart.setTotalPrice(cart.getTotalPrice().subtract(oldItemTotalPrice));
-
-                } else if (product.getStockQuantity() < request.getQuantity()) {
-                    throw new IllegalArgumentException("Không đủ số lượng sản phẩm trong kho.");
+                    cartItemRepository.delete(item);
+                } else if (product.getStockQuantity() == null || product.getStockQuantity() < request.getQuantity()) {
+                    throw new IllegalArgumentException("Không đủ số lượng sản phẩm trong kho. Chỉ còn " + (product.getStockQuantity() != null ? product.getStockQuantity() : 0) + " sản phẩm.");
                 } else {
-                    item.setQuantity(request.getQuantity());
-                    BigDecimal newItemTotalPrice = item.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
-                    item.setItemTotalPrice(newItemTotalPrice);
-                    cart.setTotalPrice(cart.getTotalPrice().subtract(oldItemTotalPrice).add(newItemTotalPrice));
+                    item.setQuantity(request.getQuantity()); // Cập nhật số lượng
+                    cartItemRepository.save(item);
                 }
             } else if (item.getItemType() == Global.ItemType.PET) {
                 if (request.getQuantity() <= 0) {
                     cart.getItems().remove(item);
-                    cart.setTotalPrice(cart.getTotalPrice().subtract(oldItemTotalPrice));
-
+                    cartItemRepository.delete(item);
                 } else if (request.getQuantity() != 1) {
                     throw new IllegalArgumentException("Số lượng thú cưng phải là 1.");
                 } else {
                     item.setQuantity(1);
-                    BigDecimal newItemTotalPrice = item.getPrice();
-                    item.setItemTotalPrice(newItemTotalPrice);
-                    if (oldItemTotalPrice.compareTo(newItemTotalPrice) != 0) {
-                        cart.setTotalPrice(cart.getTotalPrice().subtract(oldItemTotalPrice).add(newItemTotalPrice));
-                    }
+                    cartItemRepository.save(item);
                 }
             } else {
                 throw new IllegalStateException("Loại item không xác định trong giỏ hàng.");
@@ -106,7 +98,7 @@ public class CartService {
         return convert.toCartResponse(cart);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CartResponse getCart(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + userId));
@@ -122,7 +114,6 @@ public class CartService {
         } else {
             Cart newCart = new Cart();
             newCart.setUser(user);
-            newCart.setTotalPrice(BigDecimal.ZERO);
             newCart.setItems(new ArrayList<>());
             return cartRepository.save(newCart);
         }
@@ -142,15 +133,12 @@ public class CartService {
 
         if (existingItemOpt.isEmpty()) {
             CartItem newItem = new CartItem();
-            newItem.setCart(cart); // Set mối quan hệ ngược
+            newItem.setCart(cart);
             newItem.setPet(pet);
             newItem.setItemType(Global.ItemType.PET);
             newItem.setQuantity(1);
-            newItem.setPrice(pet.getPrice());
-            newItem.setItemTotalPrice(pet.getPrice());
             cart.getItems().add(newItem);
-            cart.setTotalPrice(cart.getTotalPrice().add(newItem.getItemTotalPrice()));
-            cartRepository.save(cart);
+            cartItemRepository.save(newItem);
         }
     }
 
@@ -170,12 +158,8 @@ public class CartService {
                 .filter(item -> Global.ItemType.PRODUCT.equals(item.getItemType()) && item.getProduct() != null && item.getProduct().getId().equals(productId))
                 .findFirst();
 
-
         if (existingItemOpt.isPresent()) {
             CartItem existingItem = existingItemOpt.get();
-
-            BigDecimal oldItemTotalPrice = existingItem.getItemTotalPrice() == null ? BigDecimal.ZERO : existingItem.getItemTotalPrice();
-
             int newQuantity = existingItem.getQuantity() + quantity;
 
             if (product.getStockQuantity() < newQuantity) {
@@ -183,25 +167,15 @@ public class CartService {
             }
 
             existingItem.setQuantity(newQuantity);
-            BigDecimal newItemTotalPrice = existingItem.getPrice().multiply(BigDecimal.valueOf(newQuantity));
-            existingItem.setItemTotalPrice(newItemTotalPrice);
-
-            cart.setTotalPrice(cart.getTotalPrice().subtract(oldItemTotalPrice).add(newItemTotalPrice));
-            cartRepository.save(cart);
+            cartItemRepository.save(existingItem);
         } else {
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setItemType(Global.ItemType.PRODUCT);
             newItem.setQuantity(quantity);
-            newItem.setPrice(product.getPrice());
-            BigDecimal newItemTotalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
-            newItem.setItemTotalPrice(newItemTotalPrice);
-
             cart.getItems().add(newItem);
-            cart.setTotalPrice(cart.getTotalPrice().add(newItemTotalPrice));
-
-            cartRepository.save(cart);
+            cartItemRepository.save(newItem);
         }
     }
 }

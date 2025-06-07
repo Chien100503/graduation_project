@@ -5,14 +5,20 @@ import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.pet.PetDetailResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetImage;
+import com.petshop.petopia.repository.pet.PetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ConvertPet {
+    private final CalculateDiscount calculateDiscount;
+
     public CreatePetResponse convertToResponse(Pet pet) {
         List<String> imageUrls = pet.getPetImages() != null
                 ? pet.getPetImages().stream()
@@ -41,15 +47,17 @@ public class ConvertPet {
     }
 
     public GetAllPetResponse convertToGetAllPetResponse(Pet pet) {
-        String firstImageUrl = null;
-        if (pet.getPetImages() != null && !pet.getPetImages().isEmpty()) {
-            firstImageUrl = pet.getPetImages().getFirst().getImageUrl();
+        BigDecimal salePercent = BigDecimal.ZERO;
+        if (pet.getBanner() != null && pet.getBanner().getSalePercent() != null) {
+            salePercent = pet.getBanner().getSalePercent();
         }
         return new GetAllPetResponse(
                 pet.getId(),
                 pet.getName(),
+                pet.getThumbnail(),
+                salePercent,
                 pet.getPrice(),
-                firstImageUrl
+                calculateDiscount.calculatePriceDiscount(pet.getPrice(), salePercent)
         );
     }
 

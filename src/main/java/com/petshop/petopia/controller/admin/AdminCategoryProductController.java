@@ -4,7 +4,7 @@ import com.petshop.petopia.dto.request.admin.CreateCategoryRequest;
 import com.petshop.petopia.dto.request.product.CreateBrandRequest;
 import com.petshop.petopia.dto.request.product.CreateTypeRequest;
 import com.petshop.petopia.dto.response.admin.CreateCategoryResponse;
-import com.petshop.petopia.dto.response.product.BrandResponse;
+import com.petshop.petopia.dto.response.product.GetBrandResponse;
 import com.petshop.petopia.dto.response.product.CreateTypeResponse;
 import com.petshop.petopia.service.category.ProductCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class AdminCategoryProductController {
     }
 
     @PostMapping("/product-brand/add")
-    public ResponseEntity<BrandResponse> createBrand(@RequestBody CreateBrandRequest req) {
-        BrandResponse brandResponse = productCategoryService.createBrand(req);
+    public ResponseEntity<GetBrandResponse> createBrand(@RequestBody CreateBrandRequest req) {
+        GetBrandResponse brandResponse = productCategoryService.createBrand(req);
         return new ResponseEntity<>(brandResponse, HttpStatus.CREATED);
     }
 

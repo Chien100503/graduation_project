@@ -1,7 +1,7 @@
 package com.petshop.petopia.controller.admin;
 
 import com.petshop.petopia.dto.request.product.CreateProductRequest;
-import com.petshop.petopia.dto.response.product.ProductResponse;
+import com.petshop.petopia.dto.response.product.CreateProductResponse;
 import com.petshop.petopia.service.admin.AdminProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class AdminProductController {
     @PostMapping(value = "/product/add", consumes = {"multipart/form-data"})
     public ResponseEntity<?> createProduct(@ModelAttribute CreateProductRequest productRequest) {
         try {
-            ProductResponse createProduct = adminProductService.createProduct(productRequest);
+            CreateProductResponse createProduct = adminProductService.createProduct(productRequest);
             return ResponseEntity.ok(createProduct);
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
@@ -41,7 +41,7 @@ public class AdminProductController {
     }
 
     @PutMapping(value = "/product/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductResponse> updateProduct(
+    public ResponseEntity<CreateProductResponse> updateProduct(
             @PathVariable Integer id,
             @RequestPart("product") CreateProductRequest productCreateRequest,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
@@ -49,7 +49,7 @@ public class AdminProductController {
             if (files != null && !files.isEmpty()) {
                 productCreateRequest.setFile(files);
             }
-            ProductResponse updatedProduct = adminProductService.updateProduct(id, productCreateRequest);
+            CreateProductResponse updatedProduct = adminProductService.updateProduct(id, productCreateRequest);
             if (updatedProduct != null) {
                 return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
             } else {

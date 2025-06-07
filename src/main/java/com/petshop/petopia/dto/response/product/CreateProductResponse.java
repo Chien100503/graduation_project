@@ -11,9 +11,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductResponse {
+public class CreateProductResponse {
     private Integer id;
     private String name;
+    private String categoryName;
     private String brandName;
     private String typeName;
     private String description;
@@ -22,8 +23,6 @@ public class ProductResponse {
     private String size;
     private Double weight;
     private String expirationDate;
-    private List<String> imageUrls;
-    private Date createdAt;
-    private Date updatedAt;
-    private String categoryName;
+    private List<String> imageUrl;
+    private String thumbnailUrl;
 }

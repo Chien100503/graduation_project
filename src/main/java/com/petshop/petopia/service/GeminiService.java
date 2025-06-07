@@ -57,7 +57,6 @@ public class GeminiService {
             return new String(Files.readAllBytes(resource.getFile().toPath()));
         } catch (IOException e) {
             e.printStackTrace();
-            // Ném RuntimeException để Spring context không khởi tạo nếu file không đọc được
             throw new RuntimeException("Failed to load hardcoded prompt from file: " + promptFilePath, e);
         }
     }
