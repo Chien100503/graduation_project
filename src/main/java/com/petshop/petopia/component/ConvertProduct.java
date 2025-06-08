@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 @AllArgsConstructor
 public class ConvertProduct {
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
 
     public GetAllProductResponse convertToGetProductResponse(Product product) {
         BigDecimal percentDiscount = BigDecimal.ZERO;
@@ -27,10 +27,10 @@ public class ConvertProduct {
         if (product.getBanner() != null && product.getBanner().getSalePercent() != null) {
             BigDecimal salePercentFromBanner = product.getBanner().getSalePercent();
 
-            percentDiscount = calculateDiscount.getPercentDiscount(salePercentFromBanner);
+            percentDiscount = calculatePrice.getPercentDiscount(salePercentFromBanner);
 
             if (percentDiscount.compareTo(BigDecimal.ZERO) > 0) {
-                priceDiscount = calculateDiscount.calculatePriceDiscount(product.getPrice(), percentDiscount);
+                priceDiscount = calculatePrice.calculatePriceDiscount(product.getPrice(), percentDiscount);
             }
         }
 
@@ -51,9 +51,9 @@ public class ConvertProduct {
                 product.getName(),
                 product.getThumbnail(),
                 averageRate,
-                calculateDiscount.roundBigDecimal(percentDiscount),
+                calculatePrice.roundBigDecimal(percentDiscount),
                 product.getPrice(),
-                calculateDiscount.roundBigDecimal(priceDiscount)
+                calculatePrice.roundBigDecimal(priceDiscount)
         );
     }
 
@@ -63,10 +63,10 @@ public class ConvertProduct {
 
         if (product.getBanner() != null && product.getBanner().getSalePercent() != null) {
             BigDecimal salePercentFromBanner = product.getBanner().getSalePercent();
-            percentDiscount = calculateDiscount.getPercentDiscount(salePercentFromBanner);
+            percentDiscount = calculatePrice.getPercentDiscount(salePercentFromBanner);
 
             if (percentDiscount.compareTo(BigDecimal.ZERO) > 0) {
-                priceDiscount = calculateDiscount.calculatePriceDiscount(product.getPrice(), percentDiscount);
+                priceDiscount = calculatePrice.calculatePriceDiscount(product.getPrice(), percentDiscount);
             }
         }
 
@@ -102,9 +102,9 @@ public class ConvertProduct {
                 typeName,
                 product.getDescription(),
                 averageRate,
-                calculateDiscount.roundBigDecimal(percentDiscount),
+                calculatePrice.roundBigDecimal(percentDiscount),
                 product.getPrice(),
-                calculateDiscount.roundBigDecimal(priceDiscount),
+                calculatePrice.roundBigDecimal(priceDiscount),
                 imageUrls,
                 product.getStockQuantity(),
                 product.getSize(),

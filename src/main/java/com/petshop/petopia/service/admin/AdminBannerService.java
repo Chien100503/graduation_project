@@ -1,6 +1,6 @@
 package com.petshop.petopia.service.admin;
 
-import com.petshop.petopia.component.CalculateDiscount;
+import com.petshop.petopia.component.CalculatePrice;
 import com.petshop.petopia.component.ConvertBanner;
 import com.petshop.petopia.dto.request.banner.CUBannerRequest;
 import com.petshop.petopia.dto.response.banner.CUBannerResponse;
@@ -14,10 +14,8 @@ import com.petshop.petopia.service.FirebaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +28,7 @@ public class AdminBannerService {
     private final PetRepository petRepository;
     private final ProductRepository productRepository;
     private final FirebaseService firebaseService;
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
     private final ConvertBanner convertBanner;
 
     @Transactional

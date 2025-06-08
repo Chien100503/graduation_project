@@ -1,6 +1,6 @@
 package com.petshop.petopia.service;
 
-import com.petshop.petopia.component.CalculateDiscount;
+import com.petshop.petopia.component.CalculatePrice;
 import com.petshop.petopia.component.ConvertBanner;
 import com.petshop.petopia.dto.response.banner.*;
 import com.petshop.petopia.model.pet.PetImage;
@@ -23,7 +23,7 @@ public class BannerService {
     private final PetRepository petRepository;
     private final ProductRepository productRepository;
     private final FirebaseService firebaseService;
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
     private final ConvertBanner convertBanner;
 
     public List<BannerInfo> getAllBanners() {
@@ -46,7 +46,7 @@ public class BannerService {
                                 firstImageUrl,
                                 pet.getName(),
                                 pet.getPrice(),
-                                calculateDiscount.calculatePriceDiscount(pet.getPrice(), banner.getSalePercent())
+                                calculatePrice.calculatePriceDiscount(pet.getPrice(), banner.getSalePercent())
                         );
                     })
                     .collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class BannerService {
                                 firstImageUrl,
                                 product.getName(),
                                 product.getPrice(),
-                                calculateDiscount.calculatePriceDiscount(product.getPrice(), banner.getSalePercent())
+                                calculatePrice.calculatePriceDiscount(product.getPrice(), banner.getSalePercent())
                         );
                     })
                     .collect(Collectors.toList());

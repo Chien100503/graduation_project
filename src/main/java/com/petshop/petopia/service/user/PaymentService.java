@@ -1,4 +1,4 @@
-package com.petshop.petopia.service;
+package com.petshop.petopia.service.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

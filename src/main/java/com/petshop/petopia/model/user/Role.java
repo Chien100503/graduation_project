@@ -1,5 +1,6 @@
 package com.petshop.petopia.model.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +24,6 @@ public class Role {
     private String name;
 
     @OneToMany(mappedBy = "role")
+    @JsonBackReference
     private List<User> users = new ArrayList<>();
 }

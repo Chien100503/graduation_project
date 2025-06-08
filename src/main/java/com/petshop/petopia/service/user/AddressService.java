@@ -73,7 +73,7 @@ public class AddressService {
 
     @Transactional
     public AddressResponse setDefaultAddress(Integer userId, Integer addressId) {
-        Optional<Address> targetAddressOpt = addressRepository.findByIdAndUser_Id(addressId, userId);
+        Optional<Address> targetAddressOpt = addressRepository.findByIdAndUserId(addressId, userId);
 
         Address targetAddress = targetAddressOpt
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy địa chỉ với ID: " + addressId + " thuộc về người dùng: " + userId));
@@ -93,8 +93,6 @@ public class AddressService {
 
     @Transactional
     public void deleteAddress(Integer userId, Integer addressId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + userId));
         Address addressToDelete = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy địa chỉ với ID: " + addressId));
 

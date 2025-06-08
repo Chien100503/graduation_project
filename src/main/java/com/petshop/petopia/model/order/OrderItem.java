@@ -31,11 +31,13 @@ public class OrderItem {
     private Pet pet;
 
     private Integer quantity;
-    private BigDecimal price;
+
 
     @Transient
     private String imageUrl;
 
+    private BigDecimal priceDiscount;
+    private BigDecimal price;
     @Transient
     private BigDecimal itemTotalPrice;
 

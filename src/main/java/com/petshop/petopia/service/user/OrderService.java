@@ -4,24 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
-import com.petshop.petopia.dto.request.order.OrderItemRequest;
-import com.petshop.petopia.dto.request.order.OrderPendingInfo;
 import com.petshop.petopia.implement.PayosImpl;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.order.*;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.product.Product;
+import com.petshop.petopia.model.sale.Banner;
+import com.petshop.petopia.model.user.Address;
 import com.petshop.petopia.model.user.User;
+
 import com.petshop.petopia.repository.cart.CartItemRepository;
 import com.petshop.petopia.repository.order.OrderItemRepository;
 import com.petshop.petopia.repository.order.OrderRepository;
 import com.petshop.petopia.repository.order.PaymentRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
+import com.petshop.petopia.repository.user.AddressRepository;
 import com.petshop.petopia.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ import vn.payos.type.PaymentLinkData;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong; // Sử dụng AtomicLong để gen orderCode an toàn hơn
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,17 +42,15 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final AddressRepository addressRepository;
     private final PetRepository petRepository;
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
-    private final PaymentRepository paymentRepository; // Inject PaymentRepository
+    private final PaymentRepository paymentRepository;
     private final PayOS payOS;
     private final PayosImpl payOSImpl;
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final AtomicLong orderCodeCounter = new AtomicLong(new Date().getTime() / 1000);
     private static final int DEFAULT_DESCRIPTION_LENGTH = 8;
@@ -61,127 +59,112 @@ public class OrderService {
     @Transactional
     public ObjectNode createOrder(CreateOrderRequest request, Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại."));
 
-        List<OrderItem> orderItems;
-        boolean isFromCart;
-
-        if (request.getItems() != null && !request.getItems().isEmpty()) {
-            orderItems = processDirectOrderItems(request.getItems());
-            isFromCart = false;
-        } else {
-            orderItems = processCartOrderItems(userId);
-            isFromCart = true;
+        if (request.getAddressId() == null) {
+            throw new IllegalArgumentException("Vui lòng cung cấp ID địa chỉ giao hàng.");
         }
+        Address shippingAddressDetails = addressRepository.findByIdAndUserId(request.getAddressId(), userId)
+                .orElseThrow(() -> new RuntimeException("Địa chỉ giao hàng không hợp lệ hoặc không thuộc về người dùng này."));
+
+        List<OrderItem> orderItems = processCartItemsAndPrepareOrderItems(userId);
 
         isOrderValid(orderItems);
 
-        BigDecimal totalPrice = calculateTotalPrice(orderItems);
+        BigDecimal finalTotalPrice = calculateTotalPriceFromOrderItems(orderItems);
 
-        Order order = createAndSaveOrder(user, request, totalPrice);
-
-        if (isFromCart) {
-            cartItemRepository.deleteCartItemsByUserId(userId);
-        }
-
-        if (Global.PaymentMethod.PAYOS.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
-            return handlePayOSPayment(order, user, orderItems, totalPrice, request.getShippingAddress(), request.getPhoneNumber());
-        } else if (Global.PaymentMethod.COD.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
-            return handleCodPayment(order, orderItems);
-        } else {
-            throw new RuntimeException("Phương thức thanh toán không hợp lệ hoặc chưa được xử lý.");
-        }
-    }
-
-    private Order createAndSaveOrder(User user, CreateOrderRequest request, BigDecimal totalPrice) {
         Order order = new Order();
         order.setUser(user);
-        order.setShippingAddress(request.getShippingAddress());
-        order.setPhoneNumber(request.getPhoneNumber());
-        order.setOrderDate(new Date());
-        order.setPaid(false);
-        order.setDelivered(false);
-        order.setReceived(false);
-        order.setTotalPrice(totalPrice);
+        order.setRecipientName(shippingAddressDetails.getRecipientName());
+        order.setShippingAddress(shippingAddressDetails.getFullAddress());
+        order.setPhoneNumber(shippingAddressDetails.getPhone());
+        order.setTotalPrice(finalTotalPrice);
         order.setStatus(Global.OrderStatus.PENDING);
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+
+        updateInventoryAndSaveOrderItems(order, orderItems);
+
+        cartItemRepository.deleteCartItemsByUserId(userId);
+
+
+        ObjectNode response;
+        if (Global.PaymentMethod.PAYOS.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
+            response = handlePayOSPayment(order, finalTotalPrice);
+        } else if (Global.PaymentMethod.COD.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
+            response = handleCodPayment(order);
+        } else {
+            throw new RuntimeException("Phương thức thanh toán không hợp lệ hoặc chưa được hỗ trợ.");
+        }
+
+        return response;
     }
 
-
     public PaymentLinkData getPaymentDetails(Long orderCode, Integer userId) {
-        String redisKey = String.valueOf(orderCode);
-        OrderPendingInfo pendingInfo = (OrderPendingInfo) redisTemplate.opsForValue().get(redisKey);
+        Payment payment = paymentRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin thanh toán với mã: " + orderCode));
 
-        if (pendingInfo == null) {
-            throw new IllegalArgumentException("Không tìm thấy yêu cầu thanh toán đang chờ xử lý với mã: " + orderCode);
+        Order order = payment.getOrder();
+        if (order == null || !order.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập thông tin thanh toán này.");
         }
         try {
             return payOS.getPaymentLinkInformation(orderCode);
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching order details from PayOS", e);
+            throw new RuntimeException("Lỗi khi lấy thông tin chi tiết đơn hàng từ PayOS: " + e.getMessage(), e);
         }
     }
 
-    private List<OrderItem> processCartOrderItems(Integer userId) {
-        List<CartItem> cartItems = cartItemRepository.findByUserId(userId); // Giả sử có phương thức này
+    private List<OrderItem> processCartItemsAndPrepareOrderItems(Integer userId) {
+        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
 
         if (cartItems == null || cartItems.isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống.");
+            throw new RuntimeException("Giỏ hàng của bạn đang trống. Không thể tạo đơn hàng.");
         }
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setPet(cartItem.getPet());
-            orderItem.setQuantity(cartItem.getQuantity());
-            if (orderItem.getProduct() != null) {
-                Product product = productRepository.findById(orderItem.getProduct().getId())
-                        .orElseThrow(() -> new RuntimeException("Sản phẩm trong giỏ hàng không tồn tại: " + orderItem.getProduct().getId()));
-                orderItem.setPrice(product.getPrice());
-            } else if (orderItem.getPet() != null) {
-                Pet pet = petRepository.findById(orderItem.getPet().getId())
-                        .orElseThrow(() -> new RuntimeException("Thú cưng trong giỏ hàng không tồn tại: " + orderItem.getPet().getId()));
-                orderItem.setPrice(pet.getPrice());
-            } else {
-                throw new RuntimeException("Mục trong giỏ hàng không hợp lệ.");
-            }
-            orderItems.add(orderItem);
-        }
-        return orderItems;
-    }
 
-    private List<OrderItem> processDirectOrderItems(List<OrderItemRequest> requestItems) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderItemRequest requestItem : requestItems) {
-            OrderItem orderItem = new OrderItem();
+            BigDecimal originalPrice;
+            Banner itemBanner = null;
 
-            if (requestItem.getProductId() != null) {
-                Product product = productRepository.findById(requestItem.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + requestItem.getProductId()));
+            if (cartItem.getProduct() != null) {
+                Product product = productRepository.findById(cartItem.getProduct().getId())
+                        .orElseThrow(() -> new RuntimeException("Sản phẩm trong giỏ hàng không tồn tại: " + cartItem.getProduct().getId()));
                 orderItem.setProduct(product);
-                orderItem.setQuantity(requestItem.getQuantity());
-                orderItem.setPrice(product.getPrice());
-            } else if (requestItem.getPetId() != null) {
-                // Tìm Pet theo ID từ request
-                Pet pet = petRepository.findById(requestItem.getPetId())
-                        .orElseThrow(() -> new RuntimeException("Thú cưng không tồn tại với ID: " + requestItem.getPetId()));
+                originalPrice = product.getPrice();
+                itemBanner = product.getBanner();
+            } else if (cartItem.getPet() != null) {
+                Pet pet = petRepository.findById(cartItem.getPet().getId())
+                        .orElseThrow(() -> new RuntimeException("Thú cưng trong giỏ hàng không tồn tại: " + cartItem.getPet().getId()));
                 orderItem.setPet(pet);
-                orderItem.setQuantity(1);
-                orderItem.setPrice(pet.getPrice());
+                originalPrice = pet.getPrice();
+                itemBanner = pet.getBanner();
             } else {
-                throw new RuntimeException("Thông tin sản phẩm hoặc thú cưng không hợp lệ cho mua trực tiếp.");
+                throw new RuntimeException("Mục trong giỏ hàng không hợp lệ (thiếu sản phẩm hoặc thú cưng).");
             }
 
-            if (orderItem.getQuantity() <= 0) {
-                throw new RuntimeException("Số lượng sản phẩm/thú cưng phải lớn hơn 0.");
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(originalPrice);
+
+            BigDecimal priceAfterBannerDiscount = originalPrice;
+            if (itemBanner != null && itemBanner.getSalePercent() != null) {
+                if (itemBanner.getIsActive()) {
+                    BigDecimal discountFactor = BigDecimal.ONE.subtract(itemBanner.getSalePercent());
+                    priceAfterBannerDiscount = originalPrice.multiply(discountFactor);
+                }
             }
+            orderItem.setPriceDiscount(priceAfterBannerDiscount.max(BigDecimal.ZERO));
+
             orderItems.add(orderItem);
         }
         return orderItems;
     }
 
     private void isOrderValid(List<OrderItem> orderItems) {
+        if (orderItems.isEmpty()) {
+            throw new RuntimeException("Đơn hàng không có sản phẩm/thú cưng nào.");
+        }
         for (OrderItem item : orderItems) {
             if (item.getProduct() == null && item.getPet() == null) {
                 throw new RuntimeException("Mục đơn hàng không hợp lệ: Thiếu thông tin sản phẩm hoặc thú cưng.");
@@ -197,7 +180,7 @@ public class OrderService {
                 Pet pet = petRepository.findById(item.getPet().getId())
                         .orElseThrow(() -> new RuntimeException("Thú cưng không tồn tại: " + item.getPet().getId()));
                 if (!pet.getStatus()) {
-                    throw new RuntimeException("Thú cưng '" + pet.getName() + "' không có sẵn.");
+                    throw new RuntimeException("Thú cưng '" + pet.getName() + "' hiện không có sẵn để bán.");
                 }
                 if (item.getQuantity() != 1) {
                     throw new RuntimeException("Số lượng thú cưng phải là 1.");
@@ -206,40 +189,38 @@ public class OrderService {
         }
     }
 
-    private BigDecimal calculateTotalPrice(List<OrderItem> orderItems) {
+    private BigDecimal calculateTotalPriceFromOrderItems(List<OrderItem> orderItems) {
         BigDecimal total = BigDecimal.ZERO;
         for (OrderItem item : orderItems) {
-            if (item.getPrice() != null && item.getQuantity() != null) {
-                total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-            } else {
-                throw new RuntimeException("Thông tin giá hoặc số lượng sản phẩm/thú cưng không hợp lệ.");
+            if (item.getPriceDiscount() == null || item.getQuantity() == null) {
+                throw new RuntimeException("Thông tin giá đã giảm hoặc số lượng của một sản phẩm/thú cưng trong đơn hàng không hợp lệ.");
             }
+            total = total.add(item.getPriceDiscount().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         return total;
     }
 
     @Transactional
-    public ObjectNode handlePayOSPayment(Order order, User user, List<OrderItem> orderItems, BigDecimal totalPrice, String shippingAddress, String phoneNumber) {
-
+    public ObjectNode handlePayOSPayment(Order order, BigDecimal finalTotalPrice) {
         ObjectNode response = objectMapper.createObjectNode();
         Payment payment = null;
 
         try {
-            long orderCode = 1000000000L + new Random().nextLong(900000000);
+            long payosOrderCode = orderCodeCounter.incrementAndGet();
             String description = generateRandomString();
 
-            List<ItemData> payosItems = orderItems.stream()
+            List<ItemData> payosItems = order.getItems().stream()
                     .map(item -> ItemData.builder()
                             .name(item.getProduct() != null ? item.getProduct().getName() : item.getPet().getName())
                             .quantity(item.getQuantity())
-                            .price(item.getPrice().intValue())
+                            .price(item.getPriceDiscount().intValue())
                             .build())
                     .collect(Collectors.toList());
 
             PaymentData paymentData = PaymentData.builder()
-                    .orderCode(orderCode)
+                    .orderCode(payosOrderCode)
                     .description(description)
-                    .amount(totalPrice.intValue())
+                    .amount(finalTotalPrice.intValue())
                     .items(payosItems)
                     .returnUrl("")
                     .cancelUrl("")
@@ -250,25 +231,27 @@ public class OrderService {
 
             payment = new Payment();
             payment.setPaymentMethod(Global.PaymentMethod.PAYOS);
-            payment.setOrderCode(orderCode);
+            payment.setOrderCode(payosOrderCode);
             payment.setTransactionId(data.getPaymentLinkId());
             payment.setTransactionContent(description);
-
             payment.setOrder(order);
-            order.setPayment(payment);
 
+            payment = paymentRepository.save(payment);
+
+            order.setPayment(payment);
             orderRepository.save(order);
 
             response.put("error", 0);
-            response.put("message", "success");
-//            response.set("data", objectMapper.valueToTree(data));
+            response.put("message", "Tạo yêu cầu thanh toán PayOS thành công.");
+            response.put("orderCode", payosOrderCode);
             response.put("qrCode", data.getQrCode());
+            response.put("checkoutUrl", data.getCheckoutUrl());
 
             return response;
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error handling PayOS payment initiation for Order ID " + (order != null ? order.getId() : "N/A") + ": " + e.getMessage());
+            System.err.println("Lỗi khi khởi tạo thanh toán PayOS cho Đơn hàng ID " + (order != null ? order.getId() : "N/A") + ": " + e.getMessage());
 
             if (order != null) {
                 order.setStatus(Global.OrderStatus.FAILED);
@@ -278,43 +261,43 @@ public class OrderService {
         }
     }
 
-    private ObjectNode handleCodPayment(Order order, List<OrderItem> orderItems) {
-        updateInventoryAndSaveOrderItems(order, orderItems);
-        ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectNode handleCodPayment(Order order) {
         ObjectNode response = objectMapper.createObjectNode();
+
         Payment payment = new Payment();
         payment.setPaymentMethod(Global.PaymentMethod.COD);
-        payment.setPaymentDate(new Date());
-        payment.setTransactionContent("COD-" + UUID.randomUUID());
+        payment.setTransactionContent("COD-" + UUID.randomUUID().toString().substring(0, 8));
         payment.setOrder(order);
-        order.setStatus(Global.OrderStatus.CONFIRMED);
-        paymentRepository.save(payment);
+
+        payment = paymentRepository.save(payment);
+
         order.setPayment(payment);
+        order.setStatus(Global.OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
-        response.put("error", 0); // Thêm trường error
+        response.put("error", 0);
         response.put("message", "Đơn hàng COD đã được tạo thành công.");
-        response.set("data", objectMapper.valueToTree(order));
         return response;
     }
 
     private void updateInventoryAndSaveOrderItems(Order order, List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
-            orderItem.setOrder(order); // Set order cho từng item
-            orderItemRepository.save(orderItem); // Lưu OrderItem
+            orderItem.setOrder(order);
+            orderItemRepository.save(orderItem);
 
-            // Cập nhật số lượng/trạng thái trong kho
             if (orderItem.getProduct() != null) {
-                Product product = orderItem.getProduct();
+                Product product = productRepository.findById(orderItem.getProduct().getId())
+                        .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại khi cập nhật tồn kho: " + orderItem.getProduct().getId()));
                 if (product.getStockQuantity() < orderItem.getQuantity()) {
-                    throw new RuntimeException("Sản phẩm '" + product.getName() + "' không đủ số lượng tồn kho khi cập nhật.");
+                    throw new RuntimeException("Sản phẩm '" + product.getName() + "' không đủ số lượng tồn kho để cập nhật.");
                 }
                 product.setStockQuantity(product.getStockQuantity() - orderItem.getQuantity());
                 productRepository.save(product);
             } else if (orderItem.getPet() != null) {
-                Pet pet = orderItem.getPet();
+                Pet pet = petRepository.findById(orderItem.getPet().getId())
+                        .orElseThrow(() -> new RuntimeException("Thú cưng không tồn tại khi cập nhật trạng thái: " + orderItem.getPet().getId()));
                 if (!pet.getStatus()) {
-                    throw new RuntimeException("Thú cưng '" + pet.getName() + "' không có sẵn khi cập nhật.");
+                    throw new RuntimeException("Thú cưng '" + pet.getName() + "' hiện không có sẵn để bán.");
                 }
                 pet.setStatus(false);
                 petRepository.save(pet);
@@ -334,34 +317,35 @@ public class OrderService {
 
     @Transactional
     public PaymentLinkData cancelOrder(Long orderCode, Integer userId) {
-        String redisKey = String.valueOf(orderCode);
+        Payment payment = paymentRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin thanh toán với mã: " + orderCode));
 
-        OrderPendingInfo pendingInfo = (OrderPendingInfo) redisTemplate.opsForValue().get(redisKey);
-
-        if (pendingInfo == null) {
-            throw new IllegalArgumentException("Không tìm thấy yêu cầu thanh toán đang chờ xử lý với mã: " + orderCode);
+        Order order = payment.getOrder();
+        if (order == null) {
+            throw new RuntimeException("Không tìm thấy đơn hàng liên kết với thanh toán này.");
         }
-
-        if (!pendingInfo.getUserId().equals(userId)) {
+        if (!order.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("Bạn không có quyền hủy yêu cầu thanh toán này.");
         }
 
         try {
             PaymentLinkData cancelledPayosOrder = payOS.cancelPaymentLink(orderCode, null);
 
-            redisTemplate.delete(redisKey);
+            order.setStatus(Global.OrderStatus.CANCELLED);
+            orderRepository.save(order);
+
             return cancelledPayosOrder;
         } catch (Exception e) {
-            System.err.println("Error cancelling PayOS payment link for orderCode " + orderCode + ": " + e.getMessage());
+            System.err.println("Lỗi khi hủy link thanh toán PayOS cho orderCode " + orderCode + ": " + e.getMessage());
             throw new RuntimeException("Lỗi khi hủy yêu cầu thanh toán PayOS với mã " + orderCode + ": " + e.getMessage(), e);
         }
     }
 
     private List<OrderItem> getOrderItemsForReorder(Integer orderId, Integer userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
         if (!order.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("You do not have permission to access this order.");
+            throw new AccessDeniedException("Bạn không có quyền truy cập đơn hàng này.");
         }
         return order.getItems();
     }

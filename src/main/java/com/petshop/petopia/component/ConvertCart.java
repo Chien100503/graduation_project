@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ConvertCart {
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
 
     public CartResponse toCartResponse(Cart cart) {
         if (cart == null) {
@@ -88,7 +88,7 @@ public class ConvertCart {
 
         cartItemResponse.setQuantity(quantity);
 
-        BigDecimal priceDiscount = calculateDiscount.calculatePriceDiscount(originalPrice, salePercent); // Đổi thành calculateFinalPrice nếu bạn đã sửa trong CalculateDiscount
+        BigDecimal priceDiscount = calculatePrice.calculatePriceDiscount(originalPrice, salePercent); // Đổi thành calculateFinalPrice nếu bạn đã sửa trong CalculateDiscount
         BigDecimal itemTotalPrice = priceDiscount.multiply(BigDecimal.valueOf(cartItem.getQuantity()))
                 .setScale(2, RoundingMode.HALF_UP);
 

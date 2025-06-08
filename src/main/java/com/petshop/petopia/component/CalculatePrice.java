@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Component
-public class CalculateDiscount {
+public class CalculatePrice {
     private static final BigDecimal HUNDRED = new BigDecimal("100");
     private static final int DECIMAL_PLACES = 2;
 

@@ -1,12 +1,12 @@
 package com.petshop.petopia.model.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petshop.petopia.model.review.ProductRating;
 import com.petshop.petopia.model.review.Review;
 import com.petshop.petopia.model.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +33,7 @@ public class User {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
+    @JsonManagedReference
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)

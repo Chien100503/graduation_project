@@ -32,6 +32,8 @@ public class Order {
 
     private Date orderDate;
     private BigDecimal totalPrice;
+
+    private String recipientName;
     private String shippingAddress;
     private String phoneNumber;
 

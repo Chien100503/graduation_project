@@ -5,7 +5,6 @@ import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.pet.PetDetailResponse;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetImage;
-import com.petshop.petopia.repository.pet.PetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ConvertPet {
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
 
     public CreatePetResponse convertToResponse(Pet pet) {
         List<String> imageUrls = pet.getPetImages() != null
@@ -57,7 +56,7 @@ public class ConvertPet {
                 pet.getThumbnail(),
                 salePercent,
                 pet.getPrice(),
-                calculateDiscount.calculatePriceDiscount(pet.getPrice(), salePercent)
+                calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent)
         );
     }
 

@@ -21,6 +21,7 @@ public class Address {
     private Integer id;
 
     private String name;
+    private String recipientName;
     private String phone;
     private String fullAddress;
     private boolean isDefault;

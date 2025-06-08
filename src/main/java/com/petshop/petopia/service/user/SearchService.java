@@ -1,7 +1,7 @@
 // File: SearchService.java
 package com.petshop.petopia.service.user;
 
-import com.petshop.petopia.component.CalculateDiscount;
+import com.petshop.petopia.component.CalculatePrice;
 import com.petshop.petopia.component.CalculateRating;
 import com.petshop.petopia.dto.request.user.SearchRequest;
 import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class SearchService {
     private final PetRepository petRepository;
     private final ProductRepository productRepository;
     private final CalculateRating calculateRating;
-    private final CalculateDiscount calculateDiscount;
+    private final CalculatePrice calculatePrice;
 
     public List<GetAllPetResponse> searchPets(SearchRequest request) {
         return petRepository.findAll((root, query, cb) -> {
@@ -71,7 +70,7 @@ public class SearchService {
                 pet.getThumbnail(),
                 pet.getBanner().getSalePercent(),
                 pet.getPrice(),
-                calculateDiscount.calculatePriceDiscount(pet.getPrice(), pet.getBanner().getSalePercent())
+                calculatePrice.calculatePriceDiscount(pet.getPrice(), pet.getBanner().getSalePercent())
         );
     }
 
@@ -86,7 +85,7 @@ public class SearchService {
                 roundedAverageRating,
                 product.getBanner().getSalePercent(),
                 product.getPrice(),
-                calculateDiscount.calculatePriceDiscount(product.getPrice(), product.getBanner().getSalePercent())
+                calculatePrice.calculatePriceDiscount(product.getPrice(), product.getBanner().getSalePercent())
         );
     }
 }

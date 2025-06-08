@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateOrderRequest {
-    private String shippingAddress;
-    private String phoneNumber;
+    private Integer addressId;
     private Global.PaymentMethod paymentMethod;
-    private List<OrderItemRequest> items;
 }
