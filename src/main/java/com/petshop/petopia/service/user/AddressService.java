@@ -58,6 +58,9 @@ public class AddressService {
         if (request.getFullAddress() != null) {
             existingAddress.setFullAddress(request.getFullAddress());
         }
+        if (request.getRecipientName() != null) {
+            existingAddress.setRecipientName(request.getRecipientName());
+        }
         if (request.getIsDefault() != null) {
             if (request.getIsDefault() != existingAddress.isDefault()) {
                 existingAddress.setDefault(request.getIsDefault());
