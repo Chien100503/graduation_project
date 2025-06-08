@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
+// import com.petshop.petopia.dto.response.order.OrderResponseDTO; // <-- Đảm bảo import DTO nếu bạn dùng
 import com.petshop.petopia.implement.PayosImpl;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.order.*;
@@ -82,7 +83,11 @@ public class OrderService {
         order.setStatus(Global.OrderStatus.PENDING);
         order = orderRepository.save(order);
 
-        updateInventoryAndSaveOrderItems(order, orderItems);
+        // --- THAY ĐỔI QUAN TRỌNG ĐỂ CÁC ITEMS ĐƯỢC GÁN VÀO ORDER TRƯỚC KHI GỌI CÁC PHƯƠNG THỨC XỬ LÝ THANH TOÁN ---
+        order.setItems(orderItems); // Gán danh sách OrderItem vào đối tượng Order
+        // -----------------------------------------------------------------------------------------------------
+
+        updateInventoryAndSaveOrderItems(order, orderItems); // Dòng này vẫn hoạt động như cũ, nhưng giờ order.getItems() đã có dữ liệu
 
         cartItemRepository.deleteCartItemsByUserId(userId);
 
@@ -115,7 +120,7 @@ public class OrderService {
     }
 
     private List<OrderItem> processCartItemsAndPrepareOrderItems(Integer userId) {
-        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
+        List<CartItem> cartItems = cartItemRepository.findByUserId(userId); // <-- CÂN NHẮC THÊM @Query FETCH JOIN Ở ĐÂY NẾU VẤN ĐỀ VỀ "KHÔNG LẤY ĐƯỢC VẬT" CÓ LIÊN QUAN ĐẾN LAZY LOADING
 
         if (cartItems == null || cartItems.isEmpty()) {
             throw new RuntimeException("Giỏ hàng của bạn đang trống. Không thể tạo đơn hàng.");
@@ -129,12 +134,15 @@ public class OrderService {
             Banner itemBanner = null;
 
             if (cartItem.getProduct() != null) {
+                // Đảm bảo Product đã được tải đầy đủ (nếu cartItemRepository.findByUserId không dùng FETCH JOIN)
+                // Hoặc bạn có thể tải lại Product/Pet trong đây nếu cần dữ liệu đầy đủ hơn
                 Product product = productRepository.findById(cartItem.getProduct().getId())
                         .orElseThrow(() -> new RuntimeException("Sản phẩm trong giỏ hàng không tồn tại: " + cartItem.getProduct().getId()));
                 orderItem.setProduct(product);
                 originalPrice = product.getPrice();
                 itemBanner = product.getBanner();
             } else if (cartItem.getPet() != null) {
+                // Đảm bảo Pet đã được tải đầy đủ
                 Pet pet = petRepository.findById(cartItem.getPet().getId())
                         .orElseThrow(() -> new RuntimeException("Thú cưng trong giỏ hàng không tồn tại: " + cartItem.getPet().getId()));
                 orderItem.setPet(pet);
@@ -209,21 +217,35 @@ public class OrderService {
             long payosOrderCode = orderCodeCounter.incrementAndGet();
             String description = generateRandomString();
 
+            // --- CHẮC CHẮN order.getItems() ĐÃ CÓ DỮ LIỆU Ở ĐÂY SAU KHI THAY ĐỔI TRONG createOrder ---
             List<ItemData> payosItems = order.getItems().stream()
-                    .map(item -> ItemData.builder()
-                            .name(item.getProduct() != null ? item.getProduct().getName() : item.getPet().getName())
-                            .quantity(item.getQuantity())
-                            .price(item.getPriceDiscount().intValue())
-                            .build())
+                    .map(item -> {
+                        String name = "";
+                        // Đảm bảo tên sản phẩm/thú cưng không null
+                        if (item.getProduct() != null) {
+                            name = item.getProduct().getName();
+                        } else if (item.getPet() != null) {
+                            name = item.getPet().getName();
+                        }
+                        if (name == null || name.isEmpty()) {
+                            name = "Unknown Item"; // Fallback nếu tên vẫn null/empty
+                        }
+                        return ItemData.builder()
+                                .name(name)
+                                .quantity(item.getQuantity())
+                                .price(item.getPriceDiscount().intValue())
+                                .build();
+                    })
                     .collect(Collectors.toList());
+            // -----------------------------------------------------------------------------------------
 
             PaymentData paymentData = PaymentData.builder()
                     .orderCode(payosOrderCode)
                     .description(description)
                     .amount(finalTotalPrice.intValue())
                     .items(payosItems)
-                    .returnUrl("")
-                    .cancelUrl("")
+                    .returnUrl("") // Cần điền URL thực tế
+                    .cancelUrl("") // Cần điền URL thực tế
                     .expiredAt(payOSImpl.calculateExpiredTime())
                     .build();
 
@@ -276,6 +298,8 @@ public class OrderService {
 
         response.put("error", 0);
         response.put("message", "Đơn hàng COD đã được tạo thành công.");
+        // Bạn có thể thêm DTO ở đây nếu muốn trả về thông tin order cho client
+        // response.set("data", objectMapper.valueToTree(OrderResponseDTO.fromEntity(order)));
         return response;
     }
 
@@ -346,6 +370,9 @@ public class OrderService {
         if (!order.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("Bạn không có quyền truy cập đơn hàng này.");
         }
+        // Đảm bảo các OrderItem được tải cùng với Order nếu muốn trả về
+        // order.getItems() có thể kích hoạt LazyInitializationException nếu session đã đóng
+        // Nếu cần đảm bảo OrderItem được tải, bạn có thể dùng FETCH JOIN trong OrderRepository
         return order.getItems();
     }
 }
