@@ -1,76 +1,47 @@
-import 'package:ecom_app/common/widgets/products/cart/product_quantity.dart';
-import 'package:ecom_app/features/checkout/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import '../../../../features/checkout/models/cart_item_model.dart';
-import '../../../../utils/constants/sizes.dart';
-import '../products_card/product_price.dart';
-import 'cat_item.dart';
 
 class ECartItems extends StatelessWidget {
-  const ECartItems({
-    super.key,
-    this.showAddRemoveButton = true,
-    required this.isEditing,
-    required this.selectedItems,
-  });
-
-  final bool showAddRemoveButton;
+  final List<CartItemModel> cartItems;
   final bool isEditing;
   final Set<CartItemModel> selectedItems;
+  final void Function(CartItemModel item, bool? selected)? onItemSelected;
+
+  const ECartItems({
+    super.key,
+    required this.cartItems,
+    required this.isEditing,
+    required this.selectedItems,
+    this.onItemSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final cartController = CartController.instance;
-    return Obx(
-          () => ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: cartController.cartItems.length,
-        separatorBuilder: (_, __) => const SizedBox(height: ESizes.defaultBetweenSections),
-        itemBuilder: (_, index) {
-          final item = cartController.cartItems[index];
-          return Column(
-            children: [
-              ECartItem(
-                cartItem: item,
-                isEditing: isEditing,
-                selectedItems: selectedItems,
-                onItemSelected: (isSelected) {
-                  if (isSelected == true) {
-                    selectedItems.add(item);
-                  } else {
-                    selectedItems.remove(item);
-                  }
-                },
-              ),
-              if (showAddRemoveButton && !isEditing)
-                const SizedBox(height: ESizes.defaultBetweenItem),
-              if (showAddRemoveButton && !isEditing)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        const SizedBox(width: 70),
-                        EProductQuantityWithAddRemoveButton(
-                          quantity: item.quantity,
-                          add: () => cartController.addOneToCart(item),
-                          remove: () => cartController.removeOneFromCart(item),
-                        ),
-                      ],
-                    ),
-                    EProductPrice(
-                      price: (item.price * item.quantity).toStringAsFixed(2),
-                    ),
-                  ],
-                ),
-            ],
-          );
-        },
-      ),
+    return Column(
+      children: cartItems.map((item) {
+        final name = item.productName ?? item.petName ?? 'No Name';
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            leading: const Icon(Icons.shopping_cart),
+            title: Text(name, style: Theme.of(context).textTheme.titleMedium),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Price: \$${item.price.toStringAsFixed(2)}'),
+                Text('Quantity: ${item.quantity}'),
+                Text('Total: \$${item.itemTotalPrice.toStringAsFixed(2)}'),
+              ],
+            ),
+            trailing: isEditing
+                ? Checkbox(
+              value: selectedItems.contains(item),
+              onChanged: (value) => onItemSelected?.call(item, value),
+            )
+                : null,
+          ),
+        );
+      }).toList(),
     );
   }
 }

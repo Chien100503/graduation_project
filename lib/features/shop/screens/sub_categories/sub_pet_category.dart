@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/appbar/appbar.dart';
 import 'package:pet_shop/common/widgets/images/round_images.dart';
-import 'package:pet_shop/common/widgets/products_card/product_cards_horizontal.dart';
+import 'package:pet_shop/common/widgets/products_card/product_cards_horizontal_for_pet.dart';
+import 'package:pet_shop/common/widgets/products_card/product_cards_horizontal_for_product.dart';
 import 'package:pet_shop/common/widgets/shimmer/horizontal_product_shimmer.dart';
 import 'package:pet_shop/common/widgets/texts/section_heading.dart';
 import 'package:pet_shop/features/shop/controllers/categories_controller/pet_category_controller.dart';
@@ -69,7 +70,7 @@ class SubPetCategoryScreen extends StatelessWidget {
                           if (widget != null) return widget;
 
                           final pets = snapshot.data!;
-                          print(' giong cho ${breed.name}');
+                          print('${breed.name}');
                           return Column(
                             children: [
                               ESectionHeading(
@@ -93,7 +94,7 @@ class SubPetCategoryScreen extends StatelessWidget {
                                       width: ESizes.defaultBetweenItem),
                                   itemCount: pets.length,
                                   itemBuilder: (context, index) =>
-                                      EProductCardsHorizontal(product: pets[index]),
+                                      EProductCardsHorizontalForPet(pet: pets[index]),
                                 ),
                               ),
                               const SizedBox(height: ESizes.defaultBetweenSections),

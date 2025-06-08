@@ -1,4 +1,4 @@
 class Config {
   static const baseUrl =
-      'https://warthog-subtle-dodo.ngrok-free.app/api';
+      'http://192.168.2.121:8080/api';
 }

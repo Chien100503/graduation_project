@@ -2,6 +2,9 @@ import 'package:intl/intl.dart';
 
 class EFormatter {
 
+  static NumberFormat priceFormatter(double price) {
+    return NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
+  }
   static String formatDate(DateTime? date) {
     date ??= DateTime.now();
     return DateFormat('dd-MMM-yyyy').format(date);

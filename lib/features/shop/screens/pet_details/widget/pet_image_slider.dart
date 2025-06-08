@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/controllers/products/image_pet_controller.dart';
 import 'package:pet_shop/features/shop/controllers/products/image_product_controller.dart';
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';
@@ -11,15 +13,15 @@ import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/helpers/helper_functions.dart';
 
-class EProductImageSlider extends StatelessWidget {
-  const EProductImageSlider({super.key, required this.product});
+class EPetImageSlider extends StatelessWidget {
+  const EPetImageSlider({super.key, required this.product});
 
-  final PettDetailModel product;
+  final PetDetailModel product;
 
   @override
   Widget build(BuildContext context) {
     final dark = EHelperFunctions.isDarkMode(context);
-    final controller = Get.put(ImagesProductController()); // Use Get.find to get the existing instance
+    final controller = Get.put(ImagesPetController()); // Use Get.find to get the existing instance
 
     // Ensure the controller has been properly initialized before calling it
     final images = controller.getAllProductImages(product);

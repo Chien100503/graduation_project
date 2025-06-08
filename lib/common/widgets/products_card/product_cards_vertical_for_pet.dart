@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/controllers/products/product_controller.dart';
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
+import 'package:pet_shop/features/shop/screens/pet_details/pet_detail.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
+import '../../../features/shop/screens/product_details/product_detail.dart';
 import '../../../utils/constants/enums.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../../styles/box_shadow.dart';
@@ -10,22 +15,21 @@ import '../images/round_images.dart';
 import '../texts/bran_title_with_verify_icon.dart';
 import '../texts/product_title_text.dart';
 
-class EProductCardsVerticalForProduct extends StatelessWidget {
-  const EProductCardsVerticalForProduct({super.key, required this.product});
+class EProductCardsVerticalForPet extends StatelessWidget {
+  const EProductCardsVerticalForPet({super.key, required this.product});
 
-  final ProductDetailModel product;
+  final PetDetailModel product;
 
   @override
   Widget build(BuildContext context) {
+    final controller = ProductController();
     final dark = EHelperFunctions.isDarkMode(context);
-
     return GestureDetector(
-      onTap: (){},
-      // onTap: () => Get.to(
-      //       () => ProductDetail(product: product),
-      //   transition: Transition.fadeIn,
-      //   duration: const Duration(milliseconds: 500),
-      // ),
+      onTap: () => Get.to(
+            () => PetDetail(product: product),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 500),
+      ),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 26),
         child: Container(
@@ -60,7 +64,7 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                           horizontal: ESizes.sm, vertical: ESizes.xs),
                       bg: EColors.accent,
                       child: Text(
-                        '${product.price.toStringAsFixed(0)}%',
+                        '10%',
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge!
@@ -86,7 +90,7 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                       smallSize: true,
                     ),
                     EBrandTitleWithVerifyIcon(
-                      title: product.brandName,
+                      title: product.breedName,
                       maxLines: 1,
                       brandTextSize: TextSizes.small,
                     ),

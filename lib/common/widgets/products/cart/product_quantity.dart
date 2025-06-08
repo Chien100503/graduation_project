@@ -1,7 +1,7 @@
-import 'package:ecom_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../../utils/constants/sizes.dart';
 import '../../custom_shape/circle_icon.dart';
 
 class EProductQuantityWithAddRemoveButton extends StatelessWidget {

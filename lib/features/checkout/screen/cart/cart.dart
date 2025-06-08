@@ -1,18 +1,18 @@
-import 'package:ecom_app/common/widgets/appbar/appbar.dart';
-import 'package:ecom_app/common/widgets/loader/animation_loader_widget.dart';
-import 'package:ecom_app/common/widgets/products/cart/cart_items.dart';
-import 'package:ecom_app/features/checkout/controllers/cart_controller.dart';
-import 'package:ecom_app/navigation_menu.dart';
-import 'package:ecom_app/utils/constants/images_strings.dart';
-import 'package:ecom_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../common/widgets/appbar/appbar.dart';
+import '../../../../common/widgets/loader/animation_loader_widget.dart';
+import '../../../../common/widgets/products/cart/cart_items.dart';
+import '../../../../navigation_menu.dart';
+import '../../../../utils/constants/images_strings.dart';
+import '../../../../utils/constants/sizes.dart';
+import '../../controller/cart_controller/cart_controller.dart';
 import '../../models/cart_item_model.dart';
-import '../payment/payment.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+  const CartScreen({super.key, required this.cartItems});
+  final List<CartItemModel> cartItems;
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -21,11 +21,16 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   bool isEditing = false;
   final Set<CartItemModel> selectedItems = {};
+  final controller = CartController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchCartItems();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = CartController.instance;
-
     return Scaffold(
       appBar: EAppBar(
         title: Text(
@@ -35,7 +40,10 @@ class _CartScreenState extends State<CartScreen> {
         showBackArrow: true,
         actions: [
           TextButton(
-            child: Text(isEditing ? 'Done' : 'Select All', style: Theme.of(context).textTheme.bodyMedium,),
+            child: Text(
+              isEditing ? 'Done' : 'Select All',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             onPressed: () {
               setState(() {
                 isEditing = !isEditing;
@@ -45,80 +53,98 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-      body: Obx(
-            () {
-          final emptyWidget = EAnimationLoaderWidget(
-            text: 'Whoops!, Cart is empty',
-            animation: EImages.loaderAnimationOne,
-            showAction: true,
-            actionText: 'Let\'s fill it',
-            onActionPress: () => Get.off(() => const NavigationMenu()),
-          );
 
-          if (controller.cartItems.isEmpty) {
-            return emptyWidget;
-          } else {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              padding: const EdgeInsets.all(ESizes.defaultSpace),
-              child: ECartItems(
-                isEditing: isEditing,
-                selectedItems: selectedItems,
-              ),
-            );
-          }
-        },
-      ),
-      bottomNavigationBar: controller.cartItems.isEmpty
-          ? const SizedBox()
-          : Padding(
-        padding: const EdgeInsets.all(ESizes.defaultSpace),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (isEditing)
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.removeSelectedItems(selectedItems);
-                    setState(() {
-                      selectedItems.clear();
-                      isEditing = false;
-                    });
-                  },
-                  child: const Text('Delete Selected'),
-                ),
-              ),
-            if (isEditing)
-              const SizedBox(width: 8),
-            if (isEditing)
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.clearCart();
-                    setState(() {
-                      selectedItems.clear();
-                      isEditing = false;
-                    });
-                  },
-                  child: const Text('Delete All'),
-                ),
-              ),
-            if (!isEditing)
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => Get.to(
-                        () => const PaymentScreen(),
-                    transition: Transition.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 400),
+      // Body
+      body: Obx(() {
+        final isEmpty = controller.cartItems.isEmpty;
+
+        final emptyWidget = EAnimationLoaderWidget(
+          text: 'Whoops!, Cart is empty',
+          animation: EImages.loaderAnimation,
+          showAction: true,
+          actionText: 'Let\'s fill it',
+          onActionPress: () => Get.off(() => const NavigationMenu()),
+        );
+
+        if (isEmpty) {
+          return emptyWidget;
+        } else {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            padding: const EdgeInsets.all(ESizes.defaultSpace),
+            child: ECartItems(
+              cartItems: controller.cartItems.toList(),
+              isEditing: isEditing,
+              selectedItems: selectedItems,
+              onItemSelected: (item, selected) {
+                setState(() {
+                  if (selected == true) {
+                    selectedItems.add(item);
+                  } else {
+                    selectedItems.remove(item);
+                  }
+                });
+              },
+            ),
+          );
+        }
+      }),
+
+      // Bottom Bar
+      bottomNavigationBar: Obx(() {
+        final isEmpty = controller.cartItems.isEmpty;
+
+        if (isEmpty) return const SizedBox();
+
+        return Padding(
+          padding: const EdgeInsets.all(ESizes.defaultSpace),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (isEditing)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      for (final item in selectedItems) {
+                        controller.updateItemQuantity(item.id, 0); // ✅ Cập nhật quantity = 0
+                      }
+                      setState(() {
+                        selectedItems.clear();
+                        isEditing = false;
+                      });
+                    },
+                    child: const Text('Delete Selected'),
                   ),
-                  child: Obx(() => Text(
-                      'Checkout \$${controller.totalCartPrice.value.toStringAsFixed(2)}')),
                 ),
-              ),
-          ],
-        ),
-      ),
+              if (isEditing) const SizedBox(width: 8),
+              if (isEditing)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.clearCart(); // ✅ Xoá tất cả
+                      setState(() {
+                        selectedItems.clear();
+                        isEditing = false;
+                      });
+                    },
+                    child: const Text('Delete All'),
+                  ),
+                ),
+              if (!isEditing)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Get.to(
+                          () => () {}, // TODO: Replace with actual CheckoutScreen
+                      transition: Transition.rightToLeftWithFade,
+                      duration: const Duration(milliseconds: 400),
+                    ),
+                    child: const Text('Checkout'),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

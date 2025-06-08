@@ -1,5 +1,6 @@
-import 'package:ecom_app/utils/constants/colors.dart';
 import 'package:flutter/cupertino.dart';
+
+import '../../utils/constants/colors.dart';
 
 class EBoxShadow {
   static final verticalProductBoxShadow = BoxShadow(

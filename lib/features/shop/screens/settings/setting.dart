@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pet_shop/common/widgets/appbar/appbar.dart';
 import 'package:pet_shop/features/authen/screens/login/login.dart';
+import 'package:pet_shop/features/shop/screens/chatbot/chat_history.dart';
 
 import '../../../../common/widgets/custom_shape/containers/primary_header_container.dart';
 import '../../../../common/widgets/list_title/setting_menu_title.dart';
@@ -12,6 +13,9 @@ import '../../../../data/repositories/user_repository.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/helpers/helper_functions.dart';
+import '../../../checkout/controller/cart_controller/cart_controller.dart';
+import '../../../checkout/screen/cart/cart.dart';
+import '../../../personalizations/screens/addresses/address.dart';
 import '../../../personalizations/screens/profile/profile.dart';
 
 
@@ -60,100 +64,69 @@ class Setting extends StatelessWidget {
                     title: 'Account setting',
                   ),
                   const SizedBox(height: ESizes.defaultBetweenItem),
-                  // ESettingMenuTitle(
-                  //   onTap: () => Get.to(() => const AddressScreen(),
-                  //       transition: Transition.downToUp,
-                  //       duration: const Duration(milliseconds: 400)),
-                  //   title: 'My address',
-                  //   subTitle: 'Set shopping delivery address',
-                  //   icon: Icon(
-                  //     Iconsax.location,
-                  //     size: 30,
-                  //     color: dark ? EColors.thirdColor : EColors.primaryColor,
-                  //   ),
-                  // ),
-                  const Divider(),
-                  // ESettingMenuTitle(
-                  //   onTap: () => Get.to(() => const OrderScreen(),
-                  //       transition: Transition.downToUp,
-                  //       duration: const Duration(milliseconds: 400)),
-                  //   title: 'My Orders',
-                  //   subTitle: 'Set shopping delivery address',
-                  //   icon: Icon(
-                  //     Iconsax.smart_car4,
-                  //     size: 30,
-                  //     color: dark ? EColors.thirdColor : EColors.primaryColor,
-                  //   ),
-                  // ),
-                  const Divider(),
-                  // ESettingMenuTitle(
-                  //   onTap: () => Get.to(() => const CartScreen(),
-                  //       transition: Transition.downToUp,
-                  //       duration: const Duration(milliseconds: 400)),
-                  //   title: 'My cart',
-                  //   subTitle: 'Withdraw balance to registered bank account',
-                  //   icon: Icon(
-                  //     Iconsax.shopping_cart,
-                  //     size: 30,
-                  //     color: dark ? EColors.thirdColor : EColors.primaryColor,
-                  //   ),
-                  // ),
+                  ESettingMenuTitle(
+                    onTap: () => Get.to(() => const AddressScreen(),
+                        transition: Transition.downToUp,
+                        duration: const Duration(milliseconds: 400)),
+                    title: 'My address',
+                    subTitle: 'Set shopping delivery address',
+                    icon: Icon(
+                      Iconsax.location,
+                      size: 30,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                  ),
                   const Divider(),
                   ESettingMenuTitle(
-                    onTap: () {},
-                    title: 'Bank account',
+                    onTap: (){},
+                    // onTap: () => Get.to(() => const OrderScreen(),
+                    //     transition: Transition.downToUp,
+                    //     duration: const Duration(milliseconds: 400)),
+                    title: 'My Orders',
+                    subTitle: 'Set shopping delivery address_controller',
+                    icon: Icon(
+                      Iconsax.smart_car4,
+                      size: 30,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                  ),
+                  const Divider(),
+                  ESettingMenuTitle(
+                    onTap: () {
+                      final cartItem = Get.find<CartController>().cartItems.toList();
+                      Get.to(() => CartScreen(cartItems: cartItem),
+                          transition: Transition.downToUp,
+                          duration: const Duration(milliseconds: 400));
+                    },
+                    title: 'My cart',
                     subTitle: 'Withdraw balance to registered bank account',
                     icon: Icon(
-                      Iconsax.copy,
+                      Iconsax.shopping_cart,
                       size: 30,
                       color: dark ? EColors.thirdColor : EColors.primaryColor,
                     ),
                   ),
-                  const Divider(),
-                  // ESettingMenuTitle(
-                  //   onTap: () => Get.to(() => DemoPaymentStripe()),
-                  //   title: 'Notification',
-                  //   subTitle: 'Set any kind of notification message',
-                  //   icon: Icon(
-                  //     Iconsax.notification,
-                  //     size: 30,
-                  //     color: dark ? EColors.thirdColor : EColors.primaryColor,
-                  //   ),
-                  // ),
-                  const Divider(),
-                  ESettingMenuTitle(
-                    onTap: () {},
-                    title: 'Account security',
-                    subTitle:
-                        'E-Wallet, credit cards & instant debit registered',
-                    icon: Icon(
-                      Iconsax.safe_home,
-                      size: 30,
-                      color: dark ? EColors.thirdColor : EColors.primaryColor,
-                    ),
-                  ),
-                  const Divider(),
-                  const ESectionHeading(
-                    title: 'App setting',
-                    showActionButton: false,
-                  ),
-                  const SizedBox(height: ESizes.defaultBetweenItem),
-                  ESettingMenuTitle(
-                    onTap: () {},
-                    title: 'Load data',
-                    subTitle: 'Upload data to your Cloud Firebase',
-                    icon: Icon(
-                      Iconsax.document_upload,
-                      size: 30,
-                      color: dark ? EColors.thirdColor : EColors.primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: ESizes.defaultBetweenSections * 2),
 
+                  const Divider(),
+                  ESettingMenuTitle(
+                    onTap: () => Get.to(() => ChatHistoryScreen()),
+                    title: 'Chatbot',
+                    subTitle: 'Set any kind of notification message',
+                    icon: Icon(
+                      Iconsax.notification,
+                      size: 30,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: ESizes.defaultBetweenSections,),
                   // Logout
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.red)
+                      ),
                       onPressed: () async {
                         try {
                           await UserRepository().logout();

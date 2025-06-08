@@ -1,19 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
+import 'package:pet_shop/features/shop/screens/product_details/product_detail.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 
-class ImagesProductController extends GetxController {
-  static ImagesProductController get instance => Get.find();
+class ImagesPetController extends GetxController {
+  static ImagesPetController get instance => Get.find();
 
   // Variable
   RxString selectedProductImages = ''.obs;
 
   // Get all Images from product and variation
-  List<String> getAllProductImages(PettDetailModel product) {
+  List<String> getAllProductImages(PetDetailModel product) {
     Set<String> images = {};
 
     // load thumbnail image

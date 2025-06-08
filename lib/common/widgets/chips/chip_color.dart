@@ -1,7 +1,8 @@
-import 'package:ecom_app/common/widgets/custom_shape/circle_container.dart';
-import 'package:ecom_app/utils/constants/colors.dart';
-import 'package:ecom_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+
+import '../../../utils/constants/colors.dart';
+import '../../../utils/helpers/helper_functions.dart';
+import '../custom_shape/circle_container.dart';
 
 class EChipColor extends StatelessWidget {
   const EChipColor({

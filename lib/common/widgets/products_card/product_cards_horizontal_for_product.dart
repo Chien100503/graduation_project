@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop/features/shop/models/products/product_model.dart';
+import 'package:pet_shop/utils/formatters/formatter.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -10,10 +12,10 @@ import '../images/round_images.dart';
 import '../texts/bran_title_with_verify_icon.dart';
 import '../texts/brand_title_text.dart';
 
-class EProductCardsHorizontal extends StatelessWidget {
-  const EProductCardsHorizontal({super.key, required this.product});
+class EProductCardsHorizontalForProduct extends StatelessWidget {
+  const EProductCardsHorizontalForProduct({super.key, required this.product});
 
-  final PetModel product;
+  final ProductModel product;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class EProductCardsHorizontal extends StatelessWidget {
                     boxFit: BoxFit.contain,
                     applyImageRadius: true,
                     isNetworkImage: true,
-                    imageUrl: product.thumbnail,
+                    imageUrl: product.imageUrls,
                     bg: Colors.transparent,
                   ),
                   Positioned(
@@ -89,9 +91,9 @@ class EProductCardsHorizontal extends StatelessWidget {
                       brandTextSize: TextSizes.medium,
                     ),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    EBrandTitleWithVerifyIcon(title: product.breed.name ?? ''),
+                    EBrandTitleWithVerifyIcon(title: product.type.name ?? ''),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    Text('Price ${product.price.toInt()}'),
+                    // Text('Price ${EFormatter.priceFormatter(product.price)}'),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

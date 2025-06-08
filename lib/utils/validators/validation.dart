@@ -15,7 +15,7 @@ class EValidation {
     final emailRegExp = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
     if (!emailRegExp.hasMatch(value)) {
-      return "Invalid email address.";
+      return "Invalid email address_controller.";
     }
     return null;
   }

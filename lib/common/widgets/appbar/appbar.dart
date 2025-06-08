@@ -14,13 +14,14 @@ class EAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.showBackArrow = false,
       this.leadingIcon,
       this.actions,
-      this.leadingOnPressed});
+      this.leadingOnPressed, this.background});
 
   final Widget? title;
   final bool showBackArrow;
   final IconData? leadingIcon;
   final List<Widget>? actions;
   final VoidCallback? leadingOnPressed;
+  final Color? background;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +31,11 @@ class EAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
           automaticallyImplyLeading: false,
           leading: showBackArrow
-              ? IconButton(onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left, color: dark ? EColors.thirdColor : EColors.primaryColor,))
+              ? IconButton(onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left, color: dark ? EColors.primaryColor : EColors.primaryColor,))
               : leadingIcon != null ? IconButton(onPressed: leadingOnPressed, icon: Icon(leadingIcon)) : null,
         title: title,
         actions: actions,
+        backgroundColor: background,
       ),
     );
   }

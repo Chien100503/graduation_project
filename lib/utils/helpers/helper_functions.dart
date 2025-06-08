@@ -6,35 +6,35 @@ import 'package:intl/intl.dart';
 
 class EHelperFunctions {
   static Color? getColor(String value) {
-    if (value == 'green') {
+    if (value == 'Green') {
       return Colors.green;
-    } else if (value == 'beige') {
+    } else if (value == 'Beige') {
       return const Color(0xfffaebd7);
-    } else if (value == 'red') {
+    } else if (value == 'Red') {
       return Colors.red;
-    } else if (value == 'aquatic') {
+    } else if (value == 'Aquatic') {
       return const Color(0xff00ffff);
-    } else if (value == 'blue') {
+    } else if (value == 'Blue') {
       return Colors.blue;
-    } else if (value == 'yellow') {
+    } else if (value == 'Yellow') {
       return Colors.yellow;
-    } else if (value == 'orange') {
+    } else if (value == 'Orange') {
       return Colors.orange;
-    } else if (value == 'purple') {
+    } else if (value == 'Purple') {
       return Colors.purple;
-    } else if (value == 'pink') {
+    } else if (value == 'Pink') {
       return Colors.pink;
-    } else if (value == 'brown') {
+    } else if (value == 'Brown') {
       return Colors.brown;
-    } else if (value == 'grey') {
+    } else if (value == 'Grey') {
       return Colors.grey;
-    } else if (value == 'black') {
+    } else if (value == 'Black') {
       return Colors.black;
-    } else if (value == 'white') {
+    } else if (value == 'White') {
       return Colors.white;
-    } else if (value == 'gold') {
+    } else if (value == 'Gold') {
       return const Color.fromARGB(255, 228, 216, 101);
-    } else if (value == 'silver') {
+    } else if (value == 'Silver') {
       return const Color.fromARGB(255, 208, 208, 206);
     } else {
       return null; // Return null if no matching color is found

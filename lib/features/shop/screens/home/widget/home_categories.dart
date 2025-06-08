@@ -5,7 +5,6 @@ import 'package:pet_shop/features/shop/models/categories/category_models.dart';
 
 import '../../../../../common/widgets/image_text_widget/vertical_image_text.dart';
 import '../../../../../common/widgets/shimmer/shimmer_categories.dart';
-import '../../sub_categories/sub_categories.dart';
 import '../../sub_categories/sub_pet_category.dart';
 import '../../sub_categories/sub_product_category.dart';
 

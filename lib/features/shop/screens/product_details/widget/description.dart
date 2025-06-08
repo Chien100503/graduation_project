@@ -1,7 +1,7 @@
-import 'package:ecom_app/utils/constants/sizes.dart';
-import 'package:ecom_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:see_more/see_more.dart';
+import 'package:pet_shop/utils/constants/sizes.dart';
+import 'package:pet_shop/utils/helpers/helper_functions.dart';
+import 'package:see_more/see_more_widget.dart';
 import '../../../../../common/widgets/texts/section_heading.dart';
 import '../../../../../utils/constants/colors.dart';
 

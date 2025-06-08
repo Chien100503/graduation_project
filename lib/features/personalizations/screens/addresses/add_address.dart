@@ -1,15 +1,16 @@
-import 'package:ecom_app/common/widgets/appbar/appbar.dart';
-import 'package:ecom_app/features/personalization/controllers/address/address_controller.dart';
-import 'package:ecom_app/utils/helpers/helper_functions.dart';
-import 'package:ecom_app/utils/validators/validation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
+import '../../../../utils/helpers/helper_functions.dart';
+import '../../../../utils/validators/validation.dart';
+import '../../controllers/address_controller/address_controller.dart';
 import '../../models/address_model.dart';
 
-class AddNewAddress extends StatelessWidget {
+class AddNewAddress extends StatefulWidget {
   const AddNewAddress({
     super.key,
     this.initialAddress,
@@ -20,24 +21,35 @@ class AddNewAddress extends StatelessWidget {
   final bool isEditing;
 
   @override
+  State<AddNewAddress> createState() => _AddNewAddressState();
+}
+
+class _AddNewAddressState extends State<AddNewAddress> {
+  final controller = Get.put(AddressController());
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing && widget.initialAddress != null) {
+      _initializeFields();
+    }
+  }
+
+  void _initializeFields() {
+    final address = widget.initialAddress!;
+    controller.name.text = address.name;
+    controller.phoneNumber.text = address.phone;
+    controller.fullAddress.text = address.fullAddress;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dark = EHelperFunctions.isDarkMode(context);
-    final controller = AddressController.instance;
-
-    // Initialize controller fields with initialAddress if editing
-    if (isEditing && initialAddress != null) {
-      controller.name.text = initialAddress!.name;
-      controller.phoneNumber.text = initialAddress!.phoneNumber;
-      controller.street.text = initialAddress!.street;
-      controller.ward.text = initialAddress!.ward;
-      controller.city.text = initialAddress!.city;
-      controller.country.text = initialAddress!.country;
-    }
 
     return Scaffold(
       appBar: EAppBar(
         title: Text(
-          isEditing ? 'Edit Address' : 'Add Address',
+          widget.isEditing ? 'Edit Address' : 'Add Address',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         showBackArrow: true,
@@ -49,125 +61,93 @@ class AddNewAddress extends StatelessWidget {
             key: controller.addressFormKey,
             child: Column(
               children: [
+                // Name Field
                 TextFormField(
                   controller: controller.name,
                   validator: (value) => EValidation.validateEmptyText('Name', value),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Iconsax.user,
-                        color:
-                        dark ? EColors.thirdColor : EColors.primaryColor),
-                    label: Text('Name',
-                        style: TextStyle(
-                            color: dark
-                                ? EColors.thirdColor
-                                : EColors.primaryColor)),
+                    prefixIcon: Icon(
+                      Iconsax.user,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                    label: Text(
+                      'Name',
+                      style: TextStyle(
+                        color: dark ? EColors.thirdColor : EColors.primaryColor,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(
-                  height: ESizes.inputBetweenFields,
-                ),
+
+                const SizedBox(height: ESizes.inputBetweenFields),
+
+                // Phone Number Field
                 TextFormField(
                   controller: controller.phoneNumber,
                   validator: EValidation.validatePhoneNumber,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Iconsax.call,
-                        color:
-                        dark ? EColors.thirdColor : EColors.primaryColor),
-                    label: Text('Phone number',
-                        style: TextStyle(
-                            color: dark
-                                ? EColors.thirdColor
-                                : EColors.primaryColor)),
-                  ),
-                ),
-                const SizedBox(
-                  height: ESizes.inputBetweenFields,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: controller.street,
-                        validator: (value) => EValidation.validateEmptyText('Street', value),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.edit_road,
-                              color: dark
-                                  ? EColors.thirdColor
-                                  : EColors.primaryColor),
-                          label: Text('Street',
-                              style: TextStyle(
-                                  color: dark
-                                      ? EColors.thirdColor
-                                      : EColors.primaryColor)),
-                        ),
+                    prefixIcon: Icon(
+                      Iconsax.call,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                    label: Text(
+                      'Phone number',
+                      style: TextStyle(
+                        color: dark ? EColors.thirdColor : EColors.primaryColor,
                       ),
                     ),
-                    const SizedBox(
-                      width: ESizes.inputBetweenFields,
+                  ),
+                ),
+
+                const SizedBox(height: ESizes.inputBetweenFields),
+
+                // Full Address Field
+                TextFormField(
+                  controller: controller.fullAddress,
+                  validator: (value) => EValidation.validateEmptyText('Full Address', value),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Iconsax.location,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
                     ),
-                    Expanded(
-                      child: TextFormField(
-                        controller: controller.ward,
-                        validator: (value) => EValidation.validateEmptyText('Ward', value),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.maps_home_work_outlined,
-                              color: dark
-                                  ? EColors.thirdColor
-                                  : EColors.primaryColor),
-                          label: Text('Ward',
-                              style: TextStyle(
-                                  color: dark
-                                      ? EColors.thirdColor
-                                      : EColors.primaryColor)),
-                        ),
+                    label: Text(
+                      'Full Address',
+                      style: TextStyle(
+                        color: dark ? EColors.thirdColor : EColors.primaryColor,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(
-                  height: ESizes.inputBetweenFields,
-                ),
-                TextFormField(
-                  controller: controller.city,
-                  validator: (value) => EValidation.validateEmptyText('City', value),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.location_city_outlined,
-                        color:
-                        dark ? EColors.thirdColor : EColors.primaryColor),
-                    label: Text('District',
-                        style: TextStyle(
-                            color: dark
-                                ? EColors.thirdColor
-                                : EColors.primaryColor)),
+                    alignLabelWithHint: true,
                   ),
                 ),
-                const SizedBox(
-                  height: ESizes.inputBetweenFields,
-                ),
-                TextFormField(
-                  controller: controller.country,
-                  validator: (value) => EValidation.validateEmptyText('Country', value),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Iconsax.global_search,
-                        color:
-                        dark ? EColors.thirdColor : EColors.primaryColor),
-                    label: Text('City/Province',
-                        style: TextStyle(
-                            color: dark
-                                ? EColors.thirdColor
-                                : EColors.primaryColor)),
-                  ),
-                ),
+
                 const SizedBox(height: ESizes.defaultBetweenSections),
+
+                // Save/Update Button
                 SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () => controller.addNewAddress(), child: Text(isEditing ? 'Update' : 'Save')))
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (widget.isEditing) {
+                        controller.updateAddress(widget.initialAddress!);
+                      } else {
+                        controller.addNewAddress();
+                      }
+                    },
+                    child: Text(widget.isEditing ? 'Update' : 'Save'),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

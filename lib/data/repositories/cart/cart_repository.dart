@@ -1,0 +1,87 @@
+import 'dart:ui';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:pet_shop/features/checkout/screen/cart/cart.dart';
+import '../../../features/checkout/models/cart_item_model.dart';
+import '../../config.dart';
+
+class CartRepository {
+  final String _baseUrl = Config.baseUrl;
+  final GetStorage _storage = GetStorage();
+  final Dio _dio = Dio();
+
+  Future<void> addToCart({
+    int? productId,
+    int? petId,
+    required double price,
+    required int quantity,
+  }) async {
+    try {
+      final token = _storage.read('TOKEN');
+      print("check token $token");
+      if (token == null) throw Exception('Token không tồn tại');
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      };
+
+      final body = {
+        if (productId != null) 'productId': productId,
+        if (petId != null) 'petId': petId,
+        'price': price,
+        'quantity': quantity,
+      };
+
+      final response = await _dio.post(
+        '$_baseUrl/cart/add',
+        data: body,
+        options: Options(headers: headers),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Thêm giỏ hàng thành công');
+      } else {
+        throw Exception('Thêm giỏ hàng thất bại (${response.statusCode})');
+      }
+    } catch (e) {
+      print('Lỗi, Không thể thêm vào giỏ hàng $e' );
+      Get.snackbar(
+        'Lỗi', 'Không thể thêm vào giỏ hàng',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+        borderRadius: 8,
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 2),
+      );
+    }
+  }
+  Future<List<CartItemModel>> getCartItems() async {
+    final token = _storage.read('TOKEN');
+    if (token == null) throw Exception('Token không tồn tại');
+
+    final response = await _dio.get(
+      '$_baseUrl/cart',
+      options: Options(headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = response.data;
+      final List<dynamic> items = data['items']; // ✅ Lấy danh sách từ key 'items'
+
+      return items.map((json) => CartItemModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Không thể lấy giỏ hàng');
+    }
+  }
+
+
+}

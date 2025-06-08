@@ -1,26 +1,25 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ecom_app/common/widgets/products/favorite_icon/favorite_icon.dart';
-import 'package:ecom_app/features/shop/controllers/product/images_controller.dart';
-import 'package:ecom_app/features/shop/models/product_model.dart';
-import 'package:ecom_app/utils/constants/colors.dart';
-import 'package:ecom_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/controllers/products/image_product_controller.dart';
+import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../common/widgets/custom_shape/curved_edges/curved_edge_widget.dart';
 import '../../../../../common/widgets/images/round_images.dart';
+import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
+import '../../../../../utils/helpers/helper_functions.dart';
 
 class EProductImageSlider extends StatelessWidget {
   const EProductImageSlider({super.key, required this.product});
 
-  final ProductModel product;
+  final ProductDetailModel product;
 
   @override
   Widget build(BuildContext context) {
     final dark = EHelperFunctions.isDarkMode(context);
-    final controller = Get.put(ImagesController()); // Use Get.find to get the existing instance
+    final controller = Get.put(ImagesProductController()); // Use Get.find to get the existing instance
 
     // Ensure the controller has been properly initialized before calling it
     final images = controller.getAllProductImages(product);
@@ -102,7 +101,7 @@ class EProductImageSlider extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     color: Colors.grey.withOpacity(0.3),
                   ),
-                  child: EFavoriteIcon(productId: product.id),
+                  // child: EFavoriteIcon(productId: product.id),
                 ),
               ],
             )

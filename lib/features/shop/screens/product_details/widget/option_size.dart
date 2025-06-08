@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop/common/widgets/chips/chip_color.dart';
 
-import '../../../../../common/widgets/chips/chip_color.dart';
 import '../../../../../common/widgets/texts/section_heading.dart';
 import '../../../../../utils/constants/sizes.dart';
 

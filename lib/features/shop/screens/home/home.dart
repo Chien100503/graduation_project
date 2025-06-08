@@ -1,9 +1,18 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/custom_shape/containers/primary_header_container.dart';
+import 'package:pet_shop/common/widgets/products_card/product_cards_vertical_for_product.dart';
+import 'package:pet_shop/common/widgets/products_card/product_cards_vertical_for_pet.dart';
+import 'package:pet_shop/features/shop/controllers/categories_controller/pet_category_controller.dart';
+import 'package:pet_shop/features/shop/controllers/categories_controller/product_category_controller.dart';
+import 'package:pet_shop/features/shop/controllers/products/pet_controller.dart';
+import 'package:pet_shop/features/shop/controllers/products/product_controller.dart';
 import 'package:pet_shop/features/shop/screens/home/widget/home_categories.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 
+import '../../../../common/widgets/layouts/grid_layout.dart';
+import '../../../../common/widgets/shimmer/vertical_product_card_shimmer.dart';
 import '../../../../common/widgets/texts/section_heading.dart';
 import '../../../../utils/constants/sizes.dart';
 import 'widget/home_appbar.dart';
@@ -17,7 +26,8 @@ Future<void> _refresh(){
 }
   @override
   Widget build(BuildContext context) {
-    // final controller = Get.put(ProductController());
+  final controllerProduct = Get.put(ProductController());
+  final controllerPet = Get.put(PetController());
 
     return Scaffold(
       body: RefreshIndicator(
@@ -63,7 +73,29 @@ Future<void> _refresh(){
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     // Popular text -view all
                     ESectionHeading(
-                      title: 'Popular products',
+                      title: 'Popular Pet',
+                    onPressed: () => ()),
+                    const SizedBox(height: ESizes.defaultBetweenItem),
+                    const SizedBox(height: ESizes.defaultBetweenItem),
+                    Obx(() {
+                      if (controllerPet.isLoading.value) {
+                        return const EVerticalProductCardShimmer();
+                      }
+                      if (controllerPet.allPets.isEmpty) {
+                        return const Center(
+                          child: Text('Data not found'),
+                        );
+                      }
+                      return EGridProductLayout(
+                        itemBuilder: (_, index) => EProductCardsVerticalForPet(
+                          product: controllerPet.allPets()[index],
+                        ),
+                        itemCount: 4,
+                      );
+                    }),
+                    SizedBox(height: ESizes.defaultBetweenSections,),
+                    ESectionHeading(
+                      title: 'Popular Food, Accessory',
                     onPressed: () => ()),
                     //   onPressed: () => Get.to(
                     //       () => AllProductScreen(
@@ -79,22 +111,22 @@ Future<void> _refresh(){
                     //       duration: const Duration(milliseconds: 400)),
                     // ),
                     const SizedBox(height: ESizes.defaultBetweenItem),
-                    // Obx(() {
-                    //   if (controller.isLoad.value) {
-                    //     return const EVerticalProductCardShimmer();
-                    //   }
-                    //   if (controller.featuredProducts.isEmpty) {
-                    //     return const Center(
-                    //       child: Text('Data not found'),
-                    //     );
-                    //   }
-                    //   return EGridProductLayout(
-                    //     itemBuilder: (_, index) => EProductCardVertical(
-                    //       product: controller.featuredProducts[index],
-                    //     ),
-                    //     itemCount: 6,
-                    //   );
-                    // })
+                    Obx(() {
+                      if (controllerProduct.isLoading.value) {
+                        return const EVerticalProductCardShimmer();
+                      }
+                      if (controllerProduct.allProducts.isEmpty) {
+                        return const Center(
+                          child: Text('Data not found'),
+                        );
+                      }
+                      return EGridProductLayout(
+                        itemBuilder: (_, index) => EProductCardsVerticalForProduct(
+                          product: controllerProduct.allProducts[index],
+                        ),
+                        itemCount: controllerProduct.allProducts.length,
+                      );
+                    })
                   ],
                 ),
               ),

@@ -9,11 +9,11 @@ class Routes {
   static const productDetail = '/product-detail';
   static const order = '/order';
   static const checkout = '/checkout';
-  static const cart = '/cart';
+  static const cart = '/cart_controller';
   static const brand = '/brand';
   static const allProduct = '/all-product';
   static const userProfile = '/user-profile';
-  static const userAddress = '/user-address';
+  static const userAddress = '/user-address_controller';
   static const signup = '/signup';
   static const signupSuccess = '/signup-success';
   static const verifyEmail = '/verify-email';
