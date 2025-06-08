@@ -7,10 +7,7 @@ import com.petshop.petopia.dto.response.user.SearchResponse;
 import com.petshop.petopia.service.user.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<SearchResponse> search(
-            @ModelAttribute SearchRequest request) {
+            @RequestBody SearchRequest request) {
         SearchResponse response = searchService.searchAll(request);
         return ResponseEntity.ok(response);
     }

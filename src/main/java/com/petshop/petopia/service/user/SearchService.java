@@ -12,7 +12,9 @@ import com.petshop.petopia.repository.pet.PetRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,35 +28,44 @@ public class SearchService {
     private final ConvertPet convertPet;
     private final ConvertProduct convertProduct;
 
+    @Transactional(readOnly = true)
     public SearchResponse searchAll(SearchRequest request) {
-        String keyword = request.getKeyword();
-        String keywordLike = (keyword == null || keyword.isBlank()) ? null : "%" + keyword.toLowerCase() + "%";
+        String rawKeyword = request.getKeyword();
+        String keyword = (rawKeyword == null || rawKeyword.isBlank()) ? null : rawKeyword.toLowerCase().trim();
 
-        List<Pet> pets = petRepository.findAll((root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (keywordLike != null) {
-                predicates.add(cb.or(
-                        cb.like(cb.lower(root.get("name")), keywordLike),
-                        cb.like(cb.lower(root.join("breed").get("name")), keywordLike),
-                        cb.like(cb.lower(root.join("petCategory").get("name")), keywordLike)
-                ));
-            }
-            predicates.add(cb.isTrue(root.get("status")));  // Chỉ lấy pet status = true (Available)
-            return cb.and(predicates.toArray(new Predicate[0]));
-        });
+        if (keyword == null) {
+            return new SearchResponse(List.of(), List.of());
+        }
 
-        List<Product> products = productRepository.findAll((root, query, cb) -> {
+        String keywordLike = "%" + keyword + "%";
+
+        Specification<Pet> petSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (keywordLike != null) {
-                predicates.add(cb.or(
-                        cb.like(cb.lower(root.get("name")), keywordLike),
-                        cb.like(cb.lower(root.join("brand").get("name")), keywordLike),
-                        cb.like(cb.lower(root.join("prCategory").get("name")), keywordLike),
-                        cb.like(cb.lower(root.join("type").get("name")), keywordLike)
-                ));
-            }
+
+            predicates.add(cb.isTrue(root.get("status")));
+
+            Predicate breedPredicate = cb.like(cb.lower(root.join("breed").get("name")), keywordLike);
+            Predicate petNamePredicate = cb.like(cb.lower(root.get("name")), keywordLike);
+
+            predicates.add(cb.or(breedPredicate, petNamePredicate));
+
             return cb.and(predicates.toArray(new Predicate[0]));
-        });
+        };
+
+        Specification<Product> productSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            Predicate brandPredicate = cb.like(cb.lower(root.join("brand").get("name")), keywordLike);
+            Predicate typePredicate = cb.like(cb.lower(root.join("type").get("name")), keywordLike);
+            Predicate productNamePredicate = cb.like(cb.lower(root.get("name")), keywordLike);
+
+            predicates.add(cb.or(brandPredicate, typePredicate, productNamePredicate));
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<Pet> pets = petRepository.findAll(petSpec);
+        List<Product> products = productRepository.findAll(productSpec);
 
         List<GetAllPetResponse> petResponses = pets.stream()
                 .map(convertPet::convertToGetAllPetResponse)

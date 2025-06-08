@@ -123,6 +123,7 @@
 			<artifactId>ngrok-java-native</artifactId>
 			<version>${ngrok.version}</version>
 			<classifier>${os.detected.classifier}</classifier>
+<!--			<classifier>windows-x86_64</classifier>-->
 			<scope>runtime</scope>
 		</dependency>
 
@@ -171,9 +172,11 @@
 						<goals>
 							<goal>detect</goal>
 						</goals>
+						<phase>initialize</phase>
 					</execution>
 				</executions>
 			</plugin>
+
 
 			<!-- Maven Compiler -->
 			<plugin>
