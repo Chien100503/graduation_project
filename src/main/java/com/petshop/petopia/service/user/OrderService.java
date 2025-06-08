@@ -245,7 +245,6 @@ public class OrderService {
             response.put("message", "Tạo yêu cầu thanh toán PayOS thành công.");
             response.put("orderCode", payosOrderCode);
             response.put("qrCode", data.getQrCode());
-            response.put("checkoutUrl", data.getCheckoutUrl());
 
             return response;
 

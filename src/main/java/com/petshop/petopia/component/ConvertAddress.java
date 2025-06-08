@@ -12,6 +12,7 @@ public class ConvertAddress {
         AddressResponse response = new AddressResponse();
         response.setId(address.getId());
         response.setName(address.getName());
+        response.setRecipientName(address.getRecipientName());
         response.setPhone(address.getPhone());
         response.setFullAddress(address.getFullAddress());
         response.setDefault(address.isDefault());
@@ -21,6 +22,7 @@ public class ConvertAddress {
     public Address convertToEntity(AddressRequest request, User user) {
         Address address = new Address();
         address.setName(request.getName());
+        address.setRecipientName(request.getRecipientName());
         address.setPhone(request.getPhone());
         address.setFullAddress(request.getFullAddress());
         address.setDefault(request.getIsDefault());
