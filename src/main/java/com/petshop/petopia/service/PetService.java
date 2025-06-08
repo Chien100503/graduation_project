@@ -20,7 +20,7 @@ public class PetService {
 
     @Transactional
     public PetDetailResponse getPetById(Integer petId) {
-        Pet pet = petRepository.findById(petId)
+        Pet pet = petRepository.findByIdAndStatusTrue(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thú cưng với ID: " + petId));
 
         return convertPet.convertToGetPetDetailResponse(pet);
@@ -28,7 +28,7 @@ public class PetService {
 
     @Transactional
     public List<GetAllPetResponse> getAllPets() {
-        List<Pet> pets = petRepository.findAll();
+        List<Pet> pets = petRepository.findByStatusTrue();
         return pets.stream()
                 .map(convertPet::convertToGetAllPetResponse)
                 .collect(Collectors.toList());
@@ -36,7 +36,7 @@ public class PetService {
 
     @Transactional
     public List<GetAllPetResponse> getPetByBreed(Integer categoryId, Integer breedId) {
-        List<Pet> pets = petRepository.findByPetCategory_IdAndBreed_Id(categoryId, breedId);
+        List<Pet> pets = petRepository.findByPetCategory_IdAndBreed_IdAndStatusTrue(categoryId, breedId);
         return pets.stream()
                 .map(convertPet::convertToGetAllPetResponse)
                 .collect(Collectors.toList());

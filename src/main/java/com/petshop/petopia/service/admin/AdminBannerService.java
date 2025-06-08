@@ -95,7 +95,7 @@ public class AdminBannerService {
         Banner banner = bannerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + id));
 
-        List<Pet> petsInBanner = petRepository.findByBannerId(id);
+        List<Pet> petsInBanner = petRepository.findByBannerIdAndStatusTrue(id);
         petsInBanner.forEach(pet -> pet.setBanner(null));
         petRepository.saveAll(petsInBanner);
 
@@ -220,7 +220,7 @@ public class AdminBannerService {
             throw new IllegalArgumentException("Tên danh mục không hợp lệ");
         }
 
-        List<Pet> petsByCategory = petRepository.findByPetCategory_Name(categoryName);
+        List<Pet> petsByCategory = petRepository.findByPetCategory_NameAndStatusTrue(categoryName);
         List<Pet> petsToUpdate = new ArrayList<>();
         petsByCategory.forEach(pet -> {
             if (pet.getStatus() && (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId))) {
@@ -235,7 +235,7 @@ public class AdminBannerService {
     public void addPetsByBreedToBanner(Integer bannerId, String breedName) {
         Banner banner = bannerRepository.findById(bannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy banner với ID: " + bannerId));
-        List<Pet> petsByBreed = petRepository.findByBreed_Name(breedName);
+        List<Pet> petsByBreed = petRepository.findByBreed_NameAndStatusTrue(breedName);
         List<Pet> petsToUpdate = new ArrayList<>();
         petsByBreed.forEach(pet -> {
             if (pet.getStatus() && (pet.getBanner() == null || !pet.getBanner().getId().equals(bannerId))) {

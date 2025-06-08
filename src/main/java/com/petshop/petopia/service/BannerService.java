@@ -34,7 +34,7 @@ public class BannerService {
 
     public Optional<BannerDetail> getBannerById(Integer id) {
         return bannerRepository.findById(id).map(banner -> {
-            List<PetWithDiscount> pets = petRepository.findByBannerId(banner.getId()).stream()
+            List<PetWithDiscount> pets = petRepository.findByBannerIdAndStatusTrue(banner.getId()).stream()
                     .map(pet -> {
                         String firstImageUrl = pet.getPetImages().stream()
                                 .findFirst()

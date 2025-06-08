@@ -87,7 +87,7 @@ public class PetCategoryService {
 
     @Transactional(readOnly = true)
     public List<GetAllPetResponse> getPetsByCategoryId(Integer categoryId) {
-        List<Pet> pets = petRepository.findByPetCategory_Id(categoryId);
+        List<Pet> pets = petRepository.findByPetCategory_IdAndStatusTrue(categoryId);
         return pets.stream()
                 .map(convertPet::convertToGetAllPetResponse)
                 .collect(Collectors.toList());
