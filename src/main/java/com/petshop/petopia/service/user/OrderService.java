@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
+import com.petshop.petopia.dto.response.order.OrderResponse;
 import com.petshop.petopia.implement.PayosImpl;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.order.*;
@@ -273,7 +274,7 @@ public class OrderService {
     }
 
     @Transactional
-    private ObjectNode handleCodPayment(Order order, List<OrderItem> orderItems) {
+    public ObjectNode handleCodPayment(Order order, List<OrderItem> orderItems) {
         ObjectNode response = objectMapper.createObjectNode();
 
         updateInventoryAndSaveOrderItems(order, orderItems);
@@ -329,8 +330,26 @@ public class OrderService {
         return sb.toString();
     }
 
+    private void revertInventory(Order order) {
+        if (order.getItems() != null) {
+            for (OrderItem orderItem : order.getItems()) {
+                if (orderItem.getProduct() != null) {
+                    Product product = productRepository.findById(orderItem.getProduct().getId())
+                            .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại khi hoàn tác tồn kho: " + orderItem.getProduct().getId()));
+                    product.setStockQuantity(product.getStockQuantity() + orderItem.getQuantity());
+                    productRepository.save(product);
+                } else if (orderItem.getPet() != null) {
+                    Pet pet = petRepository.findById(orderItem.getPet().getId())
+                            .orElseThrow(() -> new RuntimeException("Thú cưng không tồn tại khi hoàn tác trạng thái: " + orderItem.getPet().getId()));
+                    pet.setStatus(true);
+                    petRepository.save(pet);
+                }
+            }
+        }
+    }
+
     @Transactional
-    public PaymentLinkData cancelOrder(Long orderCode, Integer userId) {
+    public void cancelOrder(Long orderCode, Integer userId) {
         Payment payment = paymentRepository.findByOrderCode(orderCode)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin thanh toán với mã: " + orderCode));
 
@@ -341,26 +360,26 @@ public class OrderService {
         if (!order.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("Bạn không có quyền hủy yêu cầu thanh toán này.");
         }
+        if (order.getStatus() == Global.OrderStatus.CANCELLED ||
+                order.getStatus() == Global.OrderStatus.EXPIRED ||
+                order.getStatus() == Global.OrderStatus.FAILED) {
+            throw new IllegalStateException("Đơn hàng đã ở trạng thái không thể hủy.");
+        }
 
         try {
-            PaymentLinkData cancelledPayosOrder = payOS.cancelPaymentLink(orderCode, null);
+            if (payment.getPaymentMethod() == Global.PaymentMethod.PAYOS && order.getStatus() == Global.OrderStatus.PENDING) {
+                payOS.cancelPaymentLink(orderCode, null);
+            }
+            else if (order.getStatus() == Global.OrderStatus.CONFIRMED) {
+                revertInventory(order);
+            }
 
             order.setStatus(Global.OrderStatus.CANCELLED);
             orderRepository.save(order);
 
-            return cancelledPayosOrder;
         } catch (Exception e) {
-            System.err.println("Lỗi khi hủy link thanh toán PayOS cho orderCode " + orderCode + ": " + e.getMessage());
-            throw new RuntimeException("Lỗi khi hủy yêu cầu thanh toán PayOS với mã " + orderCode + ": " + e.getMessage(), e);
+            System.err.println("Lỗi khi hủy đơn hàng với mã " + orderCode + ": " + e.getMessage());
+            throw new RuntimeException("Lỗi khi hủy đơn hàng: " + e.getMessage(), e);
         }
-    }
-
-    private List<OrderItem> getOrderItemsForReorder(Integer orderId, Integer userId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
-        if (!order.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("Bạn không có quyền truy cập đơn hàng này.");
-        }
-        return order.getItems();
     }
 }
