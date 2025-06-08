@@ -11,7 +11,6 @@ class PetRepository extends GetxController {
 
   Future<List<PetDetailModel>> getAllPets() async {
     final url = Uri.parse('$_baseUrl/pet');
-    print('Requesting: $url');
     final token = _storage.read('TOKEN');
 
     try {
@@ -25,24 +24,54 @@ class PetRepository extends GetxController {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = jsonDecode(response.body);
-        print('Fetched ${jsonList.length} pets.');
 
         return jsonList.map((json) {
           try {
             return PetDetailModel.fromJson(json);
           } catch (e) {
-            print('Error parsing pet item: $e');
-            print('Raw item: $json');
             return null;
           }
         }).whereType<PetDetailModel>().toList();
       } else {
-        print('Server error: ${response.statusCode}');
-        print('Response body: ${response.body}');
         throw Exception('Failed to load pets');
       }
     } catch (e) {
-      print('Exception in getAllPets: $e');
+      rethrow;
+    }
+  }
+
+  Future<PetDetailModel> getPetById(String petId) async {
+    final url = Uri.parse('$_baseUrl/pet/$petId');
+
+    final token = _storage.read('TOKEN');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+
+      if (response.statusCode == 200) {
+
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        // Debug từng field quan trọng
+
+        // In ra tất cả keys trong JSON
+        jsonData.keys.forEach((key) {
+        });
+
+        final petModel = PetDetailModel.fromJson(jsonData);
+
+        return petModel;
+      } else {
+        throw Exception('Failed to load product detail - Status: ${response.statusCode}');
+      }
+    } catch (e) {
       rethrow;
     }
   }

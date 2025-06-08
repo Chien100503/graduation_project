@@ -4,7 +4,6 @@ import 'package:pet_shop/common/widgets/loader/loader.dart';
 
 import '../../../../data/repositories/address/address_repository.dart';
 import '../../../../utils/constants/images_strings.dart';
-import '../../../../utils/helpers/cloud_helper_functions.dart';
 import '../../../../utils/popups/full_screen_loader.dart';
 import '../../models/address_model.dart';
 
@@ -16,6 +15,7 @@ class AddressController extends GetxController {
 
   // Form controllers
   final name = TextEditingController();
+  final recipientName = TextEditingController();
   final phoneNumber = TextEditingController();
   final fullAddress = TextEditingController();
   GlobalKey<FormState> addressFormKey = GlobalKey<FormState>();
@@ -26,7 +26,7 @@ class AddressController extends GetxController {
     id: null,
     name: '',
     phone: '',
-    fullAddress: '',
+    fullAddress: '', recipientName: '',
   ).obs;
 
   @override
@@ -86,7 +86,7 @@ class AddressController extends GetxController {
         name: name.text.trim(),
         phone: phoneNumber.text.trim(),
         fullAddress: fullAddress.text.trim(),
-        isDefault: selectedAddress.value.id == null,
+        isDefault: selectedAddress.value.id == null, recipientName: recipientName.text.trim(),
       );
 
       final newAddress = await addressRepository.addAddress(address);
@@ -166,6 +166,7 @@ class AddressController extends GetxController {
         selectedAddress.value = AddressModel(
           id: null,
           name: '',
+          recipientName: '',
           phone: '',
           fullAddress: '',
         );
@@ -209,4 +210,80 @@ class AddressController extends GetxController {
     fullAddress.dispose();
     super.onClose();
   }
+
+  Future<dynamic> selectNewAddressPopup(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: Obx(() {
+            final addresses = addressList;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Select Shipping Address',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 12),
+                if (addresses.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('No addresses available'),
+                  )
+                else
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: addresses.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (_, index) {
+                      final address = addresses[index];
+                      final isSelected = selectedAddress.value.id == address.id;
+                      return ListTile(
+                        title: Text(address.fullAddress),
+                        subtitle: Text('${address.recipientName} • ${address.phone}'),
+                        trailing: isSelected
+                            ? const Icon(Icons.check_circle, color: Colors.green)
+                            : null,
+                        onTap: () async {
+                          await selectAddress(address);
+                          if (Navigator.canPop(context)) Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: const Text('Add new address'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+
+
+
 }

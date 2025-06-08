@@ -62,7 +62,13 @@ class AddressScreen extends StatelessWidget {
                         Expanded(child: Text(address.fullAddress)),
                       ],
                     ),
-                    subtitle: Text('${address.name} - ${address.phone}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${address.name} - ${address.phone}', style: Theme.of(context).textTheme.titleMedium,),
+                        Text(address.recipientName, style: Theme.of(context).textTheme.titleMedium,),
+                      ],
+                    ),
                     trailing: PopupMenuButton<String>(
                       onSelected: (value) async {
                         if (value == 'edit') {

@@ -42,7 +42,6 @@ class EHomeCategories extends StatelessWidget {
           itemCount: controller.featuredCategories.length,
           itemBuilder: (_, index) {
             final category = controller.featuredCategories[index];
-            print('$category');
             return VerticalImageText(
               title: category.name,
               image: category.image,

@@ -55,7 +55,7 @@ class CartController extends GetxController {
   //
   Future<void> fetchCartItems() async {
     try {
-      final items = await _cartRepo.getCartItems(); // API này bạn cần có
+      final items = await _cartRepo.getCartItems();
       cartItems.assignAll(items);
     } catch (e) {
       print('Lỗi khi lấy giỏ hàng: $e');

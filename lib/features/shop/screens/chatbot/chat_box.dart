@@ -171,15 +171,17 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: isUser
-                          ? (dark ? EColors.primaryColor : EColors.thirdColor)
-                          : Colors.grey.shade300,
+                          ? (dark ? EColors.thirdColor : EColors.primaryColor)
+                          : (dark ? EColors.primaryColor : EColors.thirdColor),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
                       msg.text,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: isUser ? Colors.white : Colors.black,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge!.apply(
+                        color: isUser
+                            ? (dark ? EColors.primaryColor : EColors.thirdColor)
+                            : (dark ? EColors.thirdColor : EColors.primaryColor),
+                      )
                     ),
                   ),
                 );

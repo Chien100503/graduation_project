@@ -1,11 +1,11 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/custom_shape/containers/primary_header_container.dart';
 import 'package:pet_shop/common/widgets/products_card/product_cards_vertical_for_product.dart';
 import 'package:pet_shop/common/widgets/products_card/product_cards_vertical_for_pet.dart';
-import 'package:pet_shop/features/shop/controllers/categories_controller/pet_category_controller.dart';
-import 'package:pet_shop/features/shop/controllers/categories_controller/product_category_controller.dart';
 import 'package:pet_shop/features/shop/controllers/products/pet_controller.dart';
 import 'package:pet_shop/features/shop/controllers/products/product_controller.dart';
 import 'package:pet_shop/features/shop/screens/home/widget/home_categories.dart';
@@ -90,26 +90,13 @@ Future<void> _refresh(){
                         itemBuilder: (_, index) => EProductCardsVerticalForPet(
                           product: controllerPet.allPets()[index],
                         ),
-                        itemCount: 4,
+                        itemCount:controllerPet.allPets.length,
                       );
                     }),
                     SizedBox(height: ESizes.defaultBetweenSections,),
                     ESectionHeading(
                       title: 'Popular Food, Accessory',
                     onPressed: () => ()),
-                    //   onPressed: () => Get.to(
-                    //       () => AllProductScreen(
-                    //             title: 'Popular Products',
-                    //             query: FirebaseFirestore.instance
-                    //                 .collection('Products')
-                    //                 .where('IsFeatured', isEqualTo: true)
-                    //                 .limit(6),
-                    //             futureMethod:
-                    //                 controller.fetchAllFeaturedProducts(),
-                    //           ),
-                    //       transition: Transition.fadeIn,
-                    //       duration: const Duration(milliseconds: 400)),
-                    // ),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     Obx(() {
                       if (controllerProduct.isLoading.value) {
@@ -123,8 +110,10 @@ Future<void> _refresh(){
                       return EGridProductLayout(
                         itemBuilder: (_, index) => EProductCardsVerticalForProduct(
                           product: controllerProduct.allProducts[index],
+
                         ),
-                        itemCount: controllerProduct.allProducts.length,
+
+                        itemCount: min(4, controllerProduct.allProducts.length),
                       );
                     })
                   ],

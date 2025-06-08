@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pet_shop/features/shop/models/products/product_model.dart';
-import 'package:pet_shop/utils/formatters/formatter.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
-import '../../../features/shop/models/products/pet_model.dart';
 import '../../../utils/constants/enums.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../custom_shape/containers/round_container.dart';
@@ -91,7 +89,7 @@ class EProductCardsHorizontalForProduct extends StatelessWidget {
                       brandTextSize: TextSizes.medium,
                     ),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    EBrandTitleWithVerifyIcon(title: product.type.name ?? ''),
+                    EBrandTitleWithVerifyIcon(title: product.type.name),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
                     // Text('Price ${EFormatter.priceFormatter(product.price)}'),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),

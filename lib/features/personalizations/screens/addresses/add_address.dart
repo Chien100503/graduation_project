@@ -64,7 +64,8 @@ class _AddNewAddressState extends State<AddNewAddress> {
                 // Name Field
                 TextFormField(
                   controller: controller.name,
-                  validator: (value) => EValidation.validateEmptyText('Name', value),
+                  validator: (value) =>
+                      EValidation.validateEmptyText('Name', value),
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Iconsax.user,
@@ -78,7 +79,24 @@ class _AddNewAddressState extends State<AddNewAddress> {
                     ),
                   ),
                 ),
-
+                const SizedBox(height: ESizes.inputBetweenFields),
+                TextFormField(
+                  controller: controller.recipientName,
+                  validator: (value) =>
+                      EValidation.validateEmptyText('Name', value),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Iconsax.user,
+                      color: dark ? EColors.thirdColor : EColors.primaryColor,
+                    ),
+                    label: Text(
+                      'Recipient Name',
+                      style: TextStyle(
+                        color: dark ? EColors.thirdColor : EColors.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: ESizes.inputBetweenFields),
 
                 // Phone Number Field
@@ -105,7 +123,8 @@ class _AddNewAddressState extends State<AddNewAddress> {
                 // Full Address Field
                 TextFormField(
                   controller: controller.fullAddress,
-                  validator: (value) => EValidation.validateEmptyText('Full Address', value),
+                  validator: (value) =>
+                      EValidation.validateEmptyText('Full Address', value),
                   maxLines: 3,
                   decoration: InputDecoration(
                     prefixIcon: Icon(

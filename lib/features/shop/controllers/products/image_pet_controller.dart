@@ -2,8 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
-import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
-import 'package:pet_shop/features/shop/screens/product_details/product_detail.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -18,14 +16,14 @@ class ImagesPetController extends GetxController {
   List<String> getAllProductImages(PetDetailModel product) {
     Set<String> images = {};
 
-    // load thumbnail image
-    images.add(product.imageUrls.first);
-    // assign thumbnail as selected image
-    selectedProductImages.value = product.imageUrls.first;
-
-    // get all images from the ProductModel if not null
-    if (product.imageUrls != null) {
-      images.addAll(product.imageUrls!);
+    // Nếu imageUrls không rỗng, lấy ảnh đầu tiên; nếu không, dùng thumbnailUrl
+    if (product.imageUrls.isNotEmpty) {
+      images.add(product.imageUrls.first);
+      selectedProductImages.value = product.imageUrls.first;
+      images.addAll(product.imageUrls);
+    } else {
+      images.add(product.thumbnailUrl);
+      selectedProductImages.value = product.thumbnailUrl;
     }
 
     return images.toList();

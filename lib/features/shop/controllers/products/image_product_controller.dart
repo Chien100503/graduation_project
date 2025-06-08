@@ -9,38 +9,37 @@ import '../../../../utils/constants/sizes.dart';
 class ImagesProductController extends GetxController {
   static ImagesProductController get instance => Get.find();
 
-  // Variable
   RxString selectedProductImages = ''.obs;
 
-  // Get all Images from product and variation
+  // Lấy tất cả hình ảnh của sản phẩm
   List<String> getAllProductImages(ProductDetailModel product) {
     Set<String> images = {};
 
-    // load thumbnail image
-    images.add(product.imageUrls.first);
-    // assign thumbnail as selected image
-    selectedProductImages.value = product.imageUrls.first;
-
-    // get all images from the ProductModel if not null
-    if (product.imageUrls != null) {
-      images.addAll(product.imageUrls!);
+    // Nếu imageUrls không rỗng, lấy ảnh đầu tiên; nếu không, dùng thumbnailUrl
+    if (product.imageUrl.isNotEmpty) {
+      images.add(product.imageUrl.first);
+      selectedProductImages.value = product.imageUrl.first;
+      images.addAll(product.imageUrl);
+    } else {
+      images.add(product.thumbnailUrl);
+      selectedProductImages.value = product.thumbnailUrl;
     }
 
     return images.toList();
   }
 
-  // show images popup
+  // Hiển thị popup phóng to ảnh
   void showEnlargedImage(List<String> images, int initialIndex) {
     final TransformationController controller = TransformationController();
     TapDownDetails? doubleTapDetails;
     bool isZoomed = false;
     final PageController pageController = PageController(initialPage: initialIndex);
+
     Get.to(
           () => Scaffold(
         backgroundColor: EColors.accent,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: GestureDetector(
@@ -73,14 +72,11 @@ class ImagesProductController extends GetxController {
               ),
             ),
             const SizedBox(height: ESizes.defaultBetweenItem),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                width: 200,
-                child: ElevatedButton(
-                  onPressed: () => Get.back(),
-                  child: const Text('Close'),
-                ),
+            SizedBox(
+              width: 200,
+              child: ElevatedButton(
+                onPressed: () => Get.back(),
+                child: const Text('Đóng'),
               ),
             ),
             const SizedBox(height: ESizes.defaultBetweenItem),

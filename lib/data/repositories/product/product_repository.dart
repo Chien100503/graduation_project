@@ -11,7 +11,6 @@ class ProductRepository extends GetxController {
 
   Future<List<ProductDetailModel>> getAllProducts() async {
     final url = Uri.parse('$_baseUrl/product');
-    print('Requesting: $url');
     final token = _storage.read('TOKEN');
 
     try {
@@ -25,24 +24,55 @@ class ProductRepository extends GetxController {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = jsonDecode(response.body);
-        print('Fetched ${jsonList.length} products.');
 
         return jsonList.map((json) {
           try {
             return ProductDetailModel.fromJson(json);
           } catch (e) {
-            print('Error parsing item: $e');
-            print('Raw item: $json');
             return null;
           }
         }).whereType<ProductDetailModel>().toList();
       } else {
-        print('Server error: ${response.statusCode}');
-        print('Response body: ${response.body}');
         throw Exception('Failed to load products');
       }
     } catch (e) {
-      print('Exception in getAllProducts: $e');
+      rethrow;
+    }
+  }
+
+  // Thêm method mới để lấy chi tiết sản phẩm theo ID
+  Future<ProductDetailModel> getProductById(String productId) async {
+    final url = Uri.parse('$_baseUrl/product/$productId');
+
+    final token = _storage.read('TOKEN');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+
+      if (response.statusCode == 200) {
+
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        // Debug từng field quan trọng
+
+        // In ra tất cả keys trong JSON
+        jsonData.keys.forEach((key) {
+        });
+
+        final productModel = ProductDetailModel.fromJson(jsonData);
+
+        return productModel;
+      } else {
+        throw Exception('Failed to load product detail - Status: ${response.statusCode}');
+      }
+    } catch (e) {
       rethrow;
     }
   }

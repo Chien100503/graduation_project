@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pet_shop/features/shop/models/products/product_model.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -90,7 +89,7 @@ class EProductCardsHorizontalForPet extends StatelessWidget {
                       brandTextSize: TextSizes.medium,
                     ),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    EBrandTitleWithVerifyIcon(title: pet.breed.name ?? ''),
+                    EBrandTitleWithVerifyIcon(title: pet.breed.name),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
                     Text('Price ${pet.price.toInt()}'),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
