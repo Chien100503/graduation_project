@@ -54,6 +54,8 @@ public class ConvertPet {
                 pet.getId(),
                 pet.getName(),
                 pet.getThumbnail(),
+                pet.getDescription(),
+                pet.getBreed().getName(),
                 salePercent,
                 pet.getPrice(),
                 calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent)

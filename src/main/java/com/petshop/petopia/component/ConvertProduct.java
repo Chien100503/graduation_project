@@ -51,6 +51,8 @@ public class ConvertProduct {
                 product.getName(),
                 product.getThumbnail(),
                 averageRate,
+                product.getDescription(),
+                product.getBrand().getName(),
                 calculatePrice.roundBigDecimal(percentDiscount),
                 product.getPrice(),
                 calculatePrice.roundBigDecimal(priceDiscount)

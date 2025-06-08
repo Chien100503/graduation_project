@@ -13,6 +13,8 @@ public class GetAllPetResponse {
     private int id;
     private String name;
     private String thumbnailUrl;
+    private String description;
+    private String breedName;
     private BigDecimal percentDiscount;
     private BigDecimal price;
     private BigDecimal priceDiscount;

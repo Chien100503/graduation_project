@@ -14,6 +14,8 @@ public class GetAllProductResponse {
     private String name;
     private String thumbnailUrl;
     private Double rate;
+    private String description;
+    private String brandName;
     private BigDecimal percentDiscount;
     private BigDecimal price;
     private BigDecimal priceDiscount;

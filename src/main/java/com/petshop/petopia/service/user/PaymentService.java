@@ -35,7 +35,6 @@ public class PaymentService {
 
             if ("00".equals(webhookData.getCode())) {
                 Long orderCode = webhookData.getOrderCode();
-
                 Optional<Payment> optionalPayment = paymentRepository.findByOrderCode(orderCode);
 
                 if (optionalPayment.isPresent()) {
@@ -47,14 +46,17 @@ public class PaymentService {
                         order.setPaid(true);
                         orderRepository.save(order);
 
+                        // Gửi thông điệp WebSocket đến Flutter
                         ObjectNode socketMessage = objectMapper.createObjectNode();
                         socketMessage.put("orderCode", orderCode);
                         socketMessage.put("paid", true);
                         socketMessage.put("message", "Thanh toán thành công!");
 
-                        messagingTemplate.convertAndSend("/topic/payment/" + orderCode, socketMessage);
+                        messagingTemplate.convertAndSend(
+                                "/topic/payment/" + orderCode,
+                                socketMessage.toString()
+                        );
                     }
-
                     paymentRepository.save(payment);
                 }
             }
@@ -72,3 +74,4 @@ public class PaymentService {
         }
     }
 }
+
