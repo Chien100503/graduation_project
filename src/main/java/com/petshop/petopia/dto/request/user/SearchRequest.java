@@ -11,11 +11,4 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class SearchRequest {
     private String keyword;
-    private Integer petCategoryId;
-    private Integer productCategoryId;
-    private Integer brandId;
-    private Integer typeId;
-    private Integer breedId;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
 }

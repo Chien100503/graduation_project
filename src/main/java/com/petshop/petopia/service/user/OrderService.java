@@ -234,8 +234,8 @@ public class OrderService {
                     .description(description)
                     .amount(finalTotalPrice.intValue())
                     .items(payosItems)
-                    .returnUrl("http://localhost:8080/api/v1/user/payments/payos-callback")
-                    .cancelUrl("http://localhost:8080/api/v1/user/payments/payos-cancel")
+                    .returnUrl("")
+                    .cancelUrl("")
                     .expiredAt(payOSImpl.calculateExpiredTime())
                     .build();
 

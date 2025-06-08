@@ -8,6 +8,7 @@ import com.petshop.petopia.model.order.Payment;
 import com.petshop.petopia.repository.order.OrderRepository;
 import com.petshop.petopia.repository.order.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
 import vn.payos.type.Webhook;
@@ -22,6 +23,7 @@ public class PaymentService {
     private final PayOS payOS;
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ObjectNode handlePayosTransferWebhook(ObjectNode body) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -31,26 +33,29 @@ public class PaymentService {
             Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
             WebhookData webhookData = payOS.verifyPaymentWebhookData(webhookBody);
 
-            System.out.println(objectMapper.valueToTree(webhookData));
-
             if ("00".equals(webhookData.getCode())) {
                 Long orderCode = webhookData.getOrderCode();
 
-                if (orderCode != null) {
-                    Optional<Payment> optionalPayment = paymentRepository.findByOrderCode(orderCode);
+                Optional<Payment> optionalPayment = paymentRepository.findByOrderCode(orderCode);
 
-                    if (optionalPayment.isPresent()) {
-                        Payment payment = optionalPayment.get();
-                        Order order = payment.getOrder();
-                        if (order != null) {
-                            order.setStatus(Global.OrderStatus.CONFIRMED);
-                            order.setPaid(true);
-                            orderRepository.save(order);
-                        }
-                        paymentRepository.save(payment);
-                    } else {
-                        System.err.println("Không tìm thấy payment với orderCode: " + orderCode);
+                if (optionalPayment.isPresent()) {
+                    Payment payment = optionalPayment.get();
+                    Order order = payment.getOrder();
+
+                    if (order != null) {
+                        order.setStatus(Global.OrderStatus.CONFIRMED);
+                        order.setPaid(true);
+                        orderRepository.save(order);
+
+                        ObjectNode socketMessage = objectMapper.createObjectNode();
+                        socketMessage.put("orderCode", orderCode);
+                        socketMessage.put("paid", true);
+                        socketMessage.put("message", "Thanh toán thành công!");
+
+                        messagingTemplate.convertAndSend("/topic/payment/" + orderCode, socketMessage);
                     }
+
+                    paymentRepository.save(payment);
                 }
             }
 
@@ -58,8 +63,8 @@ public class PaymentService {
             response.put("message", "Webhook delivered");
             response.set("data", objectMapper.valueToTree(webhookData));
             return response;
+
         } catch (Exception e) {
-            e.printStackTrace();
             response.put("error", -1);
             response.put("message", e.getMessage());
             response.set("data", null);

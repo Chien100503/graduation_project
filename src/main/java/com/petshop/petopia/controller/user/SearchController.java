@@ -3,6 +3,7 @@ package com.petshop.petopia.controller.user;
 import com.petshop.petopia.dto.request.user.SearchRequest;
 import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.product.GetAllProductResponse;
+import com.petshop.petopia.dto.response.user.SearchResponse;
 import com.petshop.petopia.service.user.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,19 +22,10 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    // Đã thay đổi Pageable thành List và bỏ tham số Pageable
-    @GetMapping("/products")
-    public ResponseEntity<List<GetAllProductResponse>> searchProducts(
-            @ModelAttribute SearchRequest request) { // Bỏ tham số Pageable
-        List<GetAllProductResponse> products = searchService.searchProducts(request);
-        return ResponseEntity.ok(products);
-    }
-
-    // Đã thay đổi Pageable thành List và bỏ tham số Pageable
-    @GetMapping("/pets")
-    public ResponseEntity<List<GetAllPetResponse>> searchPets(
-            @ModelAttribute SearchRequest request) { // Bỏ tham số Pageable
-        List<GetAllPetResponse> pets = searchService.searchPets(request);
-        return ResponseEntity.ok(pets);
+    @GetMapping
+    public ResponseEntity<SearchResponse> search(
+            @ModelAttribute SearchRequest request) {
+        SearchResponse response = searchService.searchAll(request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,9 +1,9 @@
-// File: SearchService.java
 package com.petshop.petopia.service.user;
 
-import com.petshop.petopia.component.CalculatePrice;
-import com.petshop.petopia.component.CalculateRating;
+import com.petshop.petopia.component.ConvertPet;
+import com.petshop.petopia.component.ConvertProduct;
 import com.petshop.petopia.dto.request.user.SearchRequest;
+import com.petshop.petopia.dto.response.user.SearchResponse;
 import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.product.GetAllProductResponse;
 import com.petshop.petopia.model.pet.Pet;
@@ -14,78 +14,56 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private static final BigDecimal HUNDRED = new BigDecimal("100");
 
     private final PetRepository petRepository;
     private final ProductRepository productRepository;
-    private final CalculateRating calculateRating;
-    private final CalculatePrice calculatePrice;
+    private final ConvertPet convertPet;
+    private final ConvertProduct convertProduct;
 
-    public List<GetAllPetResponse> searchPets(SearchRequest request) {
-        return petRepository.findAll((root, query, cb) -> {
+    public SearchResponse searchAll(SearchRequest request) {
+        String keyword = request.getKeyword();
+        String keywordLike = (keyword == null || keyword.isBlank()) ? null : "%" + keyword.toLowerCase() + "%";
+
+        List<Pet> pets = petRepository.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            // Tìm kiếm theo từ khóa trong tên hoặc mô tả
-            if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
-                String keywordLike = "%" + request.getKeyword().toLowerCase() + "%";
+            if (keywordLike != null) {
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("name")), keywordLike),
-                        cb.like(cb.lower(root.get("description")), keywordLike)
+                        cb.like(cb.lower(root.join("breed").get("name")), keywordLike),
+                        cb.like(cb.lower(root.join("petCategory").get("name")), keywordLike)
                 ));
             }
-
-            predicates.add(cb.isTrue(root.get("status")));
-
+            predicates.add(cb.isTrue(root.get("status")));  // Chỉ lấy pet status = true (Available)
             return cb.and(predicates.toArray(new Predicate[0]));
-        }).stream().map(this::toPetDto).toList();
-    }
+        });
 
-    public List<GetAllProductResponse> searchProducts(SearchRequest request) {
-        return productRepository.findAll((root, query, cb) -> {
+        List<Product> products = productRepository.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
-                String keywordLike = "%" + request.getKeyword().toLowerCase() + "%";
+            if (keywordLike != null) {
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("name")), keywordLike),
-                        cb.like(cb.lower(root.get("description")), keywordLike)
+                        cb.like(cb.lower(root.join("brand").get("name")), keywordLike),
+                        cb.like(cb.lower(root.join("prCategory").get("name")), keywordLike),
+                        cb.like(cb.lower(root.join("type").get("name")), keywordLike)
                 ));
             }
-
             return cb.and(predicates.toArray(new Predicate[0]));
-        }).stream().map(this::toProductDto).toList();
-    }
+        });
 
-    private GetAllPetResponse toPetDto(Pet pet) {
-        return new GetAllPetResponse(
-                pet.getId(),
-                pet.getName(),
-                pet.getThumbnail(),
-                pet.getBanner().getSalePercent(),
-                pet.getPrice(),
-                calculatePrice.calculatePriceDiscount(pet.getPrice(), pet.getBanner().getSalePercent())
-        );
-    }
+        List<GetAllPetResponse> petResponses = pets.stream()
+                .map(convertPet::convertToGetAllPetResponse)
+                .toList();
 
-    private GetAllProductResponse toProductDto(Product product) {
-        double rawAverageRating = CalculateRating.calculateAverageRating(product.getRating());
-        double roundedAverageRating = CalculateRating.roundToTwoDecimalPlaces(rawAverageRating);
+        List<GetAllProductResponse> productResponses = products.stream()
+                .map(convertProduct::convertToGetProductResponse)
+                .toList();
 
-        return new GetAllProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getThumbnail(),
-                roundedAverageRating,
-                product.getBanner().getSalePercent(),
-                product.getPrice(),
-                calculatePrice.calculatePriceDiscount(product.getPrice(), product.getBanner().getSalePercent())
-        );
+        return new SearchResponse(petResponses, productResponses);
     }
 }
