@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pet_shop/features/shop/controllers/products/product_controller.dart';
 import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
-import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 import 'package:pet_shop/features/shop/screens/pet_details/pet_detail.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
-import '../../../features/shop/screens/product_details/product_detail.dart';
 import '../../../utils/constants/enums.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../../styles/box_shadow.dart';
@@ -22,11 +19,10 @@ class EProductCardsVerticalForPet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = ProductController();
     final dark = EHelperFunctions.isDarkMode(context);
     return GestureDetector(
       onTap: () => Get.to(
-            () => PetDetail(product: product),
+            () => PetDetail(petId: product.id.toString()),
         transition: Transition.fadeIn,
         duration: const Duration(milliseconds: 500),
       ),
@@ -52,7 +48,7 @@ class EProductCardsVerticalForPet extends StatelessWidget {
                     Center(
                       child: ERoundImages(
                         boxFit: BoxFit.cover,
-                        imageUrl: product.imageUrls.first,
+                        imageUrl: product.thumbnailUrl,
                         bg: Colors.transparent,
                         applyImageRadius: true,
                         isNetworkImage: true,

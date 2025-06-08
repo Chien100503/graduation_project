@@ -4,12 +4,11 @@ import 'package:pet_shop/features/shop/models/products/product_detail_model.dart
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../features/shop/screens/product_details/product_detail.dart';
-import '../../../utils/constants/enums.dart';
+import '../../../features/shop/screens/review/widgets/rating_bar_star.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../../styles/box_shadow.dart';
 import '../custom_shape/containers/round_container.dart';
 import '../images/round_images.dart';
-import '../texts/bran_title_with_verify_icon.dart';
 import '../texts/product_title_text.dart';
 
 class EProductCardsVerticalForProduct extends StatelessWidget {
@@ -23,7 +22,11 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => Get.to(
-            () => ProductDetail(product: product),
+            () => ProductDetail(
+          // Thay đổi để test API call
+          // product: product, // Comment dòng này
+          productId: product.id.toString(), // Uncomment dòng này để test API
+        ),
         transition: Transition.fadeIn,
         duration: const Duration(milliseconds: 500),
       ),
@@ -49,7 +52,7 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                     Center(
                       child: ERoundImages(
                         boxFit: BoxFit.cover,
-                        imageUrl: product.imageUrls.first,
+                        imageUrl: product.thumbnailUrl,
                         bg: Colors.transparent,
                         applyImageRadius: true,
                         isNetworkImage: true,
@@ -61,7 +64,7 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                           horizontal: ESizes.sm, vertical: ESizes.xs),
                       bg: EColors.accent,
                       child: Text(
-                        '${product.price.toStringAsFixed(0)}%',
+                        '${product.percentDiscount.toStringAsFixed(0)}%',
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge!
@@ -86,11 +89,6 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                       title: product.name,
                       smallSize: true,
                     ),
-                    EBrandTitleWithVerifyIcon(
-                      title: product.brandName,
-                      maxLines: 1,
-                      brandTextSize: TextSizes.small,
-                    ),
                     Row(
                       children: [
                         Text('\$${product.price}',
@@ -99,19 +97,18 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                                 color: Colors.red)),
                         const SizedBox(width: ESizes.defaultBetweenItem),
                         Text(
-                          'Gia sale',
+                          '\$${product.priceDiscount}',
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ],
                     ),
-                    // Row(
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     const ERatingStar(rating: 4.5),
-                    //     ProductCardAddToCartButton(product: product,),
-                    //   ],
-                    // )
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ERatingStar(rating: product.rate),
+                      ],
+                    )
                   ],
                 ),
               ),

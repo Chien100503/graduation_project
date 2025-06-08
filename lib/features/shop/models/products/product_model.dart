@@ -1,4 +1,3 @@
-import 'package:pet_shop/features/shop/models/categories/breed_model.dart';
 import 'package:pet_shop/features/shop/models/categories/type_model.dart';
 
 class ProductModel {

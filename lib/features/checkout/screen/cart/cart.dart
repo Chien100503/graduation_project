@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/features/checkout/screen/payment/payment.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../common/widgets/loader/animation_loader_widget.dart';
@@ -33,10 +34,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: EAppBar(
-        title: Text(
-          'Cart',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        title: Text('Cart', style: Theme.of(context).textTheme.headlineSmall),
         showBackArrow: true,
         actions: [
           TextButton(
@@ -53,24 +51,19 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-
-      // Body
       body: Obx(() {
         final isEmpty = controller.cartItems.isEmpty;
-
-        final emptyWidget = EAnimationLoaderWidget(
-          text: 'Whoops!, Cart is empty',
-          animation: EImages.loaderAnimation,
-          showAction: true,
-          actionText: 'Let\'s fill it',
-          onActionPress: () => Get.off(() => const NavigationMenu()),
-        );
-
         if (isEmpty) {
-          return emptyWidget;
+          return EAnimationLoaderWidget(
+            text: 'Whoops!, Cart is empty',
+            animation: EImages.loaderAnimation,
+            showAction: true,
+            actionText: 'Let\'s fill it',
+            onActionPress: () => Get.off(() => const NavigationMenu()),
+          );
         } else {
           return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(ESizes.defaultSpace),
             child: ECartItems(
               cartItems: controller.cartItems.toList(),
@@ -89,8 +82,6 @@ class _CartScreenState extends State<CartScreen> {
           );
         }
       }),
-
-      // Bottom Bar
       bottomNavigationBar: Obx(() {
         final isEmpty = controller.cartItems.isEmpty;
 
@@ -106,7 +97,7 @@ class _CartScreenState extends State<CartScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       for (final item in selectedItems) {
-                        controller.updateItemQuantity(item.id, 0); // ✅ Cập nhật quantity = 0
+                        controller.updateItemQuantity(item.id, 0);
                       }
                       setState(() {
                         selectedItems.clear();
@@ -121,7 +112,7 @@ class _CartScreenState extends State<CartScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      controller.clearCart(); // ✅ Xoá tất cả
+                      controller.clearCart();
                       setState(() {
                         selectedItems.clear();
                         isEditing = false;
@@ -134,7 +125,7 @@ class _CartScreenState extends State<CartScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Get.to(
-                          () => () {}, // TODO: Replace with actual CheckoutScreen
+                          () => const PaymentScreen(),
                       transition: Transition.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 400),
                     ),

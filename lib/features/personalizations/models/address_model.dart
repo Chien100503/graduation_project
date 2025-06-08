@@ -1,6 +1,7 @@
 class AddressModel {
   final int? id;
   final String name;
+  final String recipientName;
   final String phone;
   final String fullAddress;
   final bool isDefault;
@@ -8,6 +9,7 @@ class AddressModel {
   AddressModel({
     this.id,
     required this.name,
+    required this.recipientName,
     required this.phone,
     required this.fullAddress,
     this.isDefault = false,
@@ -18,6 +20,7 @@ class AddressModel {
     return AddressModel(
       id: json['id'],
       name: json['name'] ?? '',
+      recipientName: json['recipientName'] ?? '',
       phone: json['phone'] ?? '',
       fullAddress: json['fullAddress'] ?? '',
       isDefault: json['default'] ?? false,
@@ -29,6 +32,7 @@ class AddressModel {
     return {
       'id': id,
       'name': name,
+      'recipientName': recipientName,
       'phone': phone,
       'fullAddress': fullAddress,
       'default': isDefault,
@@ -39,6 +43,7 @@ class AddressModel {
   AddressModel copyWith({
     int? id,
     String? name,
+    String? recipientName,
     String? phone,
     String? fullAddress,
     bool? isDefault,
@@ -46,6 +51,7 @@ class AddressModel {
     return AddressModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      recipientName: recipientName ?? this.recipientName,
       phone: phone ?? this.phone,
       fullAddress: fullAddress ?? this.fullAddress,
       isDefault: isDefault ?? this.isDefault,
@@ -72,7 +78,7 @@ class AddressModel {
       name: '',
       phone: '',
       fullAddress: '',
-      isDefault: false,
+      isDefault: false, recipientName: '',
     );
   }
 
@@ -80,6 +86,7 @@ class AddressModel {
   int get hashCode {
     return id.hashCode ^
     name.hashCode ^
+    recipientName.hashCode ^
     phone.hashCode ^
     fullAddress.hashCode ^
     isDefault.hashCode;

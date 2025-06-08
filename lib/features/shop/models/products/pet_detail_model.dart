@@ -9,11 +9,14 @@ class PetDetailModel {
   final double weight;
   final String color;
   final double price;
+  final double priceDiscount;
   final bool status;
+  final String thumbnailUrl;
   final String description;
   final List<String> imageUrls;
 
   PetDetailModel({
+    required this.priceDiscount,
     required this.id,
     required this.petCategoryName,
     required this.breedName,
@@ -27,11 +30,13 @@ class PetDetailModel {
     required this.status,
     required this.description,
     required this.imageUrls,
+    required this.thumbnailUrl,
   });
 
   factory PetDetailModel.fromJson(Map<String, dynamic> json) {
     return PetDetailModel(
       id: json['id'] ?? 0,
+      thumbnailUrl: json['thumbnailUrl'] ?? '',
       petCategoryName: json['petCategoryName'] ?? '',
       breedName: json['breedName'] ?? '',
       name: json['name'] ?? '',
@@ -44,9 +49,10 @@ class PetDetailModel {
       status: json['status'] ?? false,
       description: json['description'] ?? '',
       imageUrls: (json['imageUrls'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ??
+              ?.map((e) => e.toString())
+              .toList() ??
           [],
+      priceDiscount: (json['priceDiscount'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -65,6 +71,8 @@ class PetDetailModel {
       'status': status,
       'description': description,
       'imageUrls': imageUrls,
+      'thumbnailUrl': thumbnailUrl,
+      'priceDiscount': priceDiscount
     };
   }
 

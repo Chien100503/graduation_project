@@ -1,10 +1,7 @@
-import 'dart:ui';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pet_shop/features/checkout/screen/cart/cart.dart';
 import '../../../features/checkout/models/cart_item_model.dart';
 import '../../config.dart';
 

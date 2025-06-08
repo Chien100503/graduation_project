@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/controllers/products/image_pet_controller.dart';
 import 'package:pet_shop/features/shop/controllers/products/image_product_controller.dart';
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';

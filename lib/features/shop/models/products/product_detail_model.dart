@@ -1,20 +1,28 @@
+import 'dart:convert';
+
 class ProductDetailModel {
   final int id;
   final String name;
   final String brandName;
   final String typeName;
   final String description;
+  final double priceDiscount;
   final double price;
   final int stockQuantity;
   final String size;
+  final double percentDiscount;
   final double weight;
   final String expirationDate;
-  final List<String> imageUrls;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String thumbnailUrl;
+  final List<String> imageUrl;
   final String categoryName;
+  final double rate;
 
   ProductDetailModel({
+    required this.rate,
+    required this.priceDiscount,
+    required this.percentDiscount,
+    required this.thumbnailUrl,
     required this.id,
     required this.name,
     required this.brandName,
@@ -25,28 +33,30 @@ class ProductDetailModel {
     required this.size,
     required this.weight,
     required this.expirationDate,
-    required this.imageUrls,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.imageUrl,
     required this.categoryName,
   });
 
   factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
     return ProductDetailModel(
-      id: json['id'],
-      name: json['name'],
-      brandName: json['brandName'],
-      typeName: json['typeName'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      stockQuantity: json['stockQuantity'],
-      size: json['size'],
-      weight: (json['weight'] as num).toDouble(),
-      expirationDate: json['expirationDate'],
-      imageUrls: List<String>.from(json['imageUrls'] ?? []),
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      categoryName: json['categoryName'],
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      brandName: json['brandName'] ?? '',
+      typeName: json['typeName'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
+      size: json['size'] ?? '',
+      weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
+      expirationDate: json['expirationDate'] ?? '',
+      imageUrl: (json['imageUrl'] is String)
+          ? List<String>.from(jsonDecode(json['imageUrl']))
+          : List<String>.from(json['imageUrl'] ?? []),
+      categoryName: json['categoryName'] ?? '',
+      thumbnailUrl: json['thumbnailUrl'] ?? '',
+      rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
+      priceDiscount: (json['priceDiscount'] as num?)?.toDouble() ?? 0.0,
+      percentDiscount: (json['percentDiscount'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -62,10 +72,12 @@ class ProductDetailModel {
       'size': size,
       'weight': weight,
       'expirationDate': expirationDate,
-      'imageUrls': imageUrls,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'imageUrl': imageUrl,
       'categoryName': categoryName,
+      'thumbnailUrl': thumbnailUrl,
+      'rate': rate,
+      'priceDiscount': priceDiscount,
+      'percentDiscount': percentDiscount
     };
   }
 
