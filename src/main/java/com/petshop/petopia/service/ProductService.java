@@ -21,7 +21,7 @@ public class ProductService {
     public List<GetAllProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                .map(convertProduct::convertToGetProductResponse)
+                .map(convertProduct::convertToGetAllProductResponse)
                 .collect(Collectors.toList());
     }
 
@@ -37,11 +37,19 @@ public class ProductService {
                         .collect(Collectors.toList()));
     }
 
-    public List<ProductCategoryResponse> getProductsByCategoryAndType(Integer categoryId, Integer typeId) {
+    public List<GetAllProductResponse> getProductsByCategoryAndType(Integer categoryId, Integer typeId) {
         List<Product> products = productRepository.findByPrCategory_IdAndType_Id(categoryId, typeId);
         return products.stream()
-                .map(convertProduct::convertToProductCategoryResponse)
+                .map(convertProduct::convertToGetAllProductResponse)
                 .collect(Collectors.toList());
     }
+
+    public List<GetAllProductResponse> getProductsByCategory(Integer categoryId) {
+        List<Product> products = productRepository.findByPrCategory_Id(categoryId);
+        return products.stream()
+                .map(convertProduct::convertToGetAllProductResponse)
+                .collect(Collectors.toList());
+    }
+
 }
 

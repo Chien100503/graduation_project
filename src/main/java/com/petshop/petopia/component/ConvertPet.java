@@ -45,7 +45,7 @@ public class ConvertPet {
         );
     }
 
-    public GetAllPetResponse convertToGetAllPetResponse(Pet pet) {
+    public GetAllPetResponse convertToGetAllPetResponse(Pet pet, boolean isWishlist) {
         BigDecimal salePercent = BigDecimal.ZERO;
         if (pet.getBanner() != null && pet.getBanner().getSalePercent() != null) {
             salePercent = pet.getBanner().getSalePercent();
@@ -58,11 +58,12 @@ public class ConvertPet {
                 pet.getBreed().getName(),
                 salePercent,
                 pet.getPrice(),
-                calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent)
+                calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent),
+                isWishlist
         );
     }
 
-    public PetDetailResponse convertToGetPetDetailResponse(Pet pet) {
+    public PetDetailResponse convertToGetPetDetailResponse(Pet pet, boolean isWishlist) {
         PetDetailResponse dto = new PetDetailResponse();
         dto.setId(pet.getId());
 
@@ -82,6 +83,7 @@ public class ConvertPet {
         dto.setPrice(pet.getPrice());
         dto.setStatus(pet.getStatus());
         dto.setDescription(pet.getDescription());
+        dto.setWishlist(isWishlist);
 
         if (pet.getPetImages() != null && !pet.getPetImages().isEmpty()) {
             List<String> urls = new ArrayList<>();

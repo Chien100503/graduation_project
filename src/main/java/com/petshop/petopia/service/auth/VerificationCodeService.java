@@ -3,7 +3,7 @@ package com.petshop.petopia.service.auth;
 import com.petshop.petopia.model.user.User;
 import com.petshop.petopia.repository.user.UserRepository;
 import com.petshop.petopia.security.JwtService;
-import com.petshop.petopia.service.MailService;
+import com.petshop.petopia.service.user.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;

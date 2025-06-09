@@ -1,4 +1,4 @@
-package com.petshop.petopia.service;
+package com.petshop.petopia.service.user;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

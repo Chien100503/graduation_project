@@ -161,21 +161,14 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<!-- OS Plugin để resolve os.detected.classifier -->
-			<plugin>
+		<extensions>
+			<extension>
 				<groupId>kr.motd.maven</groupId>
 				<artifactId>os-maven-plugin</artifactId>
 				<version>1.7.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>detect</goal>
-						</goals>
-						<phase>initialize</phase>
-					</execution>
-				</executions>
-			</plugin>
+			</extension>
+		</extensions>
+		<plugins>
 
 
 			<!-- Maven Compiler -->

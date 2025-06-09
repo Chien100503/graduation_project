@@ -13,6 +13,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
     List<Product> findByBannerId(Integer bannerId);
     List<Product> findByPrCategory_Name(String name);
+    List<Product> findByPrCategory_Id(Integer id);
     List<Product> findByBrand_Name(String name);
     List<Product> findByType_Name(String name);
     List<Product> findByPrCategory_IdAndType_Id(Integer categoryId, Integer typeId);

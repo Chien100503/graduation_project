@@ -23,4 +23,5 @@ public class PetDetailResponse {
     private Boolean status;
     private String description;
     private List<String> imageUrls;
+    private boolean isWishlist;
 }

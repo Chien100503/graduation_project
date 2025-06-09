@@ -5,6 +5,7 @@ import com.petshop.petopia.dto.response.pet.BreedResponse;
 import com.petshop.petopia.dto.response.pet.GetAllPetResponse;
 import com.petshop.petopia.dto.response.pet.PetCategoryResponse;
 import com.petshop.petopia.dto.response.pet.PetDetailResponse;
+import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.category.PetCategoryService;
 import com.petshop.petopia.service.PetService;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,15 @@ public class PetController {
 
     private final PetService petService;
     private final PetCategoryService petCategoryService;
+    private final JwtService jwtService;
 
     @GetMapping
-    public ResponseEntity<?> getPets() {
+    public ResponseEntity<?> getPets(
+            @RequestHeader("Authorization") String token
+    ) {
+        Integer userId = jwtService.extractUserId(token);
         try {
-            List<GetAllPetResponse> pets = petService.getAllPets();
+            List<GetAllPetResponse> pets = petService.getAllPets(userId);
 
             if (pets.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -39,9 +44,13 @@ public class PetController {
     }
 
     @GetMapping("/{petId}")
-    public ResponseEntity<?> getPetDetails(@PathVariable("petId") Integer petId) {
+    public ResponseEntity<?> getPetDetails(
+            @PathVariable("petId") Integer petId,
+            @RequestHeader("Authorization") String token
+    ) {
+        Integer userId = jwtService.extractUserId(token);
         try {
-            PetDetailResponse petDto = petService.getPetById(petId);
+            PetDetailResponse petDto = petService.getPetById(userId, petId);
             return ResponseEntity.ok(petDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -53,8 +62,12 @@ public class PetController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<GetAllPetResponse>> getPetsByCategoryId(@PathVariable Integer categoryId) {
-        List<GetAllPetResponse> pets = petCategoryService.getPetsByCategoryId(categoryId);
+    public ResponseEntity<List<GetAllPetResponse>> getPetsByCategoryId(
+            @PathVariable Integer categoryId,
+            @RequestHeader("Authorization") String token
+    ) {
+        Integer userId = jwtService.extractUserId(token);
+        List<GetAllPetResponse> pets = petCategoryService.getPetsByCategoryId(userId, categoryId);
         if (pets.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -64,8 +77,11 @@ public class PetController {
     @GetMapping("/category/{categoryId}/breeds/{breedId}")
     public ResponseEntity<List<GetAllPetResponse>> getPetsByCategoryAndBreed(
             @PathVariable Integer categoryId,
-            @PathVariable Integer breedId) {
-        List<GetAllPetResponse> pets = petService.getPetByBreed(categoryId, breedId);
+            @PathVariable Integer breedId,
+            @RequestHeader("Authorization") String token
+    ) {
+        Integer userId = jwtService.extractUserId(token);
+        List<GetAllPetResponse> pets = petService.getPetByBreed(userId, categoryId, breedId);
         if (!pets.isEmpty()) {
             return new ResponseEntity<>(pets, HttpStatus.OK);
         } else {
@@ -74,9 +90,13 @@ public class PetController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filterActivePets(@RequestBody PetFilterRequest filterRequest) {
+    public ResponseEntity<?> filterActivePets(
+            @RequestHeader("Authorization") String token,
+            @RequestBody PetFilterRequest filterRequest
+    ) {
+        Integer userId = jwtService.extractUserId(token);
         try {
-            List<PetDetailResponse> result = petCategoryService.filterActivePets(filterRequest);
+            List<PetDetailResponse> result = petCategoryService.filterActivePets(userId, filterRequest);
             return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

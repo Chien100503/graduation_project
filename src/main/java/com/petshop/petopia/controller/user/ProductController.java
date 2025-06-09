@@ -42,6 +42,15 @@ public class ProductController {
         return ResponseEntity.ok(productCategoryService.getAllBrands());
     }
 
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<GetAllProductResponse>> getProductByCategory(@PathVariable Integer categoryId) {
+        List<GetAllProductResponse> responses = productService.getProductsByCategory(categoryId);
+        if (responses.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
     @GetMapping("/category/{categoryId}/type")
     public ResponseEntity<List<TypeResponse>> getTypesByCategory(@PathVariable Integer categoryId) {
         Optional<List<TypeResponse>> typesResponse = productService.getTypesByCategoryId(categoryId);
@@ -50,10 +59,10 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}/type/{typeId}")
-    public ResponseEntity<List<ProductCategoryResponse>> getProductsByCategoryAndType(
+    public ResponseEntity<List<GetAllProductResponse>> getProductsByCategoryAndType(
             @PathVariable Integer categoryId,
             @PathVariable Integer typeId) {
-        List<ProductCategoryResponse> products = productService.getProductsByCategoryAndType(categoryId, typeId);
+        List<GetAllProductResponse> products = productService.getProductsByCategoryAndType(categoryId, typeId);
         if (!products.isEmpty()) {
             return new ResponseEntity<>(products, HttpStatus.OK);
         } else {

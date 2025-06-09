@@ -31,6 +31,9 @@ public class User {
     private Boolean isActive;
     private String avatar;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishList> wishlists;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     @JsonManagedReference

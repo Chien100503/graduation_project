@@ -9,10 +9,10 @@ import com.petshop.petopia.dto.response.admin.CreateCategoryResponse;
 import com.petshop.petopia.model.pet.Breed;
 import com.petshop.petopia.model.pet.Pet;
 import com.petshop.petopia.model.pet.PetCategory;
-import com.petshop.petopia.model.pet.PetImage;
 import com.petshop.petopia.repository.pet.BreedRepository;
 import com.petshop.petopia.repository.pet.PetCategoryRepository;
 import com.petshop.petopia.repository.pet.PetRepository;
+import com.petshop.petopia.repository.user.WishlistRepository;
 import com.petshop.petopia.service.FirebaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
@@ -25,10 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +36,7 @@ public class PetCategoryService {
     private final BreedRepository breedRepository;
     private final FirebaseService firebaseService;
     private final ConvertPet convertPet;
+    private final WishlistRepository wishlistRepository;
 
     @Transactional
     public CreateCategoryResponse createPetCategory(CreateCategoryRequest createPetCategoryRequest) throws IOException {
@@ -70,7 +68,7 @@ public class PetCategoryService {
         }
 
         PetCategory category = petCategoryRepository.findByName(req.getCategoryName())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy danh mục với ID: " + req.getCategoryName()));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy danh mục với tên: " + req.getCategoryName()));
 
         Breed newBreed = new Breed();
         newBreed.setName(req.getName());
@@ -86,15 +84,18 @@ public class PetCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetAllPetResponse> getPetsByCategoryId(Integer categoryId) {
+    public List<GetAllPetResponse> getPetsByCategoryId(Integer userId, Integer categoryId) {
         List<Pet> pets = petRepository.findByPetCategory_IdAndStatusTrue(categoryId);
         return pets.stream()
-                .map(convertPet::convertToGetAllPetResponse)
+                .map(pet -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndPetId(userId, pet.getId());
+                    return convertPet.convertToGetAllPetResponse(pet, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<PetDetailResponse> filterActivePets(PetFilterRequest filterRequest) {
+    public List<PetDetailResponse> filterActivePets(Integer userId, PetFilterRequest filterRequest) {
         filterRequest.validate();
 
         Specification<Pet> spec = (root, query, cb) -> {
@@ -115,7 +116,10 @@ public class PetCategoryService {
         };
 
         return petRepository.findAll(spec).stream()
-                .map(this::mapToPetResponse)
+                .map(pet -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndPetId(userId, pet.getId());
+                    return convertPet.convertToGetPetDetailResponse(pet, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -131,27 +135,5 @@ public class PetCategoryService {
         return breedRepository.findByPetCategoryId(categoryId).stream()
                 .map(breed -> new BreedResponse(breed.getId(), breed.getName()))
                 .collect(Collectors.toList());
-    }
-
-    private PetDetailResponse mapToPetResponse(Pet pet) {
-        List<String> imageUrls = pet.getPetImages().stream()
-                .map(PetImage::getImageUrl)
-                .collect(Collectors.toList());
-
-        return new PetDetailResponse(
-                pet.getId(),
-                pet.getPetCategory() != null ? pet.getPetCategory().getName() : null,
-                pet.getBreed() != null ? pet.getBreed().getName() : null,
-                pet.getName(),
-                pet.getAge(),
-                pet.getGender(),
-                pet.getSize(),
-                pet.getWeight(),
-                pet.getColor(),
-                pet.getPrice(),
-                pet.getStatus(),
-                pet.getDescription(),
-                imageUrls
-        );
     }
 }

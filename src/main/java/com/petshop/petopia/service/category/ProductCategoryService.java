@@ -125,7 +125,7 @@ public class ProductCategoryService {
         }
 
         return productRepository.findAll(spec).stream()
-                .map(convertProduct::convertToGetProductResponse)
+                .map(convertProduct::convertToGetAllProductResponse)
                 .collect(Collectors.toList());
     }
 

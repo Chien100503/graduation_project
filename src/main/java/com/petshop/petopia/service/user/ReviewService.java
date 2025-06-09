@@ -1,5 +1,6 @@
 package com.petshop.petopia.service.user;
 
+import com.petshop.petopia.component.ConvertReview;
 import com.petshop.petopia.dto.request.review.ReviewRequest;
 import com.petshop.petopia.dto.response.review.ReviewResponse;
 import com.petshop.petopia.model.review.Review;
@@ -21,11 +22,12 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final ConvertReview convertReview;
 
     public List<ReviewResponse> getReviewsByProduct(Integer productId) {
         return reviewRepository.findByProductId(productId)
                 .stream()
-                .map(this::convertToResponse)
+                .map(convertReview::convertToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -41,16 +43,9 @@ public class ReviewService {
         review.setProduct(product);
         review.setComment(request.getComment());
         Review savedReview = reviewRepository.save(review);
-        return convertToResponse(savedReview);
+        return convertReview.convertToResponse(savedReview);
     }
 
-    private ReviewResponse convertToResponse(Review review) {
-        ReviewResponse response = new ReviewResponse();
-        response.setId(review.getId());
-        response.setUserId(review.getUser().getId());
-        response.setProductId(review.getProduct().getId());
-        response.setComment(review.getComment());
-        return response;
-    }
+
 }
 

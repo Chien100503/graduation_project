@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class ConvertProduct {
     private final CalculatePrice calculatePrice;
 
-    public GetAllProductResponse convertToGetProductResponse(Product product) {
+    public GetAllProductResponse convertToGetAllProductResponse(Product product) {
         BigDecimal percentDiscount = BigDecimal.ZERO;
         BigDecimal priceDiscount = product.getPrice();
 
