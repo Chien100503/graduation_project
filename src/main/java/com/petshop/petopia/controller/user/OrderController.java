@@ -1,6 +1,7 @@
 package com.petshop.petopia.controller.user;
 
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
+import com.petshop.petopia.dto.response.order.OrderHistoryResponse;
 import com.petshop.petopia.security.JwtService;
 import com.petshop.petopia.service.user.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import vn.payos.type.PaymentLinkData;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/order")
@@ -37,13 +40,20 @@ public class OrderController {
             orderService.cancelOrder(orderCode, userId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (RuntimeException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getOrderHistory(@RequestHeader("Authorization") String token) {
+        Integer userId = jwtService.extractUserId(token);
+        List<OrderHistoryResponse> history = orderService.getOrderHistoryByUser(userId);
+        return ResponseEntity.ok(history);
     }
 
 }

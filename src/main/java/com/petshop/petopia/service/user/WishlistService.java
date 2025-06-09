@@ -44,7 +44,7 @@ public class WishlistService {
 
             } else if (item.getProduct() != null) {
                 Product product = item.getProduct();
-                GetAllProductResponse productDto = convertProduct.convertToGetAllProductResponse(product);
+                GetAllProductResponse productDto = convertProduct.convertToGetAllProductResponse(product, true);
                 responses.add(new WishlistItemResponse("product", null, productDto));
             }
         }

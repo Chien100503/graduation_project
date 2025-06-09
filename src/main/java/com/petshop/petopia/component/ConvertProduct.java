@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class ConvertProduct {
     private final CalculatePrice calculatePrice;
 
-    public GetAllProductResponse convertToGetAllProductResponse(Product product) {
+    public GetAllProductResponse convertToGetAllProductResponse(Product product, boolean isWishlist) {
         BigDecimal percentDiscount = BigDecimal.ZERO;
         BigDecimal priceDiscount = product.getPrice();
 
@@ -55,11 +55,12 @@ public class ConvertProduct {
                 product.getBrand().getName(),
                 calculatePrice.roundBigDecimal(percentDiscount),
                 product.getPrice(),
-                calculatePrice.roundBigDecimal(priceDiscount)
+                calculatePrice.roundBigDecimal(priceDiscount),
+                isWishlist
         );
     }
 
-    public GetProductDetailResponse convertToGetProductDetailResponse(Product product) {
+    public GetProductDetailResponse convertToGetProductDetailResponse(Product product, boolean isWishlist) {
         BigDecimal percentDiscount = BigDecimal.ZERO;
         BigDecimal priceDiscount = product.getPrice();
 
@@ -111,7 +112,8 @@ public class ConvertProduct {
                 product.getStockQuantity(),
                 product.getSize(),
                 product.getWeight(),
-                expirationDateString
+                expirationDateString,
+                isWishlist
         );
     }
 

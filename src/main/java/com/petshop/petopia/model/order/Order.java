@@ -4,6 +4,7 @@ import com.petshop.petopia.component.Global;
 import com.petshop.petopia.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -42,8 +43,13 @@ public class Order {
     private boolean isReceived;
     private Global.OrderStatus status;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Date createdAt;
+
     @PrePersist
     protected void onCreate() {
+        createdAt = new Date();
         orderDate = new Date();
         isPaid = false;
         isDelivered = false;

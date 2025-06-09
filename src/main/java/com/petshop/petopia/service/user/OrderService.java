@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
+import com.petshop.petopia.dto.response.order.OrderHistoryResponse;
 import com.petshop.petopia.dto.response.order.OrderResponse;
 import com.petshop.petopia.implement.PayosImpl;
 import com.petshop.petopia.model.cart.CartItem;
@@ -382,4 +383,22 @@ public class OrderService {
             throw new RuntimeException("Lỗi khi hủy đơn hàng: " + e.getMessage(), e);
         }
     }
+
+    public List<OrderHistoryResponse> getOrderHistoryByUser(Integer userId) {
+        List<Order> orders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        return orders.stream().map(order -> {
+            OrderHistoryResponse response = new OrderHistoryResponse();
+            response.setOrderId(order.getId());
+            response.setRecipientName(order.getRecipientName());
+            response.setShippingAddress(order.getShippingAddress());
+            response.setPhoneNumber(order.getPhoneNumber());
+            response.setTotalPrice(order.getTotalPrice());
+            response.setStatus(order.getStatus());
+            response.setPaymentMethod(order.getPayment() != null ? order.getPayment().getPaymentMethod() : null);
+            response.setOrderDate(order.getCreatedAt());
+            return response;
+        }).collect(Collectors.toList());
+    }
+
 }

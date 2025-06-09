@@ -25,5 +25,5 @@ public class GetProductDetailResponse {
     private String size;
     private Double weight;
     private String expirationDate;
-//    private boolean isWishlist;
+    private boolean isWishlist;
 }

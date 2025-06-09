@@ -15,6 +15,7 @@ import com.petshop.petopia.repository.product.BrandRepository;
 import com.petshop.petopia.repository.product.ProductCategoryRepository;
 import com.petshop.petopia.repository.product.ProductRepository;
 import com.petshop.petopia.repository.product.TypeRepository;
+import com.petshop.petopia.repository.user.WishlistRepository;
 import com.petshop.petopia.service.FirebaseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class ProductCategoryService {
     private final BrandRepository brandRepository;
     private final FirebaseService firebaseService;
     private final ConvertProduct convertProduct;
+    private final WishlistRepository wishlistRepository;
 
     @Transactional
     public CreateCategoryResponse createProductCategory(CreateCategoryRequest createCategoryRequest) throws IOException {
@@ -104,7 +106,7 @@ public class ProductCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetAllProductResponse> filterProducts(ProductFilterRequest filterRequest) {
+    public List<GetAllProductResponse> filterProducts(Integer userId, ProductFilterRequest filterRequest) {
         filterRequest.validate();
 
         Specification<Product> spec = Specification.where(null);
@@ -125,7 +127,10 @@ public class ProductCategoryService {
         }
 
         return productRepository.findAll(spec).stream()
-                .map(convertProduct::convertToGetAllProductResponse)
+                .map(product -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndProductId(userId, product.getId());
+                    return convertProduct.convertToGetAllProductResponse(product, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
 

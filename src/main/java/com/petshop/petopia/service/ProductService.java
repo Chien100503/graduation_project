@@ -4,6 +4,7 @@ import com.petshop.petopia.dto.response.product.*;
 import com.petshop.petopia.model.product.*;
 import com.petshop.petopia.repository.product.*;
 import com.petshop.petopia.component.ConvertProduct;
+import com.petshop.petopia.repository.user.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +18,23 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ConvertProduct convertProduct;
     private final TypeRepository typeRepository;
+    private final WishlistRepository wishlistRepository;
 
-    public List<GetAllProductResponse> getAllProducts() {
+    public List<GetAllProductResponse> getAllProducts(Integer userId) {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                .map(convertProduct::convertToGetAllProductResponse)
+                .map(product -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndProductId(userId, product.getId());
+                    return convertProduct.convertToGetAllProductResponse(product, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
 
-    public Optional<GetProductDetailResponse> getProductById(Integer id) {
-        return productRepository.findById(id)
-                .map(convertProduct::convertToGetProductDetailResponse);
+    public GetProductDetailResponse getProductDetail(Integer userId, Integer productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + productId));
+        boolean isInWishlist = wishlistRepository.existsByUserIdAndProductId(userId, productId);
+        return convertProduct.convertToGetProductDetailResponse(product, isInWishlist);
     }
 
     public Optional<List<TypeResponse>> getTypesByCategoryId(Integer categoryId) {
@@ -37,19 +44,23 @@ public class ProductService {
                         .collect(Collectors.toList()));
     }
 
-    public List<GetAllProductResponse> getProductsByCategoryAndType(Integer categoryId, Integer typeId) {
+    public List<GetAllProductResponse> getProductsByCategoryAndType(Integer userId, Integer categoryId, Integer typeId) {
         List<Product> products = productRepository.findByPrCategory_IdAndType_Id(categoryId, typeId);
         return products.stream()
-                .map(convertProduct::convertToGetAllProductResponse)
+                .map(product -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndProductId(userId, product.getId());
+                    return convertProduct.convertToGetAllProductResponse(product, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
 
-    public List<GetAllProductResponse> getProductsByCategory(Integer categoryId) {
+    public List<GetAllProductResponse> getProductsByCategory(Integer userId, Integer categoryId) {
         List<Product> products = productRepository.findByPrCategory_Id(categoryId);
         return products.stream()
-                .map(convertProduct::convertToGetAllProductResponse)
+                .map(product -> {
+                    boolean isInWishlist = wishlistRepository.existsByUserIdAndProductId(userId, product.getId());
+                    return convertProduct.convertToGetAllProductResponse(product, isInWishlist);
+                })
                 .collect(Collectors.toList());
     }
-
 }
-
