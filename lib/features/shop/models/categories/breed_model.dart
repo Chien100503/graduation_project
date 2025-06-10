@@ -1,10 +1,12 @@
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
+
 import '../products/pet_model.dart';
 
 class BreedModel {
   final int id;
   final String name;
   final int petCategoryId;
-  final List<PetModel> pets;
+  final List<PetDetailModel> pets;
 
   BreedModel({
     required this.id,
@@ -21,7 +23,7 @@ class BreedModel {
       id: json['id'],
       name: json['name'],
       petCategoryId: json['petCategory']?['id'] ?? 0,
-      pets: petsJson.map((e) => PetModel.fromJson(e)).toList(),
+      pets: petsJson.map((e) => PetDetailModel.fromJson(e)).toList(),
     );
   }
 

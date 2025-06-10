@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+import 'package:pet_shop/common/widgets/loader/animation_loader_widget.dart';
 
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constants/images_strings.dart';
@@ -17,23 +17,17 @@ class PaymentSuccess extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.asset(EImages.successAnimate, repeat: false, height: 200, width: 200),
-            const SizedBox(height: ESizes.defaultBetweenSections,),
-            Text(
-              'Payment success!',
-              style: Theme.of(context).textTheme.headlineMedium,
+            EAnimationLoaderWidget(
+              text: 'Thanh toán thành công',
+              animation: EImages.successAnimate,
+              showAction: true,
+              actionText: 'Mong ghé lại lần sau',
+              onActionPress: () => Get.to(NavigationMenu()),
             ),
-            // SizedBox(height: ESizes.defaultBetweenItem / 2),
-            Text('Your item will be shipped soon!',
-                style: Theme.of(context).textTheme.labelSmall),
-            const SizedBox(height: ESizes.defaultBetweenItem),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const NavigationMenu()),
-                child: const Text('Continue'),
-              ),
-            )
+            const SizedBox(
+              height: ESizes.defaultBetweenSections,
+            ),
+
           ],
         ),
       ),

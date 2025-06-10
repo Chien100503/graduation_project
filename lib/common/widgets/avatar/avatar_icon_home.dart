@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../features/personalizations/controllers/profile/user_controller.dart';
 import '../../../features/personalizations/screens/profile/profile.dart';

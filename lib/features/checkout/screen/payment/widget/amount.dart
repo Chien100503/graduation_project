@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../utils/constants/sizes.dart';
-import '../../../../../utils/helpers/pricing_caculator.dart';
 import '../../../controller/cart_controller/cart_controller.dart';
 
 class BillingPaymentSections extends StatelessWidget {

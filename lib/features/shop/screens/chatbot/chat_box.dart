@@ -43,14 +43,12 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
             data: [],
           ));
         } else {
-          // Add historical messages to the list
           messages.addAll(history);
         }
       });
       // Scroll to the bottom after loading messages
       _scrollToBottom();
     } catch (e) {
-      print('Error loading chat history: $e');
       // Show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Lỗi tải lịch sử trò chuyện: ${e.toString()}')),
@@ -95,7 +93,6 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
       });
       _scrollToBottom(); // Scroll to show the bot's response
     } catch (e) {
-      print('Error sending message: $e');
       setState(() {
         // Add an error message from the bot if sending fails
         messages.add(MessageModel(

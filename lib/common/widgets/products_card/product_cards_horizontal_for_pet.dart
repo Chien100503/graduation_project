@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
+import 'package:pet_shop/features/shop/screens/pet_details/pet_detail.dart';
+import 'package:pet_shop/utils/constants/images_strings.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -13,18 +17,18 @@ import '../texts/brand_title_text.dart';
 class EProductCardsHorizontalForPet extends StatelessWidget {
   const EProductCardsHorizontalForPet({super.key, required this.pet});
 
-  final PetModel pet;
+  final PetDetailModel pet;
 
   @override
   Widget build(BuildContext context) {
     final dark = EHelperFunctions.isDarkMode(context);
 
     return GestureDetector(
-      // onTap: () => Get.to(
-      //       () => ProductDetail(product: product),
-      //   transition: Transition.fadeIn,
-      //   duration: const Duration(milliseconds: 500),
-      // ),
+      onTap: () => Get.to(
+            () => PetDetail(petId: pet.id.toString()),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 500),
+      ),
       child: Container(
         width: 350,
         padding: const EdgeInsets.all(1),
@@ -48,7 +52,7 @@ class EProductCardsHorizontalForPet extends StatelessWidget {
                     boxFit: BoxFit.contain,
                     applyImageRadius: true,
                     isNetworkImage: true,
-                    imageUrl: pet.thumbnail,
+                    imageUrl: pet.thumbnailUrl,
                     bg: Colors.transparent,
                   ),
                   Positioned(
@@ -62,7 +66,7 @@ class EProductCardsHorizontalForPet extends StatelessWidget {
                         vertical: ESizes.xs,
                       ),
                       child: Text(
-                        '10%',
+                        '${pet.percentDiscount.toStringAsFixed(0)}%',
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge!
@@ -91,40 +95,17 @@ class EProductCardsHorizontalForPet extends StatelessWidget {
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
                     EBrandTitleWithVerifyIcon(title: pet.breed.name),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    Text('Price ${pet.price.toInt()}'),
-                    const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
                       children: [
-                        // Flexible(
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       if (product.productType == ProductType.single.toString() &&
-                        //           product.salePrice > 0)
-                        //         Padding(
-                        //           padding: const EdgeInsets.only(left: ESizes.sm),
-                        //           child: Text(
-                        //             '\$${product.price}',
-                        //             style: const TextStyle(
-                        //               decoration: TextDecoration.lineThrough,
-                        //               color: Colors.red,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       Padding(
-                        //         padding: const EdgeInsets.only(left: ESizes.sm),
-                        //         child: EProductPrice(
-                        //           price: controller.getProductPrice(product),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-
+                        Text('Price ${pet.price.toInt()}', style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),),
+                        SizedBox(width: 30,),
+                        Text(
+                          '${pet.priceDiscount}',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
                       ],
                     ),
+
                   ],
                 ),
               ),

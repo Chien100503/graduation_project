@@ -60,15 +60,10 @@ class ProductRepository extends GetxController {
 
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-        // Debug từng field quan trọng
 
-        // In ra tất cả keys trong JSON
-        jsonData.keys.forEach((key) {
-        });
+        final productDetailModel = ProductDetailModel.fromJson(jsonData);
 
-        final productModel = ProductDetailModel.fromJson(jsonData);
-
-        return productModel;
+        return productDetailModel;
       } else {
         throw Exception('Failed to load product detail - Status: ${response.statusCode}');
       }

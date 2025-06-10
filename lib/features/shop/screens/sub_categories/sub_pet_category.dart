@@ -47,7 +47,7 @@ class SubPetCategoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: ESizes.defaultBetweenSections),
               FutureBuilder(
-                future: controller.fetchBreedsByCategory(petCategoryId),
+                future: controller.getBreeds(petCategoryId),
                 builder: (context, snapshot) {
                   const loader = EHorizontalProductShimmer();
                   final widget = CloudHelperFunctions.checkMultiRecordState(
@@ -63,7 +63,7 @@ class SubPetCategoryScreen extends StatelessWidget {
                       final breed = breeds[index];
 
                       return FutureBuilder(
-                        future: controller.fetchPetsByBreed(petCategoryId, breed.id),
+                        future: controller.getPetsByBreed(petCategoryId, breed.id),
                         builder: (context, snapshot) {
                           final widget = CloudHelperFunctions.checkMultiRecordState(
                               snapshot: snapshot, loader: loader);

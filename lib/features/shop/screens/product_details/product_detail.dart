@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pet_shop/common/widgets/texts/product_title_text.dart';
-import 'package:pet_shop/features/shop/controllers/products/pet_controller.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 import 'package:pet_shop/features/shop/screens/product_details/widget/description.dart';
-import 'package:pet_shop/features/shop/screens/product_details/widget/product_attributes.dart';
 import 'package:pet_shop/features/shop/screens/product_details/widget/product_image_slider.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 import 'package:pet_shop/utils/constants/sizes.dart';
@@ -131,7 +129,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               ),
 
-              EDescription(description: currentProduct!.description ?? ''),
+              EDescription(description: currentProduct!.description),
 
               Divider(thickness: 1, color: dark ? EColors.thirdColor : EColors.primaryColor),
               const SizedBox(height: ESizes.defaultBetweenItem),
@@ -156,17 +154,6 @@ class _ProductDetailState extends State<ProductDetail> {
           ),
           onPressed: () {
             controllerCart.addProductToCart(currentProduct!);
-            Get.snackbar(
-              'Thành công',
-              'Đã thêm sản phẩm vào giỏ hàng',
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-              snackPosition: SnackPosition.TOP,
-              icon: const Icon(Icons.check_circle, color: Colors.white),
-              borderRadius: 8,
-              margin: const EdgeInsets.all(16),
-              duration: const Duration(seconds: 2),
-            );
           },
         ),
       )

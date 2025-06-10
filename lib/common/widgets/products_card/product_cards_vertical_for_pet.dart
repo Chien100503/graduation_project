@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/common/widgets/products_card/favorite_icon/favorite_icon_pet.dart';
 import 'package:pet_shop/features/shop/models/products/pet_detail_model.dart';
 import 'package:pet_shop/features/shop/screens/pet_details/pet_detail.dart';
 import '../../../../utils/constants/colors.dart';
@@ -40,7 +41,7 @@ class EProductCardsVerticalForPet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ERoundContainer(
-                height: 178,
+                height: 210,
                 padding: const EdgeInsets.all(ESizes.sm),
                 bg: dark ? EColors.thirdColor : EColors.cardLight,
                 child: Stack(
@@ -60,18 +61,18 @@ class EProductCardsVerticalForPet extends StatelessWidget {
                           horizontal: ESizes.sm, vertical: ESizes.xs),
                       bg: EColors.accent,
                       child: Text(
-                        '10%',
+                        '${product.percentDiscount.toStringAsFixed(0)}%',
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge!
                             .apply(color: EColors.thirdColor),
                       ),
                     ),
-                    // Positioned(
-                    //   top: 0,
-                    //   right: 0,
-                    //   child: EFavoriteIcon(productId: product.id),
-                    // ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: EFavoriteIconPet(petId: product.id.toString()),
+                    ),
                   ],
                 ),
               ),
@@ -79,6 +80,7 @@ class EProductCardsVerticalForPet extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: ESizes.sm),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     EProductTitleText(
@@ -98,19 +100,11 @@ class EProductCardsVerticalForPet extends StatelessWidget {
                                 color: Colors.red)),
                         const SizedBox(width: ESizes.defaultBetweenItem),
                         Text(
-                          'Gia sale',
+                          '${product.priceDiscount}',
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ],
                     ),
-                    // Row(
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     const ERatingStar(rating: 4.5),
-                    //     ProductCardAddToCartButton(product: product,),
-                    //   ],
-                    // )
                   ],
                 ),
               ),

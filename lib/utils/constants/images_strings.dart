@@ -6,6 +6,12 @@ class EImages {
   static const String googleLogo = 'assets/logos/logo_google.png';
   static const String facebookLogo = 'assets/logos/logo_fb.png';
 
+  // Animation
+  static const String notFound = 'assets/animation/notFound.json';
+  static const String letSearch = 'assets/animation/letSearch.json';
+  static const String cartNull = 'assets/animation/loader.json';
+  static const String successAnimate = 'assets/animation/success.json';
+
   // onBoarding
   static const String onBoarding1 = 'assets/images/onboarding/onboarding1.png';
   static const String onBoarding2 = 'assets/images/onboarding/onboarding2.png';
@@ -60,23 +66,15 @@ class EImages {
   static const String diorLogo = 'assets/logos/dior.png';
   static const String lvLogo = 'assets/logos/LV.png';
   static const String paypal = 'assets/images/paypal.png';
-  static const String successAnimate = 'assets/images/success.json';
+
 
   // Logo payment
   static const String payos = 'assets/logos/payos.png';
   static const String COD = 'assets/logos/cod.png';
   static const String momo = 'assets/logos/momo.png';
 
-  // search
-  static const String search = 'assets/images/search.gif';
-  static const String searchNoFound = 'assets/images/searchNoFound.gif';
 
   // Loader
   static const String loaderAnimation = 'assets/animation/loader.json';
-  static const String loaderAnimationOne = 'assets/images/animate.json';
-  static const String emptyAnimation = 'assets/images/empty.json';
 
-  // icon system
-  static const String iconHome = 'assets/icons/icon_system/home.png';
-  static const String iconHomeOL = 'assets/icons/icon_system/home_ol.png';
 }

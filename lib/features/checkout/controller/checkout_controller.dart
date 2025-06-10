@@ -59,10 +59,11 @@ class CheckoutController extends GetxController {
       );
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}'); // ✅ In toàn bộ response
-
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (paymentMethod == 'PAYOS') {
+
           Get.to(() => PaymentQRCodeScreen(
             qrData: data['qrCode'],
             checkoutUrl: data['checkoutUrl'],

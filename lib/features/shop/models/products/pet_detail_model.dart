@@ -1,3 +1,5 @@
+import '../categories/breed_model.dart';
+
 class PetDetailModel {
   final int id;
   final String petCategoryName;
@@ -10,13 +12,17 @@ class PetDetailModel {
   final String color;
   final double price;
   final double priceDiscount;
+  final double percentDiscount;
   final bool status;
   final String thumbnailUrl;
   final String description;
   final List<String> imageUrls;
+  final BreedModel breed;
 
   PetDetailModel({
+    required this.breed,
     required this.priceDiscount,
+    required this.percentDiscount,
     required this.id,
     required this.petCategoryName,
     required this.breedName,
@@ -53,6 +59,10 @@ class PetDetailModel {
               .toList() ??
           [],
       priceDiscount: (json['priceDiscount'] as num?)?.toDouble() ?? 0.0,
+      percentDiscount: (json['percentDiscount'] as num?)?.toDouble() ?? 0.0,
+      breed: json['breed'] != null
+          ? BreedModel.fromJson(json['breed'])
+          : BreedModel(id: 0, name: 'Unknown', petCategoryId: 0),
     );
   }
 
@@ -72,7 +82,9 @@ class PetDetailModel {
       'description': description,
       'imageUrls': imageUrls,
       'thumbnailUrl': thumbnailUrl,
-      'priceDiscount': priceDiscount
+      'priceDiscount': priceDiscount,
+      'percentDiscount': percentDiscount,
+      'breed': breed.toJson(),
     };
   }
 

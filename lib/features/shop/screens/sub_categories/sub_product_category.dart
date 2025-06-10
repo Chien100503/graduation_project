@@ -38,7 +38,7 @@ class SubProductCategoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: ESizes.defaultBetweenSections),
               FutureBuilder(
-                future: controller.getTypesByProductCategoryId(productCategoryId),
+                future: controller.getTypes(productCategoryId),
                 builder: (context, snapshot) {
                   const loader = EHorizontalProductShimmer();
                   final widget = CloudHelperFunctions.checkMultiRecordState(
@@ -54,12 +54,12 @@ class SubProductCategoryScreen extends StatelessWidget {
                       final type = types[index];
 
                       return FutureBuilder(
-                        future: controller.fetchProductByType(productCategoryId, type.id),
+                        future: controller.getProductsByType(productCategoryId, type.id),
                         builder: (context, snapshot) {
                           final widget = CloudHelperFunctions.checkMultiRecordState(
                               snapshot: snapshot, loader: loader);
                           if (widget != null) return widget;
-                          final types = snapshot.data!;
+                          final products = snapshot.data!;
                           return Column(
                             children: [
                               ESectionHeading(
@@ -81,9 +81,9 @@ class SubProductCategoryScreen extends StatelessWidget {
                                   scrollDirection: Axis.horizontal,
                                   separatorBuilder: (_, __) => const SizedBox(
                                       width: ESizes.defaultBetweenItem),
-                                  itemCount: types.length,
+                                  itemCount: products.length,
                                   itemBuilder: (context, index) =>
-                                      EProductCardsHorizontalForProduct(product: types[index]),
+                                      EProductCardsHorizontalForProduct(product: products[index],),
                                 ),
                               ),
                               const SizedBox(height: ESizes.defaultBetweenSections),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet_shop/common/widgets/products_card/favorite_icon/favorite_icon_pet.dart';
+import 'package:pet_shop/common/widgets/products_card/favorite_icon/favorite_icon_product.dart';
+import 'package:pet_shop/common/widgets/texts/bran_title_with_verify_icon.dart';
 import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -71,11 +74,11 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                             .apply(color: EColors.thirdColor),
                       ),
                     ),
-                    // Positioned(
-                    //   top: 0,
-                    //   right: 0,
-                    //   child: EFavoriteIcon(productId: product.id),
-                    // ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: EFavoriteIconProduct(productId: product.id.toString()),
+                    ),
                   ],
                 ),
               ),
@@ -84,11 +87,13 @@ class EProductCardsVerticalForProduct extends StatelessWidget {
                 padding: const EdgeInsets.only(left: ESizes.sm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     EProductTitleText(
                       title: product.name,
                       smallSize: true,
                     ),
+                    EBrandTitleWithVerifyIcon(title: product.brandName),
                     Row(
                       children: [
                         Text('\$${product.price}',

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pet_shop/features/shop/models/products/product_model.dart';
+import 'package:get/get.dart';
+import 'package:pet_shop/features/shop/models/products/product_detail_model.dart';
+import 'package:pet_shop/features/shop/screens/review/widgets/rating_bar_star.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
+import '../../../features/shop/screens/product_details/product_detail.dart';
 import '../../../utils/constants/enums.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../custom_shape/containers/round_container.dart';
@@ -11,20 +14,23 @@ import '../texts/bran_title_with_verify_icon.dart';
 import '../texts/brand_title_text.dart';
 
 class EProductCardsHorizontalForProduct extends StatelessWidget {
-  const EProductCardsHorizontalForProduct({super.key, required this.product});
+  const EProductCardsHorizontalForProduct({
+    super.key,
+    required this.product,
+  });
 
-  final ProductModel product;
+  final ProductDetailModel product;
 
   @override
   Widget build(BuildContext context) {
     final dark = EHelperFunctions.isDarkMode(context);
 
     return GestureDetector(
-      // onTap: () => Get.to(
-      //       () => ProductDetail(product: product),
-      //   transition: Transition.fadeIn,
-      //   duration: const Duration(milliseconds: 500),
-      // ),
+      onTap: () => Get.to(
+            () => ProductDetail(productId: product.id.toString()),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 500),
+      ),
       child: Container(
         width: 350,
         padding: const EdgeInsets.all(1),
@@ -48,7 +54,7 @@ class EProductCardsHorizontalForProduct extends StatelessWidget {
                     boxFit: BoxFit.contain,
                     applyImageRadius: true,
                     isNetworkImage: true,
-                    imageUrl: product.imageUrls,
+                    imageUrl: product.thumbnailUrl,
                     bg: Colors.transparent,
                   ),
                   Positioned(
@@ -70,11 +76,6 @@ class EProductCardsHorizontalForProduct extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Positioned(
-                  //   right: 0,
-                  //   top: 0,
-                  //   child: EFavoriteIcon(productId: product.id),
-                  // ),
                 ],
               ),
             ),
@@ -91,40 +92,36 @@ class EProductCardsHorizontalForProduct extends StatelessWidget {
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
                     EBrandTitleWithVerifyIcon(title: product.type.name),
                     const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    // Text('Price ${EFormatter.priceFormatter(product.price)}'),
-                    const SizedBox(height: ESizes.defaultBetweenItem / 2),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        // Flexible(
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       if (product.productType == ProductType.single.toString() &&
-                        //           product.salePrice > 0)
-                        //         Padding(
-                        //           padding: const EdgeInsets.only(left: ESizes.sm),
-                        //           child: Text(
-                        //             '\$${product.price}',
-                        //             style: const TextStyle(
-                        //               decoration: TextDecoration.lineThrough,
-                        //               color: Colors.red,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       Padding(
-                        //         padding: const EdgeInsets.only(left: ESizes.sm),
-                        //         child: EProductPrice(
-                        //           price: controller.getProductPrice(product),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
+                        Flexible(
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: ESizes.sm),
+                                child: Text(
+                                  '${product.price}',
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),Padding(
+                                padding: const EdgeInsets.only(left: ESizes.sm),
+                                child: Text(
+                                  '${product.priceDiscount}',
+                                  style: Theme.of(context).textTheme.headlineSmall,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                       ],
                     ),
+                    ERatingStar(rating: product.rate)
                   ],
                 ),
               ),

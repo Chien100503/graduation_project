@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import '../categories/breed_model.dart';
+import '../categories/type_model.dart';
+
 class ProductDetailModel {
   final int id;
   final String name;
@@ -15,10 +18,12 @@ class ProductDetailModel {
   final String expirationDate;
   final String thumbnailUrl;
   final List<String> imageUrl;
+  final TypeModel type;
   final String categoryName;
   final double rate;
 
   ProductDetailModel({
+    required this.type,
     required this.rate,
     required this.priceDiscount,
     required this.percentDiscount,
@@ -57,6 +62,9 @@ class ProductDetailModel {
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
       priceDiscount: (json['priceDiscount'] as num?)?.toDouble() ?? 0.0,
       percentDiscount: (json['percentDiscount'] as num?)?.toDouble() ?? 0.0,
+      type: json['type'] != null
+          ? TypeModel.fromJson(json['type'])
+          : TypeModel(id: 0, name: 'Unknown',productCategoryId: 0),
     );
   }
 

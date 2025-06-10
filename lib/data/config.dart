@@ -1,4 +1,5 @@
 class Config {
   static const baseUrl =
-      'http://192.168.2.121:8080/api';
+      // 'https://warthog-subtle-dodo.ngrok-free.app/api';
+      'https://ultimately-magical-mosquito.ngrok-free.app/api';
 }

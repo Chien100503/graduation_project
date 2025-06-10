@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:mime/mime.dart';
 import 'package:pet_shop/data/config.dart';
 import '../../features/personalizations/models/register_model.dart';
 import '../../features/personalizations/models/user_model.dart';
@@ -53,7 +50,6 @@ class UserRepository {
       if (token != null) {
         _storage.write('TOKEN', token);
         _storage.write('USER_ID', responseData['id']);
-        print('Đăng ký thành công');
       }
     } else {
       final error = jsonDecode(response.body);
@@ -170,44 +166,5 @@ class UserRepository {
     final token = _storage.read('TOKEN');
     if (token == null) throw Exception('Token không tồn tại.');
 
-    final dio = Dio();
-
-    if (avatarFile != null) {
-      final mimeType = lookupMimeType(avatarFile.path);
-      final mediaType = mimeType != null
-          ? MediaType.parse(mimeType)
-          : MediaType('application', 'octet-stream');
-
-      final formData = FormData.fromMap({
-        'firstName': firstName,
-        'lastName': lastName,
-        'phone': phone,
-        'name': name,
-        'avatar': await MultipartFile.fromFile(
-          avatarFile.path,
-          filename: avatarFile.path
-              .split('/')
-              .last,
-          contentType: mediaType,
-        ),
-      });
-
-      try {
-        final response = await dio.put(
-          '$_baseUrl/profile',
-          data: formData,
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'multipart/form-data'
-            },
-          ),
-        );
-        print('Hồ sơ đã được cập nhật: ${response.data}');
-      } catch (e) {
-        print('Cập nhật hồ sơ thất bại: $e');
-        rethrow;
-      }
-    }
   }
 }

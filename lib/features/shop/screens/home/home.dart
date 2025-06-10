@@ -1,6 +1,3 @@
-
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_shop/common/widgets/custom_shape/containers/primary_header_container.dart';
@@ -11,6 +8,7 @@ import 'package:pet_shop/features/shop/controllers/products/product_controller.d
 import 'package:pet_shop/features/shop/screens/home/widget/home_categories.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 
+import '../../../../common/widgets/custom_shape/containers/search_container.dart';
 import '../../../../common/widgets/layouts/grid_layout.dart';
 import '../../../../common/widgets/shimmer/vertical_product_card_shimmer.dart';
 import '../../../../common/widgets/texts/section_heading.dart';
@@ -21,13 +19,14 @@ import 'widget/home_slider.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-Future<void> _refresh(){
-  return Future.delayed(const Duration(seconds: 1));
-}
+  Future<void> _refresh() {
+    return Future.delayed(const Duration(seconds: 1));
+  }
+
   @override
   Widget build(BuildContext context) {
-  final controllerProduct = Get.put(ProductController());
-  final controllerPet = Get.put(PetController());
+    final controllerProduct = Get.put(ProductController());
+    final controllerPet = Get.put(PetController());
 
     return Scaffold(
       body: RefreshIndicator(
@@ -42,7 +41,7 @@ Future<void> _refresh(){
                     EHomeAppBar(),
                     SizedBox(height: ESizes.defaultBetweenSections),
                     // SearchBar
-                    // ESearchContainer(text: 'Search in Store'),
+                    ESearchContainer(text: 'Search in Store'),
                     SizedBox(height: ESizes.defaultBetweenSections),
                     // Categories
                     Padding(
@@ -72,9 +71,7 @@ Future<void> _refresh(){
                     const ESlider(),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     // Popular text -view all
-                    ESectionHeading(
-                      title: 'Popular Pet',
-                    onPressed: () => ()),
+                    ESectionHeading(title: 'Popular Pet', onPressed: () => ()),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     Obx(() {
@@ -86,17 +83,21 @@ Future<void> _refresh(){
                           child: Text('Data not found'),
                         );
                       }
+                      final pets = controllerPet.allPets;
                       return EGridProductLayout(
                         itemBuilder: (_, index) => EProductCardsVerticalForPet(
-                          product: controllerPet.allPets()[index],
+                          product: pets[index],
                         ),
-                        itemCount:controllerPet.allPets.length,
+                        itemCount: pets.length >= 4
+                            ? 4
+                            : pets.length,
                       );
                     }),
-                    SizedBox(height: ESizes.defaultBetweenSections,),
+                    const SizedBox(
+                      height: ESizes.defaultBetweenSections,
+                    ),
                     ESectionHeading(
-                      title: 'Popular Food, Accessory',
-                    onPressed: () => ()),
+                        title: 'Popular Food, Accessory', onPressed: () => ()),
                     const SizedBox(height: ESizes.defaultBetweenItem),
                     Obx(() {
                       if (controllerProduct.isLoading.value) {
@@ -107,13 +108,13 @@ Future<void> _refresh(){
                           child: Text('Data not found'),
                         );
                       }
+                      final products = controllerProduct.allProducts;
                       return EGridProductLayout(
-                        itemBuilder: (_, index) => EProductCardsVerticalForProduct(
-                          product: controllerProduct.allProducts[index],
-
-                        ),
-
-                        itemCount: min(4, controllerProduct.allProducts.length),
+                          itemBuilder: (_, index) =>
+                              EProductCardsVerticalForProduct(
+                                product: products[index],
+                              ),
+                          itemCount: products.length >= 4 ? 4 : products.length
                       );
                     })
                   ],

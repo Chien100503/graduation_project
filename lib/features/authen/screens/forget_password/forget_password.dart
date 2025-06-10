@@ -8,9 +8,11 @@ import '../../../../utils/validators/validation.dart';
 import '../../controllers/forget_password/forget_password_controller.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final dark = EHelperFunctions.isDarkMode(context);
     final ForgotPasswordController controller = Get.put(ForgotPasswordController());
 
@@ -22,7 +24,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
           return Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -54,7 +56,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     onPressed: controller.isLoading.value
                         ? null
                         : () async {
-                      if (_formKey.currentState!.validate()) {
+                      if (formKey.currentState!.validate()) {
                         await controller.requestPasswordReset();
                       }
                     },

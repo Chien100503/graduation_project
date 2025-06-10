@@ -130,17 +130,28 @@ class _PetDetailState extends State<PetDetail> {
               ),
               child: Row(
                 children: [
-                  EProductTitleText(title: 'Giống loài: ${pet!.breedName}'),
+                  EProductTitleText(title: 'Giống loài: '),
+                  EProductTitleText(title: '${pet!.breedName}'),
+                  SizedBox(width: 10),
+                  Icon(Iconsax.verify5, color: Colors.blue)
                 ],
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: ESizes.defaultSpace, vertical: ESizes.defaultSpace),
+              padding: EdgeInsets.symmetric(horizontal: ESizes.defaultSpace, vertical: 10.0),
               child: ESectionHeading(title: 'Cân nặng', showActionButton: false),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: ESizes.defaultSpace),
-              child: EChipColor(text: '${pet!.size} kg', selected: false, onSelected: (value) {}),
+              child: EChipColor(text: '${pet!.weight}', selected: false, onSelected: (value) {}),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: ESizes.defaultSpace, vertical: 10.0),
+              child: ESectionHeading(title: 'Giới tính', showActionButton: false),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.defaultSpace),
+              child: EChipColor(text: pet!.gender, selected: false, onSelected: (value) {}),
             ),
             const Padding(
               padding: EdgeInsets.only(

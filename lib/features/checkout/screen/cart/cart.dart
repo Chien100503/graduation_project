@@ -12,8 +12,8 @@ import '../../controller/cart_controller/cart_controller.dart';
 import '../../models/cart_item_model.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key, required this.cartItems});
-  final List<CartItemModel> cartItems;
+  const CartScreen({super.key, this.cartItems});
+  final List<CartItemModel>? cartItems;
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -56,7 +56,7 @@ class _CartScreenState extends State<CartScreen> {
         if (isEmpty) {
           return EAnimationLoaderWidget(
             text: 'Whoops!, Cart is empty',
-            animation: EImages.loaderAnimation,
+            animation: EImages.cartNull,
             showAction: true,
             actionText: 'Let\'s fill it',
             onActionPress: () => Get.off(() => const NavigationMenu()),

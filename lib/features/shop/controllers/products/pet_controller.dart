@@ -29,30 +29,21 @@ class PetController extends GetxController {
   }
 
   Future<PetDetailModel?> fetchPetById(String petId) async {
-    print('=== CONTROLLER: getProductDetail called ===');
-    print('Requested Product ID: $petId');
 
-    // 1. Check cache
     final cachedPet = allPets.firstWhereOrNull((pet) => pet.id == petId);
-
     if (cachedPet != null) {
-      print('=== CONTROLLER: Product found in cache ===');
       selectedPet.value = cachedPet;
       return cachedPet;
     }
 
     try {
-      // 2. Fetch from server if not found
       final fetchedPet = await petRepository.getPetById(petId);
-      if (fetchedPet != null) {
-        selectedPet.value = fetchedPet;
-        allPets.add(fetchedPet); // Optional: cache it locally
-        print('=== CONTROLLER: Product fetched from server ===');
-      }
-      return fetchedPet;
+      selectedPet.value = fetchedPet;
+          return fetchedPet;
     } catch (e) {
       ECustomSnackBar.showError(title: 'Oh Snap!', message: e.toString());
       return null;
     }
   }
+
 }

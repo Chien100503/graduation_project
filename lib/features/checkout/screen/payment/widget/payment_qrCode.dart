@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pet_shop/features/authen/screens/login/widgets/login_divider.dart';
 import 'package:pet_shop/features/checkout/screen/payment/widget/payment_success.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 import 'package:pet_shop/utils/constants/sizes.dart';

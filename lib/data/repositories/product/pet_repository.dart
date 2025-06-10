@@ -58,13 +58,6 @@ class PetRepository extends GetxController {
       if (response.statusCode == 200) {
 
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
-
-        // Debug từng field quan trọng
-
-        // In ra tất cả keys trong JSON
-        jsonData.keys.forEach((key) {
-        });
-
         final petModel = PetDetailModel.fromJson(jsonData);
 
         return petModel;

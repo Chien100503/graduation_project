@@ -66,12 +66,6 @@ class LoginController extends GetxController {
     }
   }
 
-  // Future<void> logoutUser() async {
-  //   await _userRepo.logout();
-  //   localStorage.remove('JWT_TOKEN');
-  //   Get.offAllNamed('/login');
-  // }
-
   // UI feedback
   void showSuccessSnackBar(String title, String message) {
     Get.snackbar(

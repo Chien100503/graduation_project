@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pet_shop/features/checkout/screen/payment/widget/payment_qrCode.dart';
-import 'package:pet_shop/features/checkout/screen/payment/widget/payment_success.dart';
 import 'package:pet_shop/utils/constants/colors.dart';
 import 'package:pet_shop/utils/helpers/helper_functions.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../common/widgets/custom_shape/containers/round_container.dart';
 import '../../../../common/widgets/products/cart/cart_items.dart';
-import '../../../../common/widgets/products/cart/coupon_code.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../personalizations/controllers/address_controller/address_controller.dart';
 import '../../controller/cart_controller/cart_controller.dart';

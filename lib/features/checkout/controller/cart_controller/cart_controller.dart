@@ -1,5 +1,3 @@
-
-
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:pet_shop/features/checkout/models/cart_item_model.dart';
@@ -14,6 +12,7 @@ class CartController extends GetxController {
   final CartRepository _cartRepo = CartRepository();
   final RxList<CartItemModel> cartItems = <CartItemModel>[].obs;
 
+  RxInt noOfCartItems = 0.obs;
   var totalPrice = 0.0.obs;
 
 
@@ -57,6 +56,7 @@ class CartController extends GetxController {
     try {
       final items = await _cartRepo.getCartItems();
       cartItems.assignAll(items);
+      noOfCartItems.value = cartItems.length;
     } catch (e) {
       print('Lỗi khi lấy giỏ hàng: $e');
     }

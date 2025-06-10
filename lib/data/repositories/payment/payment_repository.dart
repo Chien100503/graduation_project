@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,7 +27,9 @@ class PaymentRepository {
         'paymentMethod': paymentMethod,
       }),
     );
-        print('Sending order: addressId=$addressId, paymentMethod=$paymentMethod');
+        if (kDebugMode) {
+          print('Sending order: addressId=$addressId, paymentMethod=$paymentMethod');
+        }
 
     return response;
   }
