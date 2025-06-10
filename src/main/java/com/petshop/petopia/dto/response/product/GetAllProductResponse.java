@@ -19,5 +19,5 @@ public class GetAllProductResponse {
     private BigDecimal percentDiscount;
     private BigDecimal price;
     private BigDecimal priceDiscount;
-    private boolean isWishlist;
+//    private boolean isWishlist;
 }

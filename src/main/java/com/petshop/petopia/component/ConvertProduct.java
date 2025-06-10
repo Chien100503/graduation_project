@@ -55,8 +55,7 @@ public class ConvertProduct {
                 product.getBrand().getName(),
                 calculatePrice.roundBigDecimal(percentDiscount),
                 product.getPrice(),
-                calculatePrice.roundBigDecimal(priceDiscount),
-                isWishlist
+                calculatePrice.roundBigDecimal(priceDiscount)
         );
     }
 
@@ -112,8 +111,7 @@ public class ConvertProduct {
                 product.getStockQuantity(),
                 product.getSize(),
                 product.getWeight(),
-                expirationDateString,
-                isWishlist
+                expirationDateString
         );
     }
 

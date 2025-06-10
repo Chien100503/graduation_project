@@ -58,8 +58,7 @@ public class ConvertPet {
                 pet.getBreed().getName(),
                 salePercent,
                 pet.getPrice(),
-                calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent),
-                isWishlist
+                calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent)
         );
     }
 
