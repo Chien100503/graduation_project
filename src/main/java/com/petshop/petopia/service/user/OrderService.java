@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.petshop.petopia.component.Global;
 import com.petshop.petopia.dto.request.order.CreateOrderRequest;
 import com.petshop.petopia.dto.response.order.OrderHistoryResponse;
-import com.petshop.petopia.dto.response.order.OrderResponse;
 import com.petshop.petopia.implement.PayosImpl;
 import com.petshop.petopia.model.cart.CartItem;
 import com.petshop.petopia.model.order.*;
@@ -84,8 +83,10 @@ public class OrderService {
         order.setStatus(Global.OrderStatus.PENDING);
         order = orderRepository.save(order);
 
-        order.setItems(orderItems);
-
+        for (OrderItem item : orderItems) {
+            item.setOrder(order);
+        }
+        orderItemRepository.saveAll(orderItems);
 
         ObjectNode response;
         if (Global.PaymentMethod.PAYOS.name().equalsIgnoreCase(request.getPaymentMethod().name())) {
@@ -95,9 +96,7 @@ public class OrderService {
         } else {
             throw new RuntimeException("Phương thức thanh toán không hợp lệ hoặc chưa được hỗ trợ.");
         }
-
         cartItemRepository.deleteCartItemsByUserId(userId);
-
         return response;
     }
 
@@ -225,7 +224,7 @@ public class OrderService {
                         return ItemData.builder()
                                 .name(name)
                                 .quantity(item.getQuantity())
-                                .price(item.getPriceDiscount().intValue())
+                                .price(item.getPriceDiscount().multiply(BigDecimal.valueOf(100)).intValue())
                                 .build();
                     })
                     .collect(Collectors.toList());
@@ -396,7 +395,7 @@ public class OrderService {
             response.setTotalPrice(order.getTotalPrice());
             response.setStatus(order.getStatus());
             response.setPaymentMethod(order.getPayment() != null ? order.getPayment().getPaymentMethod() : null);
-            response.setOrderDate(order.getCreatedAt());
+            response.setOrderDate(order.getOrderDate());
             return response;
         }).collect(Collectors.toList());
     }

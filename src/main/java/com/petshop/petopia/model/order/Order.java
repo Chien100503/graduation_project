@@ -49,7 +49,6 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
         orderDate = new Date();
         isPaid = false;
         isDelivered = false;
