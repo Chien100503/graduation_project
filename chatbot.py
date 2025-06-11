@@ -9,10 +9,6 @@ class Chatbot:
         self.model = genai.GenerativeModel(GEMINI_MODEL)
 
     def generate_response(self, query: str, context: str) -> str:
-        """
-        Sinh phản hồi sử dụng Gemini API dựa trên truy vấn và ngữ cảnh.
-        Phản hồi được định dạng JSON.
-        """
         prompt = f"""
         Dựa trên thông tin sản phẩm và thú cưng sau:
         {context}

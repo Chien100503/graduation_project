@@ -17,7 +17,6 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQL_USE_SSL_DISABLED = os.getenv("MYSQL_USE_SSL") 
 
 def get_mysql_connection():
-    """Tạo và trả về kết nối tới cơ sở dữ liệu MySQL."""
     return mysql.connector.connect(
         host=MYSQL_HOST,
         port=MYSQL_PORT,
@@ -28,10 +27,6 @@ def get_mysql_connection():
     )
 
 def fetch_products():
-    """
-    Lấy dữ liệu sản phẩm từ MySQL, bao gồm thông tin danh mục, hãng, loại.
-    Chỉ lấy các trường cần thiết cho Vector Store.
-    """
     query = """
     SELECT
         p.id, p.name, p.description, p.price, p.weight, p.stock_quantity, p.size, p.expiration_date,
@@ -52,10 +47,6 @@ def fetch_products():
     return results
 
 def fetch_pets():
-    """
-    Lấy dữ liệu thú cưng từ MySQL, bao gồm thông tin danh mục thú cưng và giống.
-    Chỉ lấy các trường cần thiết cho Vector Store.
-    """
     query = """
     SELECT
         pt.id, pt.name, pt.age, pt.gender, pt.size, pt.weight, pt.color, pt.price, pt.status, pt.description,
@@ -86,7 +77,6 @@ def fetch_user_by_email(email: str) -> dict:
 _firestore_db = None
 
 def initialize_firestore():
-    """Khởi tạo Firebase Admin SDK nếu chưa được khởi tạo."""
     global _firestore_db
     if _firestore_db is None:
         try:
@@ -104,16 +94,11 @@ def initialize_firestore():
             raise
 
 def get_firestore_db():
-    """Trả về đối tượng Firestore client."""
     if _firestore_db is None:
         initialize_firestore()
     return _firestore_db
 
 def get_or_create_conversation_firestore(user_id: str) -> dict:
-    """
-    Lấy hoặc tạo tài liệu cuộc trò chuyện cho người dùng.
-    Sử dụng user_id (email từ token sub) làm ID tài liệu Firestore.
-    """
     db = get_firestore_db()
     doc_ref = db.collection("conversations").document(user_id)
     doc = doc_ref.get()
@@ -132,9 +117,6 @@ def get_or_create_conversation_firestore(user_id: str) -> dict:
         return convo_doc
 
 def append_message_to_conversation_firestore(user_id: str, sender: str, text: str, data: list = None):
-    """
-    Thêm một tin nhắn vào lịch sử cuộc trò chuyện của người dùng.
-    """
     db = get_firestore_db()
     doc_ref = db.collection("conversations").document(user_id)
     
@@ -154,10 +136,6 @@ def append_message_to_conversation_firestore(user_id: str, sender: str, text: st
     })
 
 def clean_metadata(obj):
-    """
-    Đệ quy làm sạch các giá trị None trong dictionary/list.
-    ChromaDB không cho phép giá trị None trong metadata.
-    """
     if isinstance(obj, dict):
         return {k: clean_metadata(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -168,10 +146,6 @@ def clean_metadata(obj):
         return obj
 
 def convert_decimal_to_float(obj):
-    """
-    Đệ quy chuyển đổi các đối tượng Decimal sang float.
-    Firestore và JSON không hỗ trợ Decimal trực tiếp.
-    """
     if isinstance(obj, dict):
         return {k: convert_decimal_to_float(v) for k, v in obj.items()}
     elif isinstance(obj, list):

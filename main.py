@@ -12,11 +12,10 @@ import os
 import re
 import json
 from mysql_connector import (
-    get_mysql_connection, # Giữ lại nếu có các endpoint khác dùng MySQL
     get_or_create_conversation_firestore,
     append_message_to_conversation_firestore,
     initialize_firestore,
-    fetch_user_by_email # Đã thêm import này
+    fetch_user_by_email
 )
 from ngrok_config import setup_ngrok
 from datetime import datetime
@@ -32,19 +31,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Khởi tạo Firebase Firestore khi ứng dụng bắt đầu
 initialize_firestore()
 
-# Khởi tạo vector store và chatbot
 vector_store = init_vector_store()
 chatbot = init_chatbot()
-
 
 class Query(BaseModel):
     text: str
 
 def base64_decode_with_padding(s):
-    """Thêm padding và decode chuỗi base64."""
     missing_padding = len(s) % 4
     if missing_padding != 0:
         s += '=' * (4 - missing_padding)
@@ -57,7 +52,7 @@ except Exception as e:
     DECODED_SECRET_KEY = b''
 
 
-def verify_token(authorization: str = Header(None)):
+def extract_token(authorization: str = Header(None)):
     if authorization is None:
         raise HTTPException(
             status_code=401, detail="Authorization header bị thiếu")
@@ -79,9 +74,6 @@ def verify_token(authorization: str = Header(None)):
 
 
 def build_context_from_history(messages: List[Dict], max_turns: int = 6) -> str:
-    """
-    Ghép các message gần nhất thành context cho chatbot, có đánh số thứ tự.
-    """
     history = messages[-max_turns * 2:] if len(messages) > max_turns * 2 else messages
     context_lines = []
     start_idx = len(messages) - len(history) + 1
@@ -95,14 +87,13 @@ def build_context_from_history(messages: List[Dict], max_turns: int = 6) -> str:
     return "\n".join(context_lines)
 
 @app.post("/chat")
-async def chat(query: Query, token_payload: dict = Depends(verify_token)):
+async def chat(query: Query, token_payload: dict = Depends(extract_token)):
     try:
         email = token_payload.get("sub")
         if not email:
             raise HTTPException(
                 status_code=400, detail="Token không chứa email người dùng (sub claim).")
 
-        # Lấy thông tin người dùng từ MySQL bằng email để có được ID
         user = fetch_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="Không tìm thấy người dùng trong database với email này.")
@@ -174,19 +165,17 @@ async def chat(query: Query, token_payload: dict = Depends(verify_token)):
 
 
 @app.get("/chat/history")
-async def get_chat_history(token_payload: dict = Depends(verify_token)):
+async def get_chat_history(token_payload: dict = Depends(extract_token)):
     try:
         email = token_payload.get("sub")
         if not email:
             raise HTTPException(
                 status_code=400, detail="Token không chứa email người dùng (sub claim).")
         
-        # Lấy thông tin người dùng từ MySQL bằng email để có được ID
         user = fetch_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="Không tìm thấy người dùng trong database với email này.")
         
-        # Sử dụng ID của người dùng từ MySQL làm user_id cho Firestore
         user_id_for_firestore = str(user['id'])
 
         conversation = get_or_create_conversation_firestore(user_id_for_firestore)
@@ -196,9 +185,7 @@ async def get_chat_history(token_payload: dict = Depends(verify_token)):
             if isinstance(msg.get("timestamp"), datetime):
                 msg["timestamp"] = msg["timestamp"].isoformat()
             messages.append(msg)
-
-        # Trả về ID của người dùng thay vì email
-        return {"user_id": user_id_for_firestore, "messages": messages}
+        return {"messages": messages}
     except HTTPException as he:
         raise he
     except Exception as e:
@@ -207,7 +194,7 @@ async def get_chat_history(token_payload: dict = Depends(verify_token)):
 
 
 @app.get("/users/me")
-async def get_current_user_info(token_payload: dict = Depends(verify_token)):
+async def get_current_user_info(token_payload: dict = Depends(extract_token)):
     try:
         email = token_payload.get("sub")
         if not email:
@@ -231,18 +218,15 @@ async def get_current_user_info(token_payload: dict = Depends(verify_token)):
 
 
 @app.post("/update")
-async def add_or_update_document_endpoint(
+async def update_document_endpoint(
     doc_data: dict = Body(...), 
     doc_type: str = Body(..., description="Loại tài liệu: 'product' hoặc 'pet'")
 ):
-    """
-    Endpoint để thêm hoặc cập nhật một tài liệu (sản phẩm/thú cưng) vào Vector Store.
-    """
     if doc_type not in ["product", "pet"]:
         raise HTTPException(status_code=400, detail="Loại tài liệu không hợp lệ. Phải là 'product' hoặc 'pet'.")
     
     try:
-        vector_store.add_or_update_document(doc_data, doc_type)
+        vector_store.update_document(doc_data, doc_type)
         return {"message": f"Cập nhật {doc_type} thành công!"}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))

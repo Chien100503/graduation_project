@@ -6,8 +6,7 @@ from mysql_connector import fetch_products, fetch_pets, clean_metadata, convert_
 from config import SENTENCE_TRANSFORMER_MODEL_PATH
 import os
 from decimal import Decimal
-from datetime import datetime # Đã thêm import này để khắc phục lỗi NameError
-
+from datetime import datetime
 
 class VectorStore:
     def __init__(self):
@@ -18,12 +17,7 @@ class VectorStore:
         self.pets_collection = self.chroma_client.get_or_create_collection("pets_collection")
 
     def _prepare_document_for_embedding(self, doc: Dict, doc_type: str) -> str:
-        """
-        Chuẩn bị chuỗi văn bản từ một tài liệu (sản phẩm/thú cưng) để tạo embedding.
-        Chỉ bao gồm các trường liên quan và khóa ngoại đã chọn.
-        """
         if doc_type == "product":
-            # Các khóa ngoại của product chỉ lấy category và type và brand
             return (
                 f"Sản phẩm ID: {doc.get('id')}, Tên: {doc.get('name')}, Mô tả: {doc.get('description')}, "
                 f"Giá: {doc.get('price')}, Số lượng tồn kho: {doc.get('stock_quantity')}, "
@@ -32,7 +26,6 @@ class VectorStore:
                 f"Thương hiệu: {doc.get('brand_name')}, Loại: {doc.get('type_name')}"
             )
         elif doc_type == "pet":
-            # Các khóa ngoại của pet chỉ lấy category và breed
             return (
                 f"Thú cưng ID: {doc.get('id')}, Tên: {doc.get('name')}, Tuổi: {doc.get('age')}, "
                 f"Giới tính: {doc.get('gender')}, Kích thước: {doc.get('size')}, "
@@ -44,10 +37,6 @@ class VectorStore:
         return ""
 
     def add_documents(self, documents: List[Dict], doc_type: str):
-        """
-        Thêm tài liệu vào Vector Store (ChromaDB) cho loại cụ thể (product/pet).
-        Xóa collection cũ trước khi thêm để đảm bảo dữ liệu mới nhất.
-        """
         if not documents:
             print(f"No documents to add for type: {doc_type}")
             return
@@ -77,11 +66,6 @@ class VectorStore:
         print(f"Successfully added {len(documents)} {doc_type} documents to ChromaDB.")
 
     def query(self, query_text: str, n_results: int = 5) -> Dict:
-        """
-        Truy vấn Vector Store.
-        Truy vấn cả hai collection (sản phẩm và thú cưng) và kết hợp kết quả.
-        Ưu tiên các kết quả có điểm tương đồng cao hơn.
-        """
         query_embedding = self.model.encode([query_text]).tolist()[0]
 
         product_results = self.products_collection.query(
@@ -136,11 +120,7 @@ class VectorStore:
             "type": response_type
         }
 
-    def add_or_update_document(self, doc: Dict, doc_type: str):
-        """
-        Thêm hoặc cập nhật một tài liệu (sản phẩm/thú cưng) vào Vector Store.
-        Cập nhật cả file JSON cục bộ và ChromaDB.
-        """
+    def update_document(self, doc: Dict, doc_type: str):
         if 'id' not in doc:
             raise ValueError("Document must have an 'id' field for update/add operation.")
         
@@ -187,7 +167,6 @@ class VectorStore:
 
 
 def init_vector_store():
-    """Khởi tạo Vector Store và tải dữ liệu ban đầu từ database."""
     vector_store = VectorStore()
     
     print("Loading products from MySQL...")
@@ -230,7 +209,7 @@ if __name__ == "__main__":
         updated_product_data['price'] = Decimal(str(float(product_to_update['price']) * 1.1))
         updated_product_data['description'] = f"Mô tả mới: {product_to_update['description']} - đã cập nhật."
         
-        vs.add_or_update_document(updated_product_data, "product")
+        vs.update_document(updated_product_data, "product")
         print(f"Updated product ID {updated_product_data['id']}: {updated_product_data['name']}")
     else:
         print("Không có sản phẩm nào trong database để kiểm thử cập nhật.")
@@ -241,10 +220,10 @@ if __name__ == "__main__":
         pet_to_update = existing_pets[0]
         updated_pet_data = pet_to_update.copy()
         updated_pet_data['name'] = f"{pet_to_update['name']} (Cập nhật - {datetime.now().strftime('%H:%M:%S')})"
-        updated_pet_data['price'] = Decimal(str(float(pet_to_update['price']) * 0.9)) # Giảm giá 10%
+        updated_pet_data['price'] = Decimal(str(float(pet_to_update['price']) * 0.9))
         updated_pet_data['description'] = f"Mô tả mới: {pet_to_update['description']} - đã cập nhật."
         
-        vs.add_or_update_document(updated_pet_data, "pet")
+        vs.update_document(updated_pet_data, "pet")
         print(f"Updated pet ID {updated_pet_data['id']}: {updated_pet_data['name']}")
     else:
         print("Không có thú cưng nào trong database để kiểm thử cập nhật.")
