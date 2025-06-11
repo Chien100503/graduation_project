@@ -19,10 +19,10 @@ public class ProductImage {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id") // Liên kết với bảng Product
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    private String imageUrl; // URL của hình ảnh
+    private String imageUrl;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -32,6 +32,7 @@ public class ProductImage {
 
     @PreUpdate
     public void setUpdatedAt() {
+        this.createdAt = new Date();
         this.updatedAt = new Date();
     }
 }

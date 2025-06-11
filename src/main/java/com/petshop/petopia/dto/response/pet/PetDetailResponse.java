@@ -20,6 +20,8 @@ public class PetDetailResponse {
     private Double weight;
     private String color;
     private BigDecimal price;
+    private BigDecimal percentDiscount;
+    private BigDecimal priceDiscount;
     private Boolean status;
     private String description;
     private List<String> imageUrls;

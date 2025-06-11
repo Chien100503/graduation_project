@@ -63,6 +63,10 @@ public class ConvertPet {
     }
 
     public PetDetailResponse convertToGetPetDetailResponse(Pet pet, boolean isWishlist) {
+        BigDecimal salePercent = BigDecimal.ZERO;
+        if (pet.getBanner() != null && pet.getBanner().getSalePercent() != null) {
+            salePercent = pet.getBanner().getSalePercent();
+        }
         PetDetailResponse dto = new PetDetailResponse();
         dto.setId(pet.getId());
 
@@ -83,6 +87,8 @@ public class ConvertPet {
         dto.setStatus(pet.getStatus());
         dto.setDescription(pet.getDescription());
         dto.setWishlist(isWishlist);
+        dto.setPercentDiscount(salePercent);
+        dto.setPriceDiscount(calculatePrice.calculatePriceDiscount(pet.getPrice(), salePercent));
 
         if (pet.getPetImages() != null && !pet.getPetImages().isEmpty()) {
             List<String> urls = new ArrayList<>();
